@@ -35,7 +35,8 @@
             width: 300px;
             height: 100vh;
             background: #1c1c1e;
-            z-index: 9999;
+            z-index: 99999;
+            pointer-events: auto;
             flex-direction: column;
             overflow: hidden;
         }
@@ -247,11 +248,8 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
-        /* ── TOGGLE FBX BUTTON ── */
-        #toggle-fbx-btn {
-            position: fixed;
-            top: 56px;
-            left: 24px;
+        /* ── BOTONES DE MODELOS BIM ── */
+        .model-toggle-btn {
             z-index: 9999;
             display: flex;
             align-items: center;
@@ -263,7 +261,7 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 20px;
             cursor: pointer;
-            font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 13px;
             font-weight: 600;
             color: #ffffff;
@@ -272,15 +270,10 @@
             user-select: none;
         }
 
-        #toggle-fbx-btn:hover {
+        .model-toggle-btn:hover {
             background: rgba(44, 44, 46, 0.95);
             border-color: rgba(255, 255, 255, 0.25);
             transform: translateY(-1px);
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
-        }
-
-        #toggle-fbx-btn:active {
-            transform: translateY(0);
         }
 
         .fbx-dot {
@@ -293,13 +286,24 @@
             flex-shrink: 0;
         }
 
-        #toggle-fbx-btn.off .fbx-dot {
+        .model-toggle-btn.off .fbx-dot {
             background: #636366;
             box-shadow: none;
         }
 
-        #toggle-fbx-btn.off {
+        .model-toggle-btn.off {
             opacity: 0.7;
+        }
+
+        /* Botones laterales generados dinámicamente */
+        #sidebar-models {
+            position: fixed;
+            left: 24px;
+            top: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
         }
 
         /* ── NEXT STEP BUTTON ── */
@@ -370,6 +374,120 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        /* ── PANEL DE CALIBRACIÓN BIM (Draggable) ── */
+        #calib-panel {
+            position: fixed;
+            top: 20px;
+            left: calc(100vw - 300px);
+            /* posición inicial cerca de la derecha */
+            z-index: 9999;
+            background: rgba(28, 28, 30, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 0 0 15px 0;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            min-width: 250px;
+            user-select: none;
+        }
+
+        .calib-header {
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 1px solid #444;
+            padding: 12px 16px;
+            cursor: grab;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px 12px 0 0;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .calib-header:active {
+            cursor: grabbing;
+        }
+
+        .calib-header::before {
+            content: '⠿';
+            font-size: 16px;
+            opacity: 0.4;
+        }
+
+        .calib-body {
+            padding: 12px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .calib-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .calib-btn {
+            background: #3a3a3c;
+            border: 1px solid #636366;
+            color: white;
+            border-radius: 4px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .calib-btn:hover {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: black;
+        }
+
+        .calib-input {
+            background: #1c1c1e;
+            color: white;
+            border: 1px solid #636366;
+            border-radius: 4px;
+            padding: 4px;
+            width: 60px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .calib-select {
+            background: #1c1c1e;
+            color: white;
+            border: 1px solid #636366;
+            border-radius: 4px;
+            padding: 4px;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        #calib-coords,
+        #calib-rot {
+            background: #000;
+            padding: 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 11px;
+            text-align: center;
+            color: #4ade80;
+            user-select: all;
+            margin-top: 5px;
+        }
     </style>
 </head>
 
@@ -396,37 +514,286 @@
         </div>
     </div>
 
-    <!-- TOGGLE FBX BUTTON -->
-    <button id="toggle-fbx-btn" onclick="toggleFbxModel()" style="display:none">
-        <span class="fbx-dot"></span>
-        <span>🏗️</span>
-        <span id="toggle-fbx-label">Modelo BIM</span>
-    </button>
 
+    <!-- BOTONES TOGGLE DE MODELOS -->
+    <div id="sidebar-models">
+        <button id="btn-electrico" class="model-toggle-btn" onclick="handleToggle('electrico')">
+            <span class="fbx-dot"></span> ⚡ M. Eléctrico
+        </button>
+        <button id="btn-clima" class="model-toggle-btn" onclick="handleToggle('clima')">
+            <span class="fbx-dot"></span> ❄️ M. Clima
+        </button>
+        <button id="btn-cubo" class="model-toggle-btn" onclick="handleToggle('cubo')">
+            <span class="fbx-dot"></span> 📦 Cubo
+        </button>
+    </div>
 
+    <!-- PANEL DE CALIBRACIÓN BIM -->
+    <div id="calib-panel">
+        <div class="calib-header" id="calib-drag-handle">🛠️ Calibrador Avanzado</div>
+        <div class="calib-body">
+
+            <select id="calib-model-select" class="calib-select" onchange="updateCalibDisplay()">
+            </select>
+
+            <div class="calib-row" style="margin-top: 5px;">
+                <span>Paso:</span>
+                <input type="number" id="calib-step" class="calib-input" value="0.1" step="0.01">
+            </div>
+
+            <div style="font-size: 11px; color:#aaa; text-align:center; margin-top:5px;">POSICIÓN (M)</div>
+            <div class="calib-row">
+                <span>Eje X:</span>
+                <div><button class="calib-btn" onclick="nudgePos('x', -1)">-</button><button class="calib-btn"
+                        onclick="nudgePos('x', 1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Eje Y:</span>
+                <div><button class="calib-btn" onclick="nudgePos('y', -1)">-</button><button class="calib-btn"
+                        onclick="nudgePos('y', 1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Eje Z:</span>
+                <div><button class="calib-btn" onclick="nudgePos('z', -1)">-</button><button class="calib-btn"
+                        onclick="nudgePos('z', 1)">+</button></div>
+            </div>
+            <div id="calib-coords">Pos: x: 0.00, y: 0.00, z: 0.00</div>
+
+            <div style="font-size: 11px; color:#aaa; text-align:center; margin-top:10px;">ROTACIÓN (GRADOS)</div>
+            <div class="calib-row">
+                <span>Paso Rot:</span>
+                <input type="number" id="calib-rot-step" class="calib-input" value="5" step="1">
+            </div>
+            <div class="calib-row">
+                <span>Rot X:</span>
+                <div><button class="calib-btn" onclick="nudgeRot('x', -1)">-</button><button class="calib-btn"
+                        onclick="nudgeRot('x', 1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Rot Y:</span>
+                <div><button class="calib-btn" onclick="nudgeRot('y', -1)">-</button><button class="calib-btn"
+                        onclick="nudgeRot('y', 1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Rot Z:</span>
+                <div><button class="calib-btn" onclick="nudgeRot('z', -1)">-</button><button class="calib-btn"
+                        onclick="nudgeRot('z', 1)">+</button></div>
+            </div>
+            <div id="calib-rot">Rot: x: 0°, y: 0°, z: 0°</div>
+        </div><!-- /calib-body -->
+    </div>
 
     <iframe id="showcase" width="100%" height="100%"
         src="./bundle/showcase.html?m=hXEV8zd9GFy&play=1&qs=1&log=0&applicationKey=myhcpcdgdh7907ggei7s5f4md"
-        frameborder="0" allowfullscreen allow="vr; xr-spatial-tracking"></iframe>
+        frameborder="0" allowfullscreen allow="vr; xr-spatial-tracking"
+        style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:1"></iframe>
 
     <script>
         const showcase = document.getElementById('showcase');
         let sdk;
         let mpSdk = null;         // alias semántico expuesto tras connect()
-        let fbxNode = null;      // referencia al nodo FBX
-        let fbxVisible = true;   // estado actual de visibilidad
 
-        // =====================================================
-        // CONFIGURACIÓN MODELO RADIO.FBX  ← ajusta aquí
-        // =====================================================
-        const RADIO_CONFIG = {
-            url: 'Radio.fbx',
-            position: { x: -2.146606233402686, y: 1.5, z: -19.8006284797463639 },  // coordenadas exactas de escena
-            rotation: { x: 0, y: 90, z: 0 },  // ← ajustar eje
-            scale: 0.05                                 // ← ajustar escala
+        // Animación GLB — variables de soporte para cubo
+        let cuboAnimComp = null;
+        let cuboClipName = '';
+        let cuboMixer = null;
+        let cuboActions = [];
+        let cuboAnimMethod = 'none';
+        let cuboAnimPlaying = false;
+
+        // ── SISTEMA DE GESTIÓN DE MODELOS (FBX/GLB) ──
+        const modelsData = {
+            'electrico': { id: 'electrico', label: 'M. Eléctrico', icon: '⚡', file: 'Electrico.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: true },
+            'clima': { id: 'clima', label: 'M. Clima', icon: '❄️', file: 'Clima.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: true },
+            'radio': {
+                id: 'radio', label: 'Radio', icon: '📻', file: 'Radio.fbx', type: 'mp.fbxLoader', scale: 0.05, node: null, visible: true,
+                position: { x: -16, y: 1.2, z: -2.7 },
+                rotation: { x: 0, y: 0, z: 0 }
+            },
+            'cubo': { id: 'cubo', label: 'Cubo Animado', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', scale: 0.1, node: null, visible: true },
+            'mesa': { id: 'mesa', label: 'Mesa', icon: '🪑', file: 'Mesa.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
+            'candado': { id: 'candado', label: 'Candado', icon: '🔒', file: 'candado.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
+            'etiqueta': { id: 'etiqueta', label: 'Etiqueta', icon: '🏷️', file: 'Etiqueta.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
+            'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true }
         };
-        let radioNode = null;   // nodo Three.js del modelo Radio
-        let radioLoaded = false;  // evita cargas duplicadas
+
+        // Mapa de calibración de tags: 'tag_1' → { sid, anchorPosition, stepLabel }
+        const tagsCalibData = {};
+
+        function initModelUI() {
+            const select = document.getElementById('calib-model-select');
+
+            // ─ Grupo: Modelos 3D ─
+            const grpModels = document.createElement('optgroup');
+            grpModels.label = '── Modelos 3D ──';
+            select.appendChild(grpModels);
+
+            Object.values(modelsData).forEach(model => {
+                const opt = document.createElement('option');
+                opt.value = model.id;
+                opt.textContent = `${model.icon} ${model.label}`;
+                grpModels.appendChild(opt);
+            });
+
+            // ─ Grupo: Tags (se llenará cuando el SDK cree los tags) ─
+            const grpTags = document.createElement('optgroup');
+            grpTags.label = '── Tags Checklist ──';
+            grpTags.id = 'calib-tags-group';
+            select.appendChild(grpTags);
+        }
+
+        // Llamado desde init SDK tras crear cada tag
+        function registerTagForCalib(stepId, sid, label, anchorPosition) {
+            const key = `tag_${stepId}`;
+            tagsCalibData[key] = { sid, anchorPosition: Object.assign({}, anchorPosition), stepLabel: label };
+
+            const grp = document.getElementById('calib-tags-group');
+            if (!grp) return;
+            // evitar duplicados
+            if (grp.querySelector(`option[value="${key}"]`)) return;
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = `📍 Paso ${stepId}: ${label.replace(/^Paso \d+: /, '')}`;
+            grp.appendChild(opt);
+        }
+
+        function toggleSpecificModel(id) {
+            const m = modelsData[id];
+            if (!m || !m.node) return;
+            m.visible = !m.visible;
+            m.node.obj3D.visible = m.visible;
+        }
+
+        function getActiveModel() {
+            const id = document.getElementById('calib-model-select').value;
+            if (id.startsWith('tag_')) return null;  // es un tag, no un modelo
+            return modelsData[id] || null;
+        }
+
+        function getActiveTag() {
+            const id = document.getElementById('calib-model-select').value;
+            if (!id.startsWith('tag_')) return null;
+            return tagsCalibData[id] || null;
+        }
+
+        function nudgePos(axis, dir) {
+            const step = parseFloat(document.getElementById('calib-step').value) || 0.1;
+
+            const tag = getActiveTag();
+            if (tag) {
+                // Mover Mattertag
+                tag.anchorPosition[axis] = (tag.anchorPosition[axis] || 0) + step * dir;
+                if (!mpSdk) return;
+                mpSdk.Mattertag.editPosition(tag.sid, {
+                    anchorPosition: tag.anchorPosition,
+                    stemVector: { x: 0, y: 0, z: 0 }
+                }).catch(e => console.warn('⚠️ editPosition error:', e));
+                updateCalibDisplay();
+                return;
+            }
+
+            const m = getActiveModel();
+            if (!m || !m.node) return;
+            if (!m.visible) toggleSpecificModel(m.id);
+            m.node.obj3D.position[axis] += (step * dir);
+            updateCalibDisplay();
+        }
+
+        function nudgeRot(axis, dir) {
+            const tag = getActiveTag();
+            if (tag) return; // Los tags no tienen rotación editable
+
+            const m = getActiveModel();
+            if (!m || !m.node) return;
+            if (!m.visible) toggleSpecificModel(m.id);
+
+            const step = parseFloat(document.getElementById('calib-rot-step').value) || 5;
+            m.node.obj3D.rotation[axis] += (step * dir * (Math.PI / 180));
+            updateCalibDisplay();
+        }
+
+        function updateCalibDisplay() {
+            const tag = getActiveTag();
+            if (tag) {
+                const p = tag.anchorPosition;
+                document.getElementById('calib-coords').innerText =
+                    `Pos: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}`;
+                document.getElementById('calib-rot').innerText = `(Tags no tienen rotación)`;
+                return;
+            }
+
+            const m = getActiveModel();
+            if (!m || !m.node) return;
+
+            const p = m.node.obj3D.position;
+            const r = m.node.obj3D.rotation;
+
+            document.getElementById('calib-coords').innerText = `Pos: x: ${p.x.toFixed(3)}, y: ${p.y.toFixed(3)}, z: ${p.z.toFixed(3)}`;
+            document.getElementById('calib-rot').innerText = `Rot: x: ${(r.x * 180 / Math.PI).toFixed(0)}°, y: ${(r.y * 180 / Math.PI).toFixed(0)}°, z: ${(r.z * 180 / Math.PI).toFixed(0)}°`;
+        }
+
+        // Actualiza el estado visual (on/off) de un botón toggle
+        function syncToggleBtn(id) {
+            const m = modelsData[id];
+            const btn = document.getElementById('btn-' + id);
+            if (!btn) return;
+            if (m.visible) {
+                btn.classList.remove('off');
+            } else {
+                btn.classList.add('off');
+            }
+        }
+
+        // Toggle con actualización visual del botón
+        function handleToggle(id) {
+            const m = modelsData[id];
+            if (!m) return;
+            if (!m.node) {
+                console.warn(`⚠️ [${id}] Modelo no cargado aún.`);
+                return;
+            }
+            m.visible = !m.visible;
+            m.node.obj3D.visible = m.visible;
+            syncToggleBtn(id);
+        }
+
+        // Inicializar UI al arrancar
+        initModelUI();
+
+        // ── DRAG & DROP para el panel calibrador ──────────────────
+        (function () {
+            const panel = document.getElementById('calib-panel');
+            const handle = document.getElementById('calib-drag-handle');
+            let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
+
+            handle.addEventListener('mousedown', (e) => {
+                dragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                const rect = panel.getBoundingClientRect();
+                origLeft = rect.left;
+                origTop = rect.top;
+                panel.style.transition = 'none';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                const newLeft = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, origLeft + dx));
+                const newTop = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, origTop + dy));
+                panel.style.left = newLeft + 'px';
+                panel.style.top = newTop + 'px';
+                panel.style.right = 'auto';
+            });
+
+            document.addEventListener('mouseup', () => { dragging = false; });
+        })();
+        // ──────────────────────────────────────────────────────────
+
+
+        // Radio ahora forma parte de modelsData (ver arriba)
 
         // Step emojis by step id
         const stepEmojis = { 1: '📋', 2: '⚡', 3: '🔌', 4: '🔒', 5: '🏷️' };
@@ -448,7 +815,7 @@
                 id: 1,
                 label: "Paso 1: Notificación y Autorización",
                 objective: "Asegurar que el área sabe que el equipo se va a detener.",
-                anchorPosition: { x: -19.8, y: 1.26, z: 1.722705161011619 },
+                anchorPosition: { x: -15.6, y: 1.2, z: -2.7 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.42, g: 0.27, b: 0.97 },
                 iconId: 'public_characters_1',
@@ -467,13 +834,13 @@
                 id: 2,
                 label: "Paso 2: Identificación de Fuentes de Energía",
                 objective: "Encontrar el punto exacto donde se debe cortar la energía.",
-                anchorPosition: { x: -18.5, y: 1.26, z: -2.25 },
+                anchorPosition: { x: -18.5, y: 1.26, z: -2.20 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.97, g: 0.55, b: 0.10 },
                 iconId: 'public_characters_2',
                 coordinates: {
-                    sweep_id: '80a800e3dbac4487b5fa87fd1908a2a3',
-                    rotation: { x: 5, y: 90 }
+                    sweep_id: 'c06e7c7685684ab1af6d33371ac893fc',
+                    rotation: { x: 0.6, y: -22.4 }
                 },
                 items: [
                     { text: "<strong>Navegar a la sala eléctrica:</strong> Dirigirse al área de tableros." },
@@ -485,7 +852,7 @@
                 id: 3,
                 label: "Paso 3: Aislamiento",
                 objective: "Cortar físicamente el flujo de energía.",
-                anchorPosition: { x: -18.034442683887985, y: 1.26, z: -2.25 },
+                anchorPosition: { x: -18.5, y: 1.4, z: -2.2 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.14, g: 0.78, b: 0.55 },
                 iconId: 'public_characters_3',
@@ -503,7 +870,7 @@
                 id: 4,
                 label: "Paso 4: Recolección de Etiquetas y Dispositivos",
                 objective: "Obtener las herramientas personales de seguridad.",
-                anchorPosition: { x: -12.8, y: 1.25, z: -2.625850974736056 },
+                anchorPosition: { x: -12.8, y: 1.1, z: -2.376 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.95, g: 0.20, b: 0.40 },
                 iconId: 'public_characters_4',
@@ -522,7 +889,7 @@
                 id: 5,
                 label: "Paso 5: Bloqueo y Etiquetado",
                 objective: "Bloquear físicamente el interruptor para que nadie pueda encenderlo por error.",
-                anchorPosition: { x: -17.48982384704301, y: 1.26, z: -2.25 },
+                anchorPosition: { x: -18.5, y: 1.54, z: -2.20 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.95, g: 0.75, b: 0.05 },
                 iconId: 'public_characters_5',
@@ -562,50 +929,52 @@
         // Se puebla dentro del loop de sdk.Mattertag.add (más abajo)
         const stepSidMap = {};
 
-        function navigateToStep(index) {
+        async function navigateToStep(index) {
             if (index < 0 || index >= checklistSteps.length) {
                 isAdvancing = false;
                 return;
             }
 
             const step = checklistSteps[index];
+            const sweepId = step.coordinates && step.coordinates.sweep_id;
+            const isRealSweep = sweepId && !sweepId.startsWith('SWEEP_ID_PASO');
+            const tagSid = stepSidMap[step.id];
 
-            // 1. Forzar UI a avanzar (anti-bloqueos)
+            console.log(`🚀 [Paso ${step.id}] sweep: ${sweepId} | tag: ${tagSid}`);
+
+            // 1. Actualizar UI en 800ms (anti-bloqueo)
             setTimeout(() => {
                 renderChecklistUI(index);
-                isAdvancing = false; 
+                isAdvancing = false;
             }, 800);
 
-            // 2. Doble Intento de Navegación
-            try {
-                if (!mpSdk) return;
-                
-                const sweepId = step.coordinates.sweep_id ? step.coordinates.sweep_id.trim() : null;
-                const tagSid = stepSidMap[step.id];
+            if (!mpSdk) { console.warn('⚠️ SDK no disponible.'); return; }
 
-                console.log(`🚀 [Paso ${step.id}] Intentando salto a Sweep: ${sweepId}`);
+            // 2a. PRIORIDAD: Sweep.moveTo cuando hay sweep_id real (vista exacta con rotación)
+            if (isRealSweep) {
+                const rot = (step.coordinates && step.coordinates.rotation) || { x: 0, y: 0 };
+                console.log(`📍 Sweep.moveTo: "${sweepId}" | rot x:${rot.x} y:${rot.y}`);
+                mpSdk.Sweep.moveTo(sweepId.trim(), {
+                    rotation: { x: rot.x, y: rot.y },
+                    transition: mpSdk.Sweep.Transition.FADEOUT,
+                    transitionTime: 800
+                })
+                    .then(() => console.log('✅ Sweep.moveTo exitoso.'))
+                    .catch(e => {
+                        console.warn('⚠️ Sweep.moveTo falló, usando navigateTo:', e);
+                        if (tagSid) mpSdk.Mattertag.navigateTo(tagSid).catch(console.error);
+                    });
+                return;
+            }
 
-                // INTENTO A: Teletransporte al Sweep del piso
-                mpSdk.Sweep.moveTo(sweepId, {
-                    transition: mpSdk.Sweep.Transition.INSTANT
-                }).then(() => {
-                    console.log('✅ [ÉXITO] Cámara teletransportada al Sweep.');
-                }).catch(sweepError => {
-                    console.warn(`⚠️ Falló el salto al Sweep. Intentando Plan B (Mattertag). Error:`, sweepError);
-                    
-                    // INTENTO B: Si falla el piso, volamos hacia el Tag
-                    if (tagSid) {
-                        mpSdk.Mattertag.navigateTo(tagSid, {
-                            transition: mpSdk.Sweep.Transition.FLY
-                        }).then(() => {
-                            console.log('✅ [ÉXITO] Cámara navegó hacia el Mattertag.');
-                        }).catch(tagError => {
-                            console.error(`❌ [ERROR CRÍTICO] El bundle local bloqueó ambos métodos de movimiento:`, tagError);
-                        });
-                    }
-                });
-            } catch (error) {
-                console.error(`❌ Error general en SDK:`, error);
+            // 2b. Sin sweep calibrado: navegar al tag por SID
+            if (tagSid) {
+                console.log(`🎯 Mattertag.navigateTo: ${tagSid}`);
+                mpSdk.Mattertag.navigateTo(tagSid)
+                    .then(() => console.log('✅ navigateTo exitoso.'))
+                    .catch(e => console.error('❌ navigateTo falló:', e));
+            } else {
+                console.warn(`⚠️ [Paso ${step.id}] Sin sweep ni tag SID disponible.`);
             }
         }
 
@@ -626,15 +995,51 @@
             updateProgress(step);
             document.getElementById('checklist-panel').classList.add('visible');
 
-            // ── VISIBILIDAD RADIO.FBX ──────────────────────────────
-            // Solo visible en Paso 1 (index === 0)
-            if (index === 0) {
-                loadRadioModel();   // carga (si no existe) y muestra
-            } else {
-                hideRadioModel();   // oculta sin destruir el nodo
-            }
+            // ── VISIBILIDAD DE MODELOS POR PASO ──
+            setStepModels(index);
 
             isAdvancing = false;  // liberar bloqueo una vez que el UI está listo
+        }
+
+        /**
+         * Muestra/oculta los modelos asociados a cada paso.
+         * @param {number} activeIndex  índice activo en checklistSteps (-1 = ocultar todo)
+         * @param {boolean} forceHide   si true, oculta los modelos del activeIndex también
+         */
+        function setStepModels(activeIndex, forceHide = false) {
+            // Mapa: id de paso → IDs de modelos que aparecen en ese paso
+            const stepModels = {
+                1: ['radio'],
+                4: ['candado', 'etiqueta', 'pinzas']
+            };
+
+            const activeStep = checklistSteps[activeIndex];
+            const activeStepId = activeStep ? activeStep.id : -1;
+
+            Object.entries(stepModels).forEach(([stepIdStr, modelIds]) => {
+                const stepId = parseInt(stepIdStr);
+                const shouldShow = !forceHide && (stepId === activeStepId);
+
+                modelIds.forEach(mid => {
+                    const m = modelsData[mid];
+                    if (!m || !m.node) return;
+
+                    // Para modelos FBX grandes (Radio), el obj3D existe pero sus hijos
+                    // pueden tardar en cargarse. Usamos polling hasta que esté listo.
+                    const applyVisibility = (attempts = 0) => {
+                        const obj = m.node.obj3D;
+                        const isReady = obj && (obj.children.length > 0 || attempts > 40);
+                        if (!isReady) {
+                            setTimeout(() => applyVisibility(attempts + 1), 250);
+                            return;
+                        }
+                        obj.visible = shouldShow;
+                        m.visible = shouldShow;
+                        console.log(`👁️ [${mid}] visible=${shouldShow} (intentos: ${attempts})`);
+                    };
+                    applyVisibility();
+                });
+            });
         }
 
         // Alias principal (usado desde tag click y auto-avance)
@@ -655,7 +1060,6 @@
             const container = document.getElementById('checklist-items-container');
             container.innerHTML = '';
 
-            // 1. Dibujar los checkboxes
             step.items.forEach((item, idx) => {
                 const checked = checkState[step.id][idx];
                 const div = document.createElement('div');
@@ -670,7 +1074,6 @@
                 container.appendChild(div);
             });
 
-            // 2. Lógica del Botón Dinámico
             const allChecked = checkState[step.id].every(Boolean);
             if (allChecked) {
                 const btn = document.createElement('button');
@@ -678,19 +1081,17 @@
                 const nextIndex = currentStepIndex + 1;
 
                 if (nextIndex < checklistSteps.length) {
-                    btn.textContent = `Ir al Paso ${checklistSteps[nextIndex].id} →`;
+                    btn.textContent = `Ir al Paso ${checklistSteps[nextIndex].id} ➔`;
                     btn.onclick = () => {
                         if (isAdvancing) return;
                         isAdvancing = true;
                         btn.textContent = 'Navegando...';
                         btn.style.opacity = '0.7';
-                        navigateToStep(nextIndex); // mueve cámara y luego actualiza UI
+                        navigateToStep(nextIndex);
                     };
                 } else {
                     btn.textContent = 'Finalizar Capacitación ✅';
-                    btn.onclick = () => {
-                        showAllDone();
-                    };
+                    btn.onclick = () => showAllDone();
                 }
                 container.appendChild(btn);
             }
@@ -700,8 +1101,16 @@
             if (isAdvancing) return;
             checkState[stepId][idx] = !checkState[stepId][idx];
             const step = checklistSteps.find(s => s.id === stepId);
-            renderItems(step); // renderItems ahora dibuja el botón si está completo
+            renderItems(step);
             updateProgress(step);
+
+            // Si se completaron TODOS los ítems del paso → ocultar sus modelos
+            const allChecked = checkState[stepId].every(Boolean);
+            if (allChecked) {
+                const stepIndex = checklistSteps.findIndex(s => s.id === stepId);
+                setStepModels(stepIndex, true);  // forceHide = true
+                console.log(`✅ Paso ${stepId} completado → modelos ocultados.`);
+            }
         }
 
         function updateProgress(step) {
@@ -737,61 +1146,7 @@
         }
 
 
-        function toggleFbxModel() {
-            if (!fbxNode) return;
-            fbxVisible = !fbxVisible;
-
-            // Cambiar visibilidad en todos los componentes del nodo
-            fbxNode.obj3D.visible = fbxVisible;
-
-            // Actualizar botón
-            const btn = document.getElementById('toggle-fbx-btn');
-            const label = document.getElementById('toggle-fbx-label');
-            if (fbxVisible) {
-                btn.classList.remove('off');
-                label.textContent = 'Modelo BIM';
-            } else {
-                btn.classList.add('off');
-                label.textContent = 'Modelo BIM';
-            }
-        }
-
-        // =====================================================
-        // RADIO MODEL — carga y control de visibilidad
-        // =====================================================
-        async function loadRadioModel() {
-            if (!mpSdk) { console.warn('⚠️ [Radio] SDK no disponible aún.'); return; }
-            if (radioLoaded && radioNode) {
-                // Ya cargado: solo hacer visible
-                radioNode.obj3D.visible = true;
-                console.log('📻 [Radio] Nodo reutilizado — visible = true');
-                return;
-            }
-
-            try {
-                const s = RADIO_CONFIG.scale;
-                radioNode = await mpSdk.Scene.createNode();
-                radioNode.addComponent('mp.fbxLoader', {
-                    url: RADIO_CONFIG.url,
-                    visible: true,
-                    localScale: { x: s, y: s, z: s },
-                    localPosition: RADIO_CONFIG.position,
-                    localRotation: RADIO_CONFIG.rotation
-                });
-                radioNode.start();
-                radioLoaded = true;
-                console.log('📻 [Radio] Modelo cargado en posición:', RADIO_CONFIG.position);
-            } catch (e) {
-                console.error('❌ [Radio] Error al cargar Radio.fbx:', e);
-            }
-        }
-
-        function hideRadioModel() {
-            if (radioNode && radioNode.obj3D) {
-                radioNode.obj3D.visible = false;
-                console.log('📻 [Radio] Oculto (paso > 0)');
-            }
-        }
+        // (toggles centralizados — ver toggleSpecificModel() y modelsData arriba)
 
         // =====================================================
         // INICIALIZACIÓN DEL SDK
@@ -805,6 +1160,7 @@
                 return;
             }
 
+
             console.log('Hello Bundle SDK', sdk);
 
             // Luces
@@ -812,20 +1168,173 @@
             lights.addComponent('mp.lights');
             lights.start();
 
-            // Modelo FBX
-            var escala2 = 0.1;
-            fbxNode = await sdk.Scene.createNode();
-            var fbxComponent = fbxNode.addComponent('mp.fbxLoader', {
-                url: "Instalaciones-2.FBX",
-                visible: true,
-                localScale: { x: escala2, y: escala2, z: escala2 },
-                localPosition: { x: -18, y: -2.2, z: -2.5 },
-                localRotation: { x: 90, y: 0, z: 0 }
-            });
-            fbxNode.start();
+            // ── MODELOS BIM ──
+            const rotBIM = { x: 0, y: 90, z: 0 };
 
-            // Habilitar el botón una vez el modelo está listo
-            document.getElementById('toggle-fbx-btn').style.display = 'flex';
+            // 1. Modelo Eléctrico
+            modelsData.electrico.node = await sdk.Scene.createNode();
+            modelsData.electrico.node.addComponent('mp.fbxLoader', {
+                url: 'Electrico.fbx',
+                visible: true,
+                localScale: { x: 0.0126, y: 0.0126, z: 0.0126 },
+                localPosition: { x: -12.7, y: -0.69, z: -7.58 },
+                localRotation: rotBIM,
+                color: 0x00FF00
+            });
+            modelsData.electrico.node.start();
+            modelsData.electrico.visible = true;
+
+            // 2. Modelo Clima
+            modelsData.clima.node = await sdk.Scene.createNode();
+            modelsData.clima.node.addComponent('mp.fbxLoader', {
+                url: 'Clima.fbx',
+                visible: true,
+                localScale: { x: 0.0134, y: 0.0126, z: 0.0126 },
+                localPosition: { x: -14.5, y: -1.5, z: -9 },
+                localRotation: rotBIM,
+                color: 0xFF00FF
+            });
+            modelsData.clima.node.start();
+            modelsData.clima.visible = true;
+
+            // 3. Cubo GLB con animación
+            modelsData.cubo.node = await sdk.Scene.createNode();
+            const cuboComponent = modelsData.cubo.node.addComponent('mp.gltfLoader', {
+                url: 'cubosdk.glb',
+                visible: true,
+                localScale: { x: 0.1, y: 0.1, z: 0.1 },
+                localPosition: { x: -20, y: 2, z: 0 },
+                localRotation: { x: 0, y: 0, z: 0 }
+            });
+            try {
+                cuboAnimComp = modelsData.cubo.node.addComponent('mp.animation');
+                cuboAnimMethod = 'mp.animation';
+                console.log('📦 [Cubo] mp.animation disponible ✅');
+            } catch (e) {
+                console.warn('📦 [Cubo] mp.animation no disponible, usará THREE.js:', e.message || e);
+            }
+            modelsData.cubo.node.start();
+            modelsData.cubo.visible = true;
+
+            function _setupCuboAnimation(objRoot, clips) {
+                const THREE = showcase.contentWindow.THREE;
+                cuboMixer = new THREE.AnimationMixer(objRoot);
+                clips.forEach(clip => {
+                    const action = cuboMixer.clipAction(clip);
+                    action.loop = THREE.LoopRepeat;
+                    cuboActions.push(action);
+                });
+                cuboAnimMethod = 'three';
+                setInterval(() => { if (cuboMixer && cuboAnimPlaying) cuboMixer.update(0.016); }, 16);
+                console.log(`📦 [Cubo] ✅ Listo. Clips: ${clips.map(c => c.name).join(', ')}`);
+            }
+            let _cuboReady = false;
+            const _cuboWait = setInterval(() => {
+                if (_cuboReady) return;
+                const state = cuboComponent.outputs && cuboComponent.outputs.loadingState;
+                if (state !== 'loaded') return;
+                _cuboReady = true;
+                clearInterval(_cuboWait);
+                const THREE = showcase.contentWindow.THREE;
+                const objRoot = (cuboComponent.outputs && cuboComponent.outputs.objectRoot) || modelsData.cubo.node.obj3D;
+                let clips = (cuboComponent.outputs && cuboComponent.outputs.animations) || [];
+                if (!clips.length && objRoot) {
+                    objRoot.traverse(child => {
+                        if (child.animations && child.animations.length) clips = clips.concat(child.animations);
+                    });
+                }
+                if (clips.length > 0) { _setupCuboAnimation(objRoot, clips); return; }
+                console.log('📦 [Cubo] Cargando GLB con GLTFLoader nativo...');
+                try {
+                    const loader = new THREE.GLTFLoader();
+                    loader.load('cubosdk.glb',
+                        (gltf) => {
+                            if (gltf.animations && gltf.animations.length > 0) {
+                                console.log('📦 [Cubo] Clips via GLTFLoader:', gltf.animations.map(c => c.name));
+                                _setupCuboAnimation(objRoot, gltf.animations);
+                            } else {
+                                console.warn('📦 [Cubo] ⚠️ Sin animaciones en el GLB.');
+                            }
+                        },
+                        null,
+                        (err) => console.error('📦 [Cubo] Error GLTFLoader:', err)
+                    );
+                } catch (e) { console.error('📦 [Cubo] GLTFLoader no disponible:', e.message); }
+            }, 300);
+            console.log('📦 [Cubo] GLB iniciado. Animación lista en ~4s.');
+
+            // 4. Mesa GLB
+            modelsData.mesa.node = await sdk.Scene.createNode();
+            modelsData.mesa.node.addComponent('mp.gltfLoader', {
+                url: 'Mesa.glb',
+                visible: true,
+                localScale: { x: 1.2, y: 1.1, z: 1 },
+                localPosition: { x: -15.65, y: 0, z: -2.6 },
+                localRotation: { x: 0, y: 0, z: 0 }
+            });
+            modelsData.mesa.node.start();
+            modelsData.mesa.visible = true;
+            console.log('🗄️ [Mesa] GLB cargado.');
+
+            // 5. Candado
+            modelsData.candado.node = await sdk.Scene.createNode();
+            modelsData.candado.node.addComponent('mp.gltfLoader', {
+                url: 'candado.glb',
+                visible: true,
+                localScale: { x: 2, y: 2, z: 2 },
+                localPosition: { x: 2.4, y: 1.4, z: -12.8 },
+                localRotation: { x: 0, y: 90, z: 0 }
+            });
+            modelsData.candado.node.start();
+            modelsData.candado.visible = true;
+
+            // 6. Etiqueta
+            modelsData.etiqueta.node = await sdk.Scene.createNode();
+            modelsData.etiqueta.node.addComponent('mp.gltfLoader', {
+                url: 'Etiqueta.glb',
+                visible: true,
+                localScale: { x: 2, y: 2, z: 2 },
+                localPosition: { x: 2.1, y: 1.65, z: -12.8 },
+                localRotation: { x: 0, y: 90, z: 0 }
+            });
+            modelsData.etiqueta.node.start();
+            modelsData.etiqueta.visible = true;
+
+            // 7. Pinzas
+            modelsData.pinzas.node = await sdk.Scene.createNode();
+            modelsData.pinzas.node.addComponent('mp.gltfLoader', {
+                url: 'Pinzas.glb',
+                visible: true,
+                localScale: { x: 2, y: 2, z: 2 },
+                localPosition: { x: -12.8, y: 1.3, z: -2.6 },
+                localRotation: { x: 0, y: 0, z: 0 }
+            });
+            modelsData.pinzas.node.start();
+            modelsData.pinzas.visible = true;
+            console.log('🔒🏷️🔧 [LOTO] Candado, Etiqueta y Pinzas cargados.');
+
+            // 8. Radio FBX
+            const radioM = modelsData.radio;
+            const rS = radioM.scale;
+            modelsData.radio.node = await sdk.Scene.createNode();
+            modelsData.radio.node.addComponent('mp.fbxLoader', {
+                url: radioM.file,
+                visible: true,
+                localScale: { x: rS, y: rS, z: rS },
+                localPosition: radioM.position,
+                localRotation: radioM.rotation
+            });
+            modelsData.radio.node.start();
+            modelsData.radio.visible = true;
+            console.log('📻 [Radio] FBX iniciando carga (~24MB):', radioM.position);
+
+            // ── Ocultar modelos de paso tras cargar ──
+            // Esperamos 500ms para que Three.js construya los obj3D antes de ocultarlos.
+            // Radio es grande (24MB) — se oculta por nombre en cuanto el nodo exista.
+            setTimeout(() => {
+                setStepModels(-1); // -1 = ningún paso activo → ocultar todos los de paso
+                console.log('🔴 [Init] Modelos de paso ocultados. Listos para activarse al navegar.');
+            }, 500);
 
             // =====================================================
             // HELPERS: crear ícono numerado con canvas
@@ -864,16 +1373,17 @@
             // =====================================================
             // AGREGAR TAGS DEL CHECKLIST CON sdk.Mattertag.add
             // =====================================================
-            const tagSidMap = {}; // sid -> stepId  (para clicks en tags)
+            // ── CREAR MATTERTAGS DEL CHECKLIST ──────────────────────
+            const tagSidMap = {}; // sid → stepId  (para el click handler)
 
             for (const step of checklistSteps) {
                 try {
-                    // 1. Registrar el ícono numerado (canvas → dataURL → SDK)
+                    // 1. Ícono numerado (canvas → dataURL → SDK)
                     const iconId = `paso_num_${step.id}`;
                     const iconDataUrl = makeNumberIcon(step.id, step.color);
                     await sdk.Mattertag.registerIcon(iconId, iconDataUrl);
 
-                    // 2. Crear el Mattertag con anchorPosition del paso
+                    // 2. Crear el Mattertag
                     const [sid] = await sdk.Mattertag.add({
                         label: step.label,
                         description: '',
@@ -883,43 +1393,29 @@
                     });
 
                     // 3. Poblar ambos mapas
-                    tagSidMap[sid] = step.id;  // sid → stepId  (para click handler)
-                    stepSidMap[step.id] = sid;    // stepId → sid  (para navigateToStep)
+                    tagSidMap[sid]       = step.id;  // sid → stepId  (click handler)
+                    stepSidMap[step.id]  = sid;      // stepId → sid  (navigateToStep)
 
-                    // 4. Aplicar el ícono numerado al disco del tag
+                    // 4. Aplicar ícono numerado
                     await sdk.Mattertag.editIcon(sid, iconId);
 
-                    console.log(`✅ Mattertag creado: "${step.label}" | sid: ${sid} | pos:`, step.anchorPosition);
+                    // 5. Registrar en el calibrador
+                    registerTagForCalib(step.id, sid, step.label, step.anchorPosition);
+
+                    console.log(`✅ Tag creado: "${step.label}" | sid: ${sid}`);
                 } catch (e) {
                     console.error(`❌ Error creando tag paso ${step.id}:`, e);
                 }
             }
 
-            // ── ESTRATEGIA 1: evento CLICK directo del SDK ──────────
+            // ── CLICK en tag → abrir checklist ──────────────────────
             sdk.on(sdk.Mattertag.Event.CLICK, function (sid) {
-                console.log('🔖 [Estrategia-1] Tag clickeado, sid:', sid);
+                console.log('🔖 Tag clickeado, sid:', sid);
                 const stepId = tagSidMap[sid];
-                if (stepId !== undefined) {
-                    openChecklist(stepId);
-                }
+                if (stepId !== undefined) openChecklist(stepId);
             });
 
-            // ── ESTRATEGIA 2: observable Mattertag.data (fallback) ──
-            // Detecta cuando el usuario navega hacia un tag (hover/open)
-            sdk.Mattertag.data.subscribe({
-                onAdded: function (index, item) { /* tags registrados */ },
-                onRemoved: function (index, item) { /* tags eliminados */ },
-                onUpdated: function (index, item) {
-                    // item.enabled === false cuando el tag está siendo "abierto"
-                    // Algunos builds del Bundle SDK no disparan CLICK; usan este canal
-                    if (item && item.sid && tagSidMap[item.sid] !== undefined) {
-                        console.log('🔖 [Estrategia-2] Tag updated (posible click):', item.sid, item);
-                    }
-                },
-                onCollectionUpdated: function (collection) { /* colección completa */ }
-            });
-
-            // ── preventAction por sid individual (evita popup nativo) ─
+            // ── preventAction: bloquear popup nativo del tag ────────
             for (const tagSid of Object.keys(tagSidMap)) {
                 sdk.Mattertag.preventAction(tagSid, { opening: false })
                     .then(() => console.log(`✅ preventAction OK: ${tagSid}`))
@@ -930,6 +1426,15 @@
             sdk.Sweep.current.subscribe(function (currentSweep) {
                 if (currentSweep && currentSweep.sid) {
                     console.log(`📍 SWEEP ACTUAL --> sid: "${currentSweep.sid}"`);
+                }
+            });
+
+            // ── Logger de rotación de cámara (para calibrar vistas) ─
+            sdk.Camera.pose.subscribe(function (pose) {
+                if (pose && pose.rotation) {
+                    const x = pose.rotation.x != null ? pose.rotation.x.toFixed(1) : '?';
+                    const y = pose.rotation.y != null ? pose.rotation.y.toFixed(1) : '?';
+                    console.log(`🎥 CAMARA rotation --> x: ${x} (pitch), y: ${y} (yaw)`);
                 }
             });
 
