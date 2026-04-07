@@ -523,65 +523,9 @@
         <button id="btn-clima" class="model-toggle-btn" onclick="handleToggle('clima')">
             <span class="fbx-dot"></span> ❄️ M. Clima
         </button>
-        <button id="btn-cubo" class="model-toggle-btn" onclick="handleToggle('cubo')">
-            <span class="fbx-dot"></span> 📦 Cubo
-        </button>
     </div>
 
-    <!-- PANEL DE CALIBRACIÓN BIM -->
-    <div id="calib-panel">
-        <div class="calib-header" id="calib-drag-handle">🛠️ Calibrador Avanzado</div>
-        <div class="calib-body">
 
-            <select id="calib-model-select" class="calib-select" onchange="updateCalibDisplay()">
-            </select>
-
-            <div class="calib-row" style="margin-top: 5px;">
-                <span>Paso:</span>
-                <input type="number" id="calib-step" class="calib-input" value="0.1" step="0.01">
-            </div>
-
-            <div style="font-size: 11px; color:#aaa; text-align:center; margin-top:5px;">POSICIÓN (M)</div>
-            <div class="calib-row">
-                <span>Eje X:</span>
-                <div><button class="calib-btn" onclick="nudgePos('x', -1)">-</button><button class="calib-btn"
-                        onclick="nudgePos('x', 1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Eje Y:</span>
-                <div><button class="calib-btn" onclick="nudgePos('y', -1)">-</button><button class="calib-btn"
-                        onclick="nudgePos('y', 1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Eje Z:</span>
-                <div><button class="calib-btn" onclick="nudgePos('z', -1)">-</button><button class="calib-btn"
-                        onclick="nudgePos('z', 1)">+</button></div>
-            </div>
-            <div id="calib-coords">Pos: x: 0.00, y: 0.00, z: 0.00</div>
-
-            <div style="font-size: 11px; color:#aaa; text-align:center; margin-top:10px;">ROTACIÓN (GRADOS)</div>
-            <div class="calib-row">
-                <span>Paso Rot:</span>
-                <input type="number" id="calib-rot-step" class="calib-input" value="5" step="1">
-            </div>
-            <div class="calib-row">
-                <span>Rot X:</span>
-                <div><button class="calib-btn" onclick="nudgeRot('x', -1)">-</button><button class="calib-btn"
-                        onclick="nudgeRot('x', 1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Rot Y:</span>
-                <div><button class="calib-btn" onclick="nudgeRot('y', -1)">-</button><button class="calib-btn"
-                        onclick="nudgeRot('y', 1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Rot Z:</span>
-                <div><button class="calib-btn" onclick="nudgeRot('z', -1)">-</button><button class="calib-btn"
-                        onclick="nudgeRot('z', 1)">+</button></div>
-            </div>
-            <div id="calib-rot">Rot: x: 0°, y: 0°, z: 0°</div>
-        </div><!-- /calib-body -->
-    </div>
 
     <iframe id="showcase" width="100%" height="100%"
         src="./bundle/showcase.html?m=hXEV8zd9GFy&play=1&qs=1&log=0&applicationKey=myhcpcdgdh7907ggei7s5f4md"
@@ -593,13 +537,6 @@
         let sdk;
         let mpSdk = null;         // alias semántico expuesto tras connect()
 
-        // Animación GLB — variables de soporte para cubo
-        let cuboAnimComp = null;
-        let cuboClipName = '';
-        let cuboMixer = null;
-        let cuboActions = [];
-        let cuboAnimMethod = 'none';
-        let cuboAnimPlaying = false;
 
         // ── SISTEMA DE GESTIÓN DE MODELOS (FBX/GLB) ──
         const modelsData = {
@@ -610,129 +547,12 @@
                 position: { x: -16, y: 1.2, z: -2.7 },
                 rotation: { x: 0, y: 0, z: 0 }
             },
-            'cubo': { id: 'cubo', label: 'Cubo Animado', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', scale: 0.1, node: null, visible: true },
             'mesa': { id: 'mesa', label: 'Mesa', icon: '🪑', file: 'Mesa.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
             'candado': { id: 'candado', label: 'Candado', icon: '🔒', file: 'candado.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
             'etiqueta': { id: 'etiqueta', label: 'Etiqueta', icon: '🏷️', file: 'Etiqueta.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
             'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true }
         };
 
-        // Mapa de calibración de tags: 'tag_1' → { sid, anchorPosition, stepLabel }
-        const tagsCalibData = {};
-
-        function initModelUI() {
-            const select = document.getElementById('calib-model-select');
-
-            // ─ Grupo: Modelos 3D ─
-            const grpModels = document.createElement('optgroup');
-            grpModels.label = '── Modelos 3D ──';
-            select.appendChild(grpModels);
-
-            Object.values(modelsData).forEach(model => {
-                const opt = document.createElement('option');
-                opt.value = model.id;
-                opt.textContent = `${model.icon} ${model.label}`;
-                grpModels.appendChild(opt);
-            });
-
-            // ─ Grupo: Tags (se llenará cuando el SDK cree los tags) ─
-            const grpTags = document.createElement('optgroup');
-            grpTags.label = '── Tags Checklist ──';
-            grpTags.id = 'calib-tags-group';
-            select.appendChild(grpTags);
-        }
-
-        // Llamado desde init SDK tras crear cada tag
-        function registerTagForCalib(stepId, sid, label, anchorPosition) {
-            const key = `tag_${stepId}`;
-            tagsCalibData[key] = { sid, anchorPosition: Object.assign({}, anchorPosition), stepLabel: label };
-
-            const grp = document.getElementById('calib-tags-group');
-            if (!grp) return;
-            // evitar duplicados
-            if (grp.querySelector(`option[value="${key}"]`)) return;
-            const opt = document.createElement('option');
-            opt.value = key;
-            opt.textContent = `📍 Paso ${stepId}: ${label.replace(/^Paso \d+: /, '')}`;
-            grp.appendChild(opt);
-        }
-
-        function toggleSpecificModel(id) {
-            const m = modelsData[id];
-            if (!m || !m.node) return;
-            m.visible = !m.visible;
-            m.node.obj3D.visible = m.visible;
-        }
-
-        function getActiveModel() {
-            const id = document.getElementById('calib-model-select').value;
-            if (id.startsWith('tag_')) return null;  // es un tag, no un modelo
-            return modelsData[id] || null;
-        }
-
-        function getActiveTag() {
-            const id = document.getElementById('calib-model-select').value;
-            if (!id.startsWith('tag_')) return null;
-            return tagsCalibData[id] || null;
-        }
-
-        function nudgePos(axis, dir) {
-            const step = parseFloat(document.getElementById('calib-step').value) || 0.1;
-
-            const tag = getActiveTag();
-            if (tag) {
-                // Mover Mattertag
-                tag.anchorPosition[axis] = (tag.anchorPosition[axis] || 0) + step * dir;
-                if (!mpSdk) return;
-                mpSdk.Mattertag.editPosition(tag.sid, {
-                    anchorPosition: tag.anchorPosition,
-                    stemVector: { x: 0, y: 0, z: 0 }
-                }).catch(e => console.warn('⚠️ editPosition error:', e));
-                updateCalibDisplay();
-                return;
-            }
-
-            const m = getActiveModel();
-            if (!m || !m.node) return;
-            if (!m.visible) toggleSpecificModel(m.id);
-            m.node.obj3D.position[axis] += (step * dir);
-            updateCalibDisplay();
-        }
-
-        function nudgeRot(axis, dir) {
-            const tag = getActiveTag();
-            if (tag) return; // Los tags no tienen rotación editable
-
-            const m = getActiveModel();
-            if (!m || !m.node) return;
-            if (!m.visible) toggleSpecificModel(m.id);
-
-            const step = parseFloat(document.getElementById('calib-rot-step').value) || 5;
-            m.node.obj3D.rotation[axis] += (step * dir * (Math.PI / 180));
-            updateCalibDisplay();
-        }
-
-        function updateCalibDisplay() {
-            const tag = getActiveTag();
-            if (tag) {
-                const p = tag.anchorPosition;
-                document.getElementById('calib-coords').innerText =
-                    `Pos: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}`;
-                document.getElementById('calib-rot').innerText = `(Tags no tienen rotación)`;
-                return;
-            }
-
-            const m = getActiveModel();
-            if (!m || !m.node) return;
-
-            const p = m.node.obj3D.position;
-            const r = m.node.obj3D.rotation;
-
-            document.getElementById('calib-coords').innerText = `Pos: x: ${p.x.toFixed(3)}, y: ${p.y.toFixed(3)}, z: ${p.z.toFixed(3)}`;
-            document.getElementById('calib-rot').innerText = `Rot: x: ${(r.x * 180 / Math.PI).toFixed(0)}°, y: ${(r.y * 180 / Math.PI).toFixed(0)}°, z: ${(r.z * 180 / Math.PI).toFixed(0)}°`;
-        }
-
-        // Actualiza el estado visual (on/off) de un botón toggle
         function syncToggleBtn(id) {
             const m = modelsData[id];
             const btn = document.getElementById('btn-' + id);
@@ -757,40 +577,7 @@
             syncToggleBtn(id);
         }
 
-        // Inicializar UI al arrancar
-        initModelUI();
 
-        // ── DRAG & DROP para el panel calibrador ──────────────────
-        (function () {
-            const panel = document.getElementById('calib-panel');
-            const handle = document.getElementById('calib-drag-handle');
-            let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
-
-            handle.addEventListener('mousedown', (e) => {
-                dragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                const rect = panel.getBoundingClientRect();
-                origLeft = rect.left;
-                origTop = rect.top;
-                panel.style.transition = 'none';
-                e.preventDefault();
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                if (!dragging) return;
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
-                const newLeft = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, origLeft + dx));
-                const newTop = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, origTop + dy));
-                panel.style.left = newLeft + 'px';
-                panel.style.top = newTop + 'px';
-                panel.style.right = 'auto';
-            });
-
-            document.addEventListener('mouseup', () => { dragging = false; });
-        })();
-        // ──────────────────────────────────────────────────────────
 
 
         // Radio ahora forma parte de modelsData (ver arriba)
@@ -929,18 +716,16 @@
         // Se puebla dentro del loop de sdk.Mattertag.add (más abajo)
         const stepSidMap = {};
 
-        async function navigateToStep(index) {
+        function navigateToStep(index) {
             if (index < 0 || index >= checklistSteps.length) {
                 isAdvancing = false;
                 return;
             }
 
             const step = checklistSteps[index];
-            const sweepId = step.coordinates && step.coordinates.sweep_id;
-            const isRealSweep = sweepId && !sweepId.startsWith('SWEEP_ID_PASO');
             const tagSid = stepSidMap[step.id];
 
-            console.log(`🚀 [Paso ${step.id}] sweep: ${sweepId} | tag: ${tagSid}`);
+            console.log(`🚀 [Paso ${step.id}] navigateTo tag sid: ${tagSid}`);
 
             // 1. Actualizar UI en 800ms (anti-bloqueo)
             setTimeout(() => {
@@ -950,32 +735,16 @@
 
             if (!mpSdk) { console.warn('⚠️ SDK no disponible.'); return; }
 
-            // 2a. PRIORIDAD: Sweep.moveTo cuando hay sweep_id real (vista exacta con rotación)
-            if (isRealSweep) {
-                const rot = (step.coordinates && step.coordinates.rotation) || { x: 0, y: 0 };
-                console.log(`📍 Sweep.moveTo: "${sweepId}" | rot x:${rot.x} y:${rot.y}`);
-                mpSdk.Sweep.moveTo(sweepId.trim(), {
-                    rotation: { x: rot.x, y: rot.y },
-                    transition: mpSdk.Sweep.Transition.FADEOUT,
-                    transitionTime: 800
-                })
-                    .then(() => console.log('✅ Sweep.moveTo exitoso.'))
-                    .catch(e => {
-                        console.warn('⚠️ Sweep.moveTo falló, usando navigateTo:', e);
-                        if (tagSid) mpSdk.Mattertag.navigateTo(tagSid).catch(console.error);
-                    });
+            if (!tagSid) {
+                console.warn(`⚠️ [Paso ${step.id}] Tag aún no creado. Reintentando en 1s...`);
+                setTimeout(() => navigateToStep(index), 1000);
                 return;
             }
 
-            // 2b. Sin sweep calibrado: navegar al tag por SID
-            if (tagSid) {
-                console.log(`🎯 Mattertag.navigateTo: ${tagSid}`);
-                mpSdk.Mattertag.navigateTo(tagSid)
-                    .then(() => console.log('✅ navigateTo exitoso.'))
-                    .catch(e => console.error('❌ navigateTo falló:', e));
-            } else {
-                console.warn(`⚠️ [Paso ${step.id}] Sin sweep ni tag SID disponible.`);
-            }
+            // Navegar al tag — vuela al sweep más cercano apuntando al tag
+            mpSdk.Mattertag.navigateTo(tagSid)
+                .then(() => console.log(`✅ [Paso ${step.id}] Vista del tag alcanzada.`))
+                .catch(e => console.error(`❌ [Paso ${step.id}] navigateTo falló:`, e));
         }
 
         // =====================================================
@@ -1196,72 +965,6 @@
             });
             modelsData.clima.node.start();
             modelsData.clima.visible = true;
-
-            // 3. Cubo GLB con animación
-            modelsData.cubo.node = await sdk.Scene.createNode();
-            const cuboComponent = modelsData.cubo.node.addComponent('mp.gltfLoader', {
-                url: 'cubosdk.glb',
-                visible: true,
-                localScale: { x: 0.1, y: 0.1, z: 0.1 },
-                localPosition: { x: -20, y: 2, z: 0 },
-                localRotation: { x: 0, y: 0, z: 0 }
-            });
-            try {
-                cuboAnimComp = modelsData.cubo.node.addComponent('mp.animation');
-                cuboAnimMethod = 'mp.animation';
-                console.log('📦 [Cubo] mp.animation disponible ✅');
-            } catch (e) {
-                console.warn('📦 [Cubo] mp.animation no disponible, usará THREE.js:', e.message || e);
-            }
-            modelsData.cubo.node.start();
-            modelsData.cubo.visible = true;
-
-            function _setupCuboAnimation(objRoot, clips) {
-                const THREE = showcase.contentWindow.THREE;
-                cuboMixer = new THREE.AnimationMixer(objRoot);
-                clips.forEach(clip => {
-                    const action = cuboMixer.clipAction(clip);
-                    action.loop = THREE.LoopRepeat;
-                    cuboActions.push(action);
-                });
-                cuboAnimMethod = 'three';
-                setInterval(() => { if (cuboMixer && cuboAnimPlaying) cuboMixer.update(0.016); }, 16);
-                console.log(`📦 [Cubo] ✅ Listo. Clips: ${clips.map(c => c.name).join(', ')}`);
-            }
-            let _cuboReady = false;
-            const _cuboWait = setInterval(() => {
-                if (_cuboReady) return;
-                const state = cuboComponent.outputs && cuboComponent.outputs.loadingState;
-                if (state !== 'loaded') return;
-                _cuboReady = true;
-                clearInterval(_cuboWait);
-                const THREE = showcase.contentWindow.THREE;
-                const objRoot = (cuboComponent.outputs && cuboComponent.outputs.objectRoot) || modelsData.cubo.node.obj3D;
-                let clips = (cuboComponent.outputs && cuboComponent.outputs.animations) || [];
-                if (!clips.length && objRoot) {
-                    objRoot.traverse(child => {
-                        if (child.animations && child.animations.length) clips = clips.concat(child.animations);
-                    });
-                }
-                if (clips.length > 0) { _setupCuboAnimation(objRoot, clips); return; }
-                console.log('📦 [Cubo] Cargando GLB con GLTFLoader nativo...');
-                try {
-                    const loader = new THREE.GLTFLoader();
-                    loader.load('cubosdk.glb',
-                        (gltf) => {
-                            if (gltf.animations && gltf.animations.length > 0) {
-                                console.log('📦 [Cubo] Clips via GLTFLoader:', gltf.animations.map(c => c.name));
-                                _setupCuboAnimation(objRoot, gltf.animations);
-                            } else {
-                                console.warn('📦 [Cubo] ⚠️ Sin animaciones en el GLB.');
-                            }
-                        },
-                        null,
-                        (err) => console.error('📦 [Cubo] Error GLTFLoader:', err)
-                    );
-                } catch (e) { console.error('📦 [Cubo] GLTFLoader no disponible:', e.message); }
-            }, 300);
-            console.log('📦 [Cubo] GLB iniciado. Animación lista en ~4s.');
 
             // 4. Mesa GLB
             modelsData.mesa.node = await sdk.Scene.createNode();
