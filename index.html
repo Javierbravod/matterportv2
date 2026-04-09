@@ -317,7 +317,8 @@
 
         /* ── SWEEP ID WIDGET ── */
         #sweep-id-widget {
-            display: none; /* Desactivado por solicitud */
+            display: none;
+            /* Desactivado por solicitud */
             flex-direction: column;
             gap: 4px;
             margin-top: 4px;
@@ -415,7 +416,8 @@
 
         /* ── ROTATION WIDGET ── */
         #rotation-widget {
-            display: none; /* Desactivado por solicitud */
+            display: none;
+            /* Desactivado por solicitud */
             flex-direction: column;
             gap: 4px;
             margin-top: 4px;
@@ -583,7 +585,8 @@
             color: white;
             font-family: 'Inter', sans-serif;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            display: none; /* Desactivado por solicitud */
+            display: none;
+            /* Desactivado por solicitud */
             flex-direction: column;
             gap: 0;
             min-width: 250px;
@@ -848,8 +851,8 @@
 
         // ── SISTEMA DE GESTIÓN DE MODELOS (FBX/GLB) ──
         const modelsData = {
-            'electrico': { id: 'electrico', label: 'M. Eléctrico', icon: '⚡', file: 'Electrico.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: true },
-            'clima': { id: 'clima', label: 'M. Clima', icon: '❄️', file: 'Clima.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: true },
+            'electrico': { id: 'electrico', label: 'M. Eléctrico', icon: '⚡', file: 'Electrico.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: false },
+            'clima': { id: 'clima', label: 'M. Clima', icon: '❄️', file: 'Clima.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: false },
             'radio': {
                 id: 'radio', label: 'Radio', icon: '📻', file: 'Radio.fbx', type: 'mp.fbxLoader', scale: 0.05, node: null, visible: true,
                 position: { x: -16, y: 1.2, z: -2.7 },
@@ -1051,7 +1054,7 @@
                     rotation: { x: -9.7, y: -21.1 }   // pitch / yaw en grados
                 },
                 items: [
-                    { text: "<strong>Identificar equipo:</strong> Confirmar visualmente el equipo a intervenir (ej. Molino SAC 3)." },
+
                     { text: "<strong>Tomar equipo de comunicación:</strong> Interactuar con la radio en la mesa de inicio." },
                     { text: "<strong>Contactar al encargado:</strong> Solicitar por radio la detención operativa del equipo." },
                     { text: "<strong>Recibir autorización:</strong> Escuchar la confirmación de detención por parte del jefe de turno antes de avanzar." }
@@ -1070,7 +1073,7 @@
                     rotation: { x: -27.1, y: -52.8 }
                 },
                 items: [
-                    { text: "<strong>Navegar a la sala eléctrica:</strong> Dirigirse al área de tableros." },
+
                     { text: "<strong>Localizar tablero general:</strong> Identificar el panel principal que alimenta el equipo." },
                     { text: "<strong>Ubicar el interruptor específico:</strong> Leer las etiquetas del tablero para encontrar la palanca exacta que corresponde al equipo a intervenir." }
                 ]
@@ -1088,7 +1091,7 @@
                     rotation: { x: -20.7, y: -52.0 }
                 },
                 items: [
-                    { text: "<strong>Posicionamiento:</strong> Situarse frente al interruptor identificado en el paso anterior." },
+
                     { text: "<strong>Accionar mecanismo:</strong> Bajar la palanca o girar el interruptor a la posición de apagado (\"OFF\")." },
                     { text: "<strong>Confirmación sensorial:</strong> Validar el corte mediante el feedback visual (luces apagadas) y auditivo (sonido del corte)." }
                 ]
@@ -1106,10 +1109,10 @@
                     rotation: { x: -18.7, y: -74.9 }
                 },
                 items: [
-                    { text: "<strong>Ir a la estación de bloqueo:</strong> Desplazarse hacia la caja de seguridad amarilla (<em>SafeLockout</em>)." },
-                    { text: "<strong>Tomar pinza múltiple (hasp):</strong> Retirar la pinza de la caja." },
-                    { text: "<strong>Tomar candado personal:</strong> Retirar el candado asignado al trabajador." },
-                    { text: "<strong>Tomar tarjeta de peligro:</strong> Retirar la etiqueta y confirmar que los datos (nombre, fecha, motivo) estén visibles." }
+
+                    { text: "<strong>Tomar pinza:</strong> Retirar la pinza de la caja." },
+                    { text: "<strong>Tomar candado:</strong> Retirar el candado asignado al trabajador." },
+                    { text: "<strong>Tomar etiqueta de seguridad:</strong> Retirar la etiqueta" }
                 ]
             },
             {
@@ -1125,10 +1128,10 @@
                     rotation: { x: -14.2, y: -51.5 }
                 },
                 items: [
-                    { text: "<strong>Regresar al punto de corte:</strong> Volver al tablero aislado en el Paso 3." },
+
                     { text: "<strong>Instalar pinza:</strong> Colocar la pinza en los orificios de bloqueo de la palanca." },
                     { text: "<strong>Instalar candado:</strong> Insertar el candado cerrando la pinza." },
-                    { text: "<strong>Instalar tarjeta:</strong> Enganchar la tarjeta de advertencia de \"PELIGRO\" junto al candado." }
+                    { text: "<strong>Instalar tarjeta:</strong> Enganchar la etiqueta de seguridad junto al candado." }
                 ]
             }
         ];
@@ -1264,12 +1267,12 @@
 
             // Reglas condicionales: el modelo SOLO se muestra si se cumple su condición en el checklist
             const conditionalModels = {
-                'pinzas': (step) => checkState[step] && checkState[step][1],
-                'candado': (step) => checkState[step] && checkState[step][2],
-                'etiqueta': (step) => checkState[step] && checkState[step][3],
-                'lotoPinza': (step) => checkState[step] && checkState[step][1],
-                'lotoCandado': (step) => checkState[step] && checkState[step][2],
-                'lotoEtiqueta': (step) => checkState[step] && checkState[step][3],
+                'pinzas': (step) => checkState[step] && checkState[step][0],
+                'candado': (step) => checkState[step] && checkState[step][1],
+                'etiqueta': (step) => checkState[step] && checkState[step][2],
+                'lotoPinza': (step) => checkState[step] && checkState[step][0],
+                'lotoCandado': (step) => checkState[step] && checkState[step][1],
+                'lotoEtiqueta': (step) => checkState[step] && checkState[step][2],
             };
 
             const activeStep = checklistSteps[activeIndex];
@@ -1370,7 +1373,7 @@
             const step = checklistSteps.find(s => s.id === stepId);
             renderItems(step);
             updateProgress(step);
-            
+
             // Actualiza la visibilidad de los modelos dinámicamente al tickear
             setStepModels(currentStepIndex);
         }
@@ -1528,6 +1531,18 @@
             // ── MODELOS BIM ──
             const rotBIM = { x: 0, y: 90, z: 0 };
 
+            const hideAfterLoad = (m) => {
+                const check = (attempts = 0) => {
+                    const obj = m.node.obj3D;
+                    if (obj && (obj.children.length > 0 || attempts > 40)) {
+                        obj.visible = false;
+                        return;
+                    }
+                    setTimeout(() => check(attempts + 1), 250);
+                };
+                check();
+            };
+
             // 1. Modelo Eléctrico
             modelsData.electrico.node = await sdk.Scene.createNode();
             modelsData.electrico.node.addComponent('mp.fbxLoader', {
@@ -1539,7 +1554,9 @@
                 color: 0x00FF00
             });
             modelsData.electrico.node.start();
-            modelsData.electrico.visible = true;
+            modelsData.electrico.visible = false;
+            syncToggleBtn('electrico');
+            hideAfterLoad(modelsData.electrico);
 
             // 2. Modelo Clima
             modelsData.clima.node = await sdk.Scene.createNode();
@@ -1552,7 +1569,9 @@
                 color: 0xFF00FF
             });
             modelsData.clima.node.start();
-            modelsData.clima.visible = true;
+            modelsData.clima.visible = false;
+            syncToggleBtn('clima');
+            hideAfterLoad(modelsData.clima);
 
             // 4. Mesa GLB
             modelsData.mesa.node = await sdk.Scene.createNode();
@@ -1895,6 +1914,7 @@
             };
             copy(text);
         }
+
     </script>
 </body>
 
