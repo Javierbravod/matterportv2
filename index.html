@@ -9,6 +9,15 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>BIM+NP</title>
+    <!-- Import Map: Three.js + GLTFLoader como ES Modules -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.150.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.150.0/examples/jsm/"
+        }
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -306,6 +315,190 @@
             z-index: 9999;
         }
 
+        /* ── SWEEP ID WIDGET ── */
+        #sweep-id-widget {
+            display: none; /* Desactivado por solicitud */
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        #sweep-id-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #8e8e93;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding-left: 4px;
+        }
+
+        #sweep-id-display {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            user-select: none;
+            min-width: 180px;
+        }
+
+        #sweep-id-display:hover {
+            border-color: rgba(74, 222, 128, 0.5);
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        #sweep-id-display:active {
+            border-color: #4ade80;
+        }
+
+        #sweep-id-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 6px #4ade80;
+            flex-shrink: 0;
+            animation: sweep-pulse 2s infinite;
+        }
+
+        @keyframes sweep-pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        #sweep-id-value {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #4ade80;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        #sweep-copy-icon {
+            font-size: 13px;
+            opacity: 0.5;
+            flex-shrink: 0;
+            transition: opacity 0.2s;
+        }
+
+        #sweep-id-display:hover #sweep-copy-icon {
+            opacity: 1;
+        }
+
+        #sweep-copy-toast {
+            font-size: 10px;
+            color: #4ade80;
+            text-align: center;
+            height: 14px;
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        #sweep-copy-toast.show {
+            opacity: 1;
+        }
+
+        /* ── ROTATION WIDGET ── */
+        #rotation-widget {
+            display: none; /* Desactivado por solicitud */
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        #rotation-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #8e8e93;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding-left: 4px;
+        }
+
+        #rotation-display {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            user-select: none;
+            min-width: 180px;
+        }
+
+        #rotation-display:hover {
+            border-color: rgba(96, 165, 250, 0.5);
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        #rotation-display:active {
+            border-color: #60a5fa;
+        }
+
+        #rotation-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #60a5fa;
+            box-shadow: 0 0 6px #60a5fa;
+            flex-shrink: 0;
+            animation: sweep-pulse 2s infinite;
+        }
+
+        #rotation-value {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #60a5fa;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        #rotation-copy-icon {
+            font-size: 13px;
+            opacity: 0.5;
+            flex-shrink: 0;
+            transition: opacity 0.2s;
+        }
+
+        #rotation-display:hover #rotation-copy-icon {
+            opacity: 1;
+        }
+
+        #rotation-copy-toast {
+            font-size: 10px;
+            color: #60a5fa;
+            text-align: center;
+            height: 14px;
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        #rotation-copy-toast.show {
+            opacity: 1;
+        }
+
         /* ── NEXT STEP BUTTON ── */
         .next-step-btn {
             background-color: #22c55e;
@@ -390,7 +583,7 @@
             color: white;
             font-family: 'Inter', sans-serif;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            display: flex;
+            display: none; /* Desactivado por solicitud */
             flex-direction: column;
             gap: 0;
             min-width: 250px;
@@ -476,6 +669,35 @@
             width: 100%;
         }
 
+        /* Colapso del cuerpo */
+        #calib-panel.collapsed #calib-panel-body {
+            display: none;
+        }
+
+        #calib-panel.collapsed {
+            padding-bottom: 0;
+        }
+
+        .calib-toggle-btn {
+            background: none;
+            border: none;
+            color: #8e8e93;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: auto;
+            padding: 0 4px;
+            line-height: 1;
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .calib-toggle-btn:hover {
+            color: #ffffff;
+        }
+
+        #calib-panel.collapsed .calib-toggle-btn {
+            transform: rotate(180deg);
+        }
+
         #calib-coords,
         #calib-rot {
             background: #000;
@@ -523,9 +745,90 @@
         <button id="btn-clima" class="model-toggle-btn" onclick="handleToggle('clima')">
             <span class="fbx-dot"></span> ❄️ M. Clima
         </button>
+
+        <!-- SWEEP ID DISPLAY -->
+        <div id="sweep-id-widget">
+            <div id="sweep-id-label">📍 Sweep ID</div>
+            <div id="sweep-id-display" onclick="copySweepId()" title="Click para copiar">
+                <div id="sweep-id-dot"></div>
+                <span id="sweep-id-value">esperando...</span>
+                <span id="sweep-copy-icon">⎘</span>
+            </div>
+            <div id="sweep-copy-toast">¡Copiado!</div>
+        </div>
+
+        <!-- ROTATION DISPLAY -->
+        <div id="rotation-widget">
+            <div id="rotation-label">🎥 Rotación</div>
+            <div id="rotation-display" onclick="copyRotation()" title="Click para copiar">
+                <div id="rotation-dot"></div>
+                <span id="rotation-value">esperando...</span>
+                <span id="rotation-copy-icon">⎘</span>
+            </div>
+            <div id="rotation-copy-toast">¡Copiado!</div>
+        </div>
     </div>
 
 
+
+    <!-- PANEL DE CALIBRACIÓN BIM -->
+    <div id="calib-panel">
+        <div class="calib-header" id="calib-drag-handle">
+            🛠️ Calibrador Avanzado
+            <button class="calib-toggle-btn" id="calib-toggle" onclick="toggleCalibPanel()"
+                title="Colapsar/Expandir">▲</button>
+        </div>
+        <div id="calib-panel-body" class="calib-body">
+
+            <select id="calib-model-select" class="calib-select" onchange="updateCalibDisplay()">
+            </select>
+
+            <div class="calib-row" style="margin-top:5px">
+                <span>Paso:</span>
+                <input type="number" id="calib-step" class="calib-input" value="0.1" step="0.01">
+            </div>
+
+            <div style="font-size:11px;color:#aaa;text-align:center;margin-top:5px">POSICIÓN (M)</div>
+            <div class="calib-row">
+                <span>Eje X:</span>
+                <div><button class="calib-btn" onclick="nudgePos('x',-1)">-</button><button class="calib-btn"
+                        onclick="nudgePos('x',1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Eje Y:</span>
+                <div><button class="calib-btn" onclick="nudgePos('y',-1)">-</button><button class="calib-btn"
+                        onclick="nudgePos('y',1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Eje Z:</span>
+                <div><button class="calib-btn" onclick="nudgePos('z',-1)">-</button><button class="calib-btn"
+                        onclick="nudgePos('z',1)">+</button></div>
+            </div>
+            <div id="calib-coords">Pos: x: 0.00, y: 0.00, z: 0.00</div>
+
+            <div style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">ROTACIÓN (GRADOS)</div>
+            <div class="calib-row">
+                <span>Paso Rot:</span>
+                <input type="number" id="calib-rot-step" class="calib-input" value="5" step="1">
+            </div>
+            <div class="calib-row">
+                <span>Rot X:</span>
+                <div><button class="calib-btn" onclick="nudgeRot('x',-1)">-</button><button class="calib-btn"
+                        onclick="nudgeRot('x',1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Rot Y:</span>
+                <div><button class="calib-btn" onclick="nudgeRot('y',-1)">-</button><button class="calib-btn"
+                        onclick="nudgeRot('y',1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Rot Z:</span>
+                <div><button class="calib-btn" onclick="nudgeRot('z',-1)">-</button><button class="calib-btn"
+                        onclick="nudgeRot('z',1)">+</button></div>
+            </div>
+            <div id="calib-rot">Rot: x: 0°, y: 0°, z: 0°</div>
+        </div><!-- /calib-panel-body -->
+    </div>
 
     <iframe id="showcase" width="100%" height="100%"
         src="./bundle/showcase.html?m=hXEV8zd9GFy&play=1&qs=1&log=0&applicationKey=myhcpcdgdh7907ggei7s5f4md"
@@ -537,6 +840,11 @@
         let sdk;
         let mpSdk = null;         // alias semántico expuesto tras connect()
 
+        // ── PRE-CARGA DE MÓDULOS THREE.JS (ES Modules via import map) ──
+        // Se inicia la descarga en paralelo mientras Matterport carga el iframe.
+        // dynamic import() en classic scripts respeta el importmap en Chrome 89+
+        const _threePromise = import('three');
+        const _gltfLoaderPromise = import('three/addons/loaders/GLTFLoader.js');
 
         // ── SISTEMA DE GESTIÓN DE MODELOS (FBX/GLB) ──
         const modelsData = {
@@ -550,7 +858,12 @@
             'mesa': { id: 'mesa', label: 'Mesa', icon: '🪑', file: 'Mesa.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
             'candado': { id: 'candado', label: 'Candado', icon: '🔒', file: 'candado.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
             'etiqueta': { id: 'etiqueta', label: 'Etiqueta', icon: '🏷️', file: 'Etiqueta.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
-            'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true }
+            'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
+            'motorArranque': { id: 'motorArranque', label: 'Motor Arranque', icon: '⚙️', file: 'bundle/MotorArranque_AnimBake.glb', type: 'custom.animatedGltf', scale: 1.0, node: null, visible: true },
+            'cuboSdk': { id: 'cuboSdk', label: 'Cubo SDK', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
+            'lotoCandado': { id: 'lotoCandado', label: 'Loto Candado', icon: '🔒', file: 'Loto_Candado.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
+            'lotoEtiqueta': { id: 'lotoEtiqueta', label: 'Loto Etiqueta', icon: '🏷️', file: 'Loto_Etiqueta.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
+            'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true }
         };
 
         function syncToggleBtn(id) {
@@ -577,10 +890,137 @@
             syncToggleBtn(id);
         }
 
+        // ── CALIBRADOR: datos y funciones ──────────────────────────
+        const tagsCalibData = {};
 
+        function initModelUI() {
+            const select = document.getElementById('calib-model-select');
+            if (!select) return;
+            select.innerHTML = '';
 
+            const grpModels = document.createElement('optgroup');
+            grpModels.label = '── Modelos 3D ──';
+            select.appendChild(grpModels);
+            Object.values(modelsData).forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.textContent = `${m.icon} ${m.label}`;
+                grpModels.appendChild(opt);
+            });
 
-        // Radio ahora forma parte de modelsData (ver arriba)
+            const grpTags = document.createElement('optgroup');
+            grpTags.label = '── Tags Checklist ──';
+            grpTags.id = 'calib-tags-group';
+            select.appendChild(grpTags);
+        }
+
+        function registerTagForCalib(stepId, sid, label, anchorPosition) {
+            const key = `tag_${stepId}`;
+            tagsCalibData[key] = { sid, anchorPosition: Object.assign({}, anchorPosition), stepLabel: label };
+            const grp = document.getElementById('calib-tags-group');
+            if (!grp) return;
+            if (grp.querySelector(`option[value="${key}"]`)) return;
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = `📍 Paso ${stepId}: ${label.replace(/^Paso \d+: /, '')}`;
+            grp.appendChild(opt);
+        }
+
+        function getActiveModel() {
+            const el = document.getElementById('calib-model-select');
+            if (!el) return null;
+            const id = el.value;
+            if (id && id.startsWith('tag_')) return null;
+            return modelsData[id] || null;
+        }
+
+        function getActiveTag() {
+            const el = document.getElementById('calib-model-select');
+            if (!el) return null;
+            const id = el.value;
+            if (!id || !id.startsWith('tag_')) return null;
+            return tagsCalibData[id] || null;
+        }
+
+        function nudgePos(axis, dir) {
+            const stepEl = document.getElementById('calib-step');
+            const step = stepEl ? (parseFloat(stepEl.value) || 0.1) : 0.1;
+            const tag = getActiveTag();
+            if (tag) {
+                tag.anchorPosition[axis] = (tag.anchorPosition[axis] || 0) + step * dir;
+                if (mpSdk) mpSdk.Mattertag.editPosition(tag.sid, { anchorPosition: tag.anchorPosition, stemVector: { x: 0, y: 0, z: 0 } }).catch(e => console.warn('editPosition:', e));
+                updateCalibDisplay(); return;
+            }
+            const m = getActiveModel();
+            if (!m || !m.node) return;
+            m.node.obj3D.position[axis] += step * dir;
+            updateCalibDisplay();
+        }
+
+        function nudgeRot(axis, dir) {
+            if (getActiveTag()) return;
+            const m = getActiveModel();
+            if (!m || !m.node) return;
+            const stepEl = document.getElementById('calib-rot-step');
+            const step = stepEl ? (parseFloat(stepEl.value) || 5) : 5;
+            m.node.obj3D.rotation[axis] += step * dir * (Math.PI / 180);
+            updateCalibDisplay();
+        }
+
+        function updateCalibDisplay() {
+            const tag = getActiveTag();
+            if (tag) {
+                const p = tag.anchorPosition;
+                const coordEl = document.getElementById('calib-coords');
+                const rotEl = document.getElementById('calib-rot');
+                if (coordEl) coordEl.innerText = `Pos: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}`;
+                if (rotEl) rotEl.innerText = `(Tags no tienen rotación)`;
+                return;
+            }
+            const m = getActiveModel();
+            if (!m || !m.node) return;
+            const p = m.node.obj3D.position;
+            const r = m.node.obj3D.rotation;
+            const coordEl = document.getElementById('calib-coords');
+            const rotEl = document.getElementById('calib-rot');
+            if (coordEl) coordEl.innerText = `Pos: x: ${p.x.toFixed(3)}, y: ${p.y.toFixed(3)}, z: ${p.z.toFixed(3)}`;
+            if (rotEl) rotEl.innerText = `Rot: x: ${(r.x * 180 / Math.PI).toFixed(0)}°, y: ${(r.y * 180 / Math.PI).toFixed(0)}°, z: ${(r.z * 180 / Math.PI).toFixed(0)}°`;
+        }
+
+        // ── COLAPSO/EXPANSIÓN ──────────────────────────────────────
+        function toggleCalibPanel() {
+            document.getElementById('calib-panel').classList.toggle('collapsed');
+        }
+
+        // ── DRAG & DROP ───────────────────────────────────────────
+        (function () {
+            const panel = document.getElementById('calib-panel');
+            const handle = document.getElementById('calib-drag-handle');
+            if (!panel || !handle) return;
+            let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
+            handle.addEventListener('mousedown', (e) => {
+                if (e.target.id === 'calib-toggle') return; // no arrastrar al pulsar el botón
+                dragging = true;
+                startX = e.clientX; startY = e.clientY;
+                const rect = panel.getBoundingClientRect();
+                origLeft = rect.left; origTop = rect.top;
+                panel.style.transition = 'none';
+                e.preventDefault();
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const newLeft = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, origLeft + e.clientX - startX));
+                const newTop = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, origTop + e.clientY - startY));
+                panel.style.left = newLeft + 'px';
+                panel.style.top = newTop + 'px';
+                panel.style.right = 'auto';
+            });
+            document.addEventListener('mouseup', () => { dragging = false; });
+        })();
+
+        // Inicializar select del calibrador
+        initModelUI();
+
 
         // Step emojis by step id
         const stepEmojis = { 1: '📋', 2: '⚡', 3: '🔌', 4: '🔒', 5: '🏷️' };
@@ -607,8 +1047,8 @@
                 color: { r: 0.42, g: 0.27, b: 0.97 },
                 iconId: 'public_characters_1',
                 coordinates: {
-                    sweep_id: 'SWEEP_ID_PASO_1',  // ← reemplazar con ID real de consola
-                    rotation: { x: 0, y: 180 }    // pitch / yaw en grados
+                    sweep_id: 'c06e7c7685684ab1af6d33371ac893fc',  // ← reemplazar con ID real de consola
+                    rotation: { x: -9.7, y: -21.1 }   // pitch / yaw en grados
                 },
                 items: [
                     { text: "<strong>Identificar equipo:</strong> Confirmar visualmente el equipo a intervenir (ej. Molino SAC 3)." },
@@ -626,8 +1066,8 @@
                 color: { r: 0.97, g: 0.55, b: 0.10 },
                 iconId: 'public_characters_2',
                 coordinates: {
-                    sweep_id: 'c06e7c7685684ab1af6d33371ac893fc',
-                    rotation: { x: 0.6, y: -22.4 }
+                    sweep_id: '89a800e3dbac4487b6fa87fe1908a2a3',
+                    rotation: { x: -27.1, y: -52.8 }
                 },
                 items: [
                     { text: "<strong>Navegar a la sala eléctrica:</strong> Dirigirse al área de tableros." },
@@ -644,8 +1084,8 @@
                 color: { r: 0.14, g: 0.78, b: 0.55 },
                 iconId: 'public_characters_3',
                 coordinates: {
-                    sweep_id: 'SWEEP_ID_PASO_3',
-                    rotation: { x: 5, y: 90 }
+                    sweep_id: '89a800e3dbac4487b6fa87fe1908a2a3',
+                    rotation: { x: -20.7, y: -52.0 }
                 },
                 items: [
                     { text: "<strong>Posicionamiento:</strong> Situarse frente al interruptor identificado en el paso anterior." },
@@ -662,8 +1102,8 @@
                 color: { r: 0.95, g: 0.20, b: 0.40 },
                 iconId: 'public_characters_4',
                 coordinates: {
-                    sweep_id: 'SWEEP_ID_PASO_4',
-                    rotation: { x: 0, y: 270 }
+                    sweep_id: 'bcb113715863410f89b0a3133cf345aa',
+                    rotation: { x: -18.7, y: -74.9 }
                 },
                 items: [
                     { text: "<strong>Ir a la estación de bloqueo:</strong> Desplazarse hacia la caja de seguridad amarilla (<em>SafeLockout</em>)." },
@@ -681,8 +1121,8 @@
                 color: { r: 0.95, g: 0.75, b: 0.05 },
                 iconId: 'public_characters_5',
                 coordinates: {
-                    sweep_id: 'SWEEP_ID_PASO_5',
-                    rotation: { x: 5, y: 90 }
+                    sweep_id: '89a800e3dbac4487b6fa87fe1908a2a3',
+                    rotation: { x: -14.2, y: -51.5 }
                 },
                 items: [
                     { text: "<strong>Regresar al punto de corte:</strong> Volver al tablero aislado en el Paso 3." },
@@ -724,28 +1164,67 @@
 
             const step = checklistSteps[index];
             const tagSid = stepSidMap[step.id];
+            const sweepId = step.coordinates && step.coordinates.sweep_id;
+            const hasRealSweep = sweepId && !sweepId.startsWith('SWEEP_ID_PASO');
 
-            console.log(`🚀 [Paso ${step.id}] navigateTo tag sid: ${tagSid}`);
+            console.log(`🚀 [Paso ${step.id}] hasRealSweep:${hasRealSweep} | sweep:${sweepId} | tag:${tagSid}`);
 
-            // 1. Actualizar UI en 800ms (anti-bloqueo)
-            setTimeout(() => {
+            if (!mpSdk) {
+                console.warn('⚠️ SDK no disponible.');
                 renderChecklistUI(index);
                 isAdvancing = false;
-            }, 800);
-
-            if (!mpSdk) { console.warn('⚠️ SDK no disponible.'); return; }
-
-            if (!tagSid) {
-                console.warn(`⚠️ [Paso ${step.id}] Tag aún no creado. Reintentando en 1s...`);
-                setTimeout(() => navigateToStep(index), 1000);
                 return;
             }
 
-            // Navegar al tag — vuela al sweep más cercano apuntando al tag
-            mpSdk.Mattertag.navigateTo(tagSid)
-                .then(() => console.log(`✅ [Paso ${step.id}] Vista del tag alcanzada.`))
-                .catch(e => console.error(`❌ [Paso ${step.id}] navigateTo falló:`, e));
+            let resolved = false;
+
+            // SEGURO DE VIDA: Si el motor no responde en 4s, fuerza el avance
+            const failSafeTimer = setTimeout(() => {
+                if (!resolved) {
+                    console.warn(`⏳ [Paso ${step.id}] Timeout 4s → forzando UI.`);
+                    resolved = true;
+                    renderChecklistUI(index);
+                    isAdvancing = false;
+                }
+            }, 4000);
+
+            const afterFlight = () => {
+                if (!resolved) {
+                    resolved = true;
+                    clearTimeout(failSafeTimer);
+                    console.log(`🏁 [Paso ${step.id}] afterFlight ejecutado.`);
+                    renderChecklistUI(index);
+                    isAdvancing = false;
+                }
+            };
+
+            // ── ESTRATEGIA 1: Sweep.moveTo (más confiable, no depende de tags) ──
+            if (hasRealSweep) {
+                const rot = (step.coordinates.rotation) || { x: 0, y: 0 };
+                console.log(`📍 Sweep.moveTo → "${sweepId}" rot x:${rot.x} y:${rot.y}`);
+                mpSdk.Sweep.moveTo(sweepId.trim(), { rotation: { x: rot.x, y: rot.y } })
+                    .then(() => console.log(`✅ [Paso ${step.id}] Sweep.moveTo OK`))
+                    .catch(err => console.error(`❌ [Paso ${step.id}] Sweep.moveTo falló:`, err))
+                    .finally(afterFlight);
+                return;
+            }
+
+            // ── ESTRATEGIA 2: Mattertag.navigateTo (para pasos sin sweep calibrado) ──
+            if (tagSid) {
+                console.log(`🎯 navigateTo → tag sid: ${tagSid}`);
+                mpSdk.Mattertag.navigateTo(tagSid)
+                    .then(() => console.log(`✅ [Paso ${step.id}] navigateTo OK`))
+                    .catch(err => console.error(`❌ [Paso ${step.id}] navigateTo falló:`, err))
+                    .finally(afterFlight);
+                return;
+            }
+
+            // ── Sin sweep ni tag: solo actualizar UI ──
+            console.warn(`⚠️ [Paso ${step.id}] Sin sweep ni tag. Actualizando solo UI.`);
+            afterFlight();
         }
+
+
 
         // =====================================================
         // RENDERIZADO DE UI (solo panel, sin tocar la cámara)
@@ -779,7 +1258,18 @@
             // Mapa: id de paso → IDs de modelos que aparecen en ese paso
             const stepModels = {
                 1: ['radio'],
-                4: ['candado', 'etiqueta', 'pinzas']
+                4: ['candado', 'etiqueta', 'pinzas'],
+                5: ['lotoPinza', 'lotoCandado', 'lotoEtiqueta']
+            };
+
+            // Reglas condicionales: el modelo SOLO se muestra si se cumple su condición en el checklist
+            const conditionalModels = {
+                'pinzas': (step) => checkState[step] && checkState[step][1],
+                'candado': (step) => checkState[step] && checkState[step][2],
+                'etiqueta': (step) => checkState[step] && checkState[step][3],
+                'lotoPinza': (step) => checkState[step] && checkState[step][1],
+                'lotoCandado': (step) => checkState[step] && checkState[step][2],
+                'lotoEtiqueta': (step) => checkState[step] && checkState[step][3],
             };
 
             const activeStep = checklistSteps[activeIndex];
@@ -787,11 +1277,18 @@
 
             Object.entries(stepModels).forEach(([stepIdStr, modelIds]) => {
                 const stepId = parseInt(stepIdStr);
-                const shouldShow = !forceHide && (stepId === activeStepId);
+                const isCurrentStep = !forceHide && (stepId === activeStepId);
 
                 modelIds.forEach(mid => {
                     const m = modelsData[mid];
                     if (!m || !m.node) return;
+
+                    let shouldShow = isCurrentStep;
+
+                    // Si estamos en el paso y tiene regla, suplantar por la regla
+                    if (isCurrentStep && conditionalModels[mid]) {
+                        shouldShow = conditionalModels[mid](stepId);
+                    }
 
                     // Para modelos FBX grandes (Radio), el obj3D existe pero sus hijos
                     // pueden tardar en cargarse. Usamos polling hasta que esté listo.
@@ -804,7 +1301,7 @@
                         }
                         obj.visible = shouldShow;
                         m.visible = shouldShow;
-                        console.log(`👁️ [${mid}] visible=${shouldShow} (intentos: ${attempts})`);
+                        // console.log(`👁️ [${mid}] visible=${shouldShow} (intentos: ${attempts})`);
                     };
                     applyVisibility();
                 });
@@ -856,6 +1353,7 @@
                         isAdvancing = true;
                         btn.textContent = 'Navegando...';
                         btn.style.opacity = '0.7';
+                        setStepModels(-1, true);
                         navigateToStep(nextIndex);
                     };
                 } else {
@@ -872,14 +1370,9 @@
             const step = checklistSteps.find(s => s.id === stepId);
             renderItems(step);
             updateProgress(step);
-
-            // Si se completaron TODOS los ítems del paso → ocultar sus modelos
-            const allChecked = checkState[stepId].every(Boolean);
-            if (allChecked) {
-                const stepIndex = checklistSteps.findIndex(s => s.id === stepId);
-                setStepModels(stepIndex, true);  // forceHide = true
-                console.log(`✅ Paso ${stepId} completado → modelos ocultados.`);
-            }
+            
+            // Actualiza la visibilidad de los modelos dinámicamente al tickear
+            setStepModels(currentStepIndex);
         }
 
         function updateProgress(step) {
@@ -932,6 +1425,101 @@
 
             console.log('Hello Bundle SDK', sdk);
 
+            // THREE y GLTFLoader vienen del CDN vía import map,
+            // completamente independientes del bundle interno de Matterport.
+            const [THREE, { GLTFLoader }] = await Promise.all([_threePromise, _gltfLoaderPromise]);
+            console.log('⚙️ [ESM] THREE r' + THREE.REVISION + ' y GLTFLoader listos.');
+
+            sdk.Scene.register('custom.animatedGltf', function () {
+                let mixer = null;
+                // THREE interno de Matterport para materiales compatibles con su renderer
+                const mpTHREE = showcase.contentWindow.THREE;
+
+                return {
+                    inputs: {
+                        url: '',
+                        localPosition: { x: 0, y: 0, z: 0 },
+                        localRotation: { x: 0, y: 0, z: 0 },
+                        localScale: { x: 1, y: 1, z: 1 }
+                    },
+
+                    // El SDK necesita objectRoot como Object3D válido desde el inicio
+                    outputs: {
+                        objectRoot: null
+                    },
+
+                    onInit() {
+                        const { url, localPosition, localRotation, localScale } = this.inputs;
+                        const loader = new GLTFLoader();
+                        const self = this;
+
+                        // ① Inicializar objectRoot ANTES del fetch para que el SDK
+                        //    siempre tenga un Object3D válido (evita "Cannot read .add of undefined")
+                        self.outputs.objectRoot = new THREE.Group();
+                        self.outputs.objectRoot.position.set(localPosition.x, localPosition.y, localPosition.z);
+                        self.outputs.objectRoot.rotation.set(
+                            THREE.MathUtils.degToRad(localRotation.x),
+                            THREE.MathUtils.degToRad(localRotation.y),
+                            THREE.MathUtils.degToRad(localRotation.z)
+                        );
+                        self.outputs.objectRoot.scale.set(localScale.x, localScale.y, localScale.z);
+
+                        console.log(`🔄 [AnimGLTF] Cargando via fetch: ${url}`);
+
+                        // ② fetch + parseAsync evita que GLTFLoader resuelva blob: URLs de texturas
+                        fetch(url)
+                            .then(res => {
+                                if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
+                                return res.arrayBuffer();
+                            })
+                            .then(buffer => loader.parseAsync(buffer, ''))
+                            .then(gltf => {
+                                const model = gltf.scene;
+                                console.log(`✅ [AnimGLTF] Parseado: ${url} — ${model.children.length} hijos.`);
+
+                                // Material compatible con el renderer interno de Matterport
+                                if (mpTHREE && mpTHREE.MeshStandardMaterial) {
+                                    const safeMat = new mpTHREE.MeshStandardMaterial({
+                                        color: 0x888888, roughness: 0.6, metalness: 0.2,
+                                        side: mpTHREE.DoubleSide
+                                    });
+                                    model.traverse(child => {
+                                        if (child.isMesh) child.material = safeMat;
+                                    });
+                                    console.log(`🎨 [AnimGLTF] Material aplicado.`);
+                                }
+
+                                // ③ Agregar al grupo ya registrado como objectRoot
+                                self.outputs.objectRoot.add(model);
+                                console.log(`🔗 [AnimGLTF] Añadido a objectRoot. Children: ${self.outputs.objectRoot.children.length}`);
+
+                                // ④ Animaciones en loop — lógica intacta para LOTO
+                                if (gltf.animations && gltf.animations.length > 0) {
+                                    mixer = new THREE.AnimationMixer(model);
+                                    gltf.animations.forEach(clip => {
+                                        mixer.clipAction(clip).setLoop(THREE.LoopRepeat, Infinity).play();
+                                    });
+                                    console.log(`⚙️ [AnimGLTF] ${gltf.animations.length} animación(es) en loop.`);
+                                } else {
+                                    console.warn(`⚠️ [AnimGLTF] ${url} sin animaciones (mesh estático).`);
+                                }
+                            })
+                            .catch(err => console.error(`❌ [AnimGLTF] Error cargando ${url}:`, err));
+                    },
+
+                    onTick(delta) {
+                        if (mixer) mixer.update(delta / 1000);
+                    },
+
+                    onDestroy() {
+                        if (mixer) { mixer.stopAllAction(); mixer = null; }
+                    }
+                };
+            });
+
+
+            console.log('✅ [ESM] custom.animatedGltf registrado.');
+
             // Luces
             const lights = await sdk.Scene.createNode();
             lights.addComponent('mp.lights');
@@ -979,57 +1567,139 @@
             modelsData.mesa.visible = true;
             console.log('🗄️ [Mesa] GLB cargado.');
 
+            // Cubo SDK (con animaciones)
+            try {
+                modelsData.cuboSdk.node = await sdk.Scene.createNode();
+                modelsData.cuboSdk.node.addComponent('custom.animatedGltf', {
+                    url: 'bundle/cubosdk.glb',
+                    localPosition: { x: 0, y: 0, z: 0 },
+                    localRotation: { x: 0, y: 0, z: 0 },
+                    localScale: { x: 1, y: 1, z: 1 }
+                });
+                modelsData.cuboSdk.node.start();
+                modelsData.cuboSdk.visible = true;
+                console.log('📦 [CuboSDK] GLB cargado en origen (0,0,0).');
+            } catch (e) { console.warn('⚠️ [CuboSDK] No se pudo cargar:', e.message || e); }
+
+
             // 5. Candado
-            modelsData.candado.node = await sdk.Scene.createNode();
-            modelsData.candado.node.addComponent('mp.gltfLoader', {
-                url: 'candado.glb',
-                visible: true,
-                localScale: { x: 2, y: 2, z: 2 },
-                localPosition: { x: 2.4, y: 1.4, z: -12.8 },
-                localRotation: { x: 0, y: 90, z: 0 }
-            });
-            modelsData.candado.node.start();
-            modelsData.candado.visible = true;
+            try {
+                modelsData.candado.node = await sdk.Scene.createNode();
+                modelsData.candado.node.addComponent('mp.gltfLoader', {
+                    url: 'candado.glb',
+                    visible: true,
+                    localScale: { x: 2, y: 2, z: 2 },
+                    localPosition: { x: 2.4, y: 1.4, z: -12.8 },
+                    localRotation: { x: 0, y: 90, z: 0 }
+                });
+                modelsData.candado.node.start();
+                modelsData.candado.visible = true;
+            } catch (e) { console.warn('⚠️ [Candado] No se pudo cargar:', e.message || e); }
 
             // 6. Etiqueta
-            modelsData.etiqueta.node = await sdk.Scene.createNode();
-            modelsData.etiqueta.node.addComponent('mp.gltfLoader', {
-                url: 'Etiqueta.glb',
-                visible: true,
-                localScale: { x: 2, y: 2, z: 2 },
-                localPosition: { x: 2.1, y: 1.65, z: -12.8 },
-                localRotation: { x: 0, y: 90, z: 0 }
-            });
-            modelsData.etiqueta.node.start();
-            modelsData.etiqueta.visible = true;
+            try {
+                modelsData.etiqueta.node = await sdk.Scene.createNode();
+                modelsData.etiqueta.node.addComponent('mp.gltfLoader', {
+                    url: 'Etiqueta.glb',
+                    visible: true,
+                    localScale: { x: 2, y: 2, z: 2 },
+                    localPosition: { x: 2.1, y: 1.65, z: -12.8 },
+                    localRotation: { x: 0, y: 90, z: 0 }
+                });
+                modelsData.etiqueta.node.start();
+                modelsData.etiqueta.visible = true;
+            } catch (e) { console.warn('⚠️ [Etiqueta] No se pudo cargar:', e.message || e); }
 
             // 7. Pinzas
-            modelsData.pinzas.node = await sdk.Scene.createNode();
-            modelsData.pinzas.node.addComponent('mp.gltfLoader', {
-                url: 'Pinzas.glb',
-                visible: true,
-                localScale: { x: 2, y: 2, z: 2 },
-                localPosition: { x: -12.8, y: 1.3, z: -2.6 },
-                localRotation: { x: 0, y: 0, z: 0 }
-            });
-            modelsData.pinzas.node.start();
-            modelsData.pinzas.visible = true;
-            console.log('🔒🏷️🔧 [LOTO] Candado, Etiqueta y Pinzas cargados.');
+            try {
+                modelsData.pinzas.node = await sdk.Scene.createNode();
+                modelsData.pinzas.node.addComponent('mp.gltfLoader', {
+                    url: 'Pinzas.glb',
+                    visible: true,
+                    localScale: { x: 2, y: 2, z: 2 },
+                    localPosition: { x: -12.8, y: 1.3, z: -2.6 },
+                    localRotation: { x: 0, y: 0, z: 0 }
+                });
+                modelsData.pinzas.node.start();
+                modelsData.pinzas.visible = true;
+                console.log('🔒🏷️🔧 [LOTO] Candado, Etiqueta y Pinzas cargados.');
+            } catch (e) { console.warn('⚠️ [Pinzas] No se pudo cargar:', e.message || e); }
 
             // 8. Radio FBX
-            const radioM = modelsData.radio;
-            const rS = radioM.scale;
-            modelsData.radio.node = await sdk.Scene.createNode();
-            modelsData.radio.node.addComponent('mp.fbxLoader', {
-                url: radioM.file,
-                visible: true,
-                localScale: { x: rS, y: rS, z: rS },
-                localPosition: radioM.position,
-                localRotation: radioM.rotation
-            });
-            modelsData.radio.node.start();
-            modelsData.radio.visible = true;
-            console.log('📻 [Radio] FBX iniciando carga (~24MB):', radioM.position);
+            try {
+                const radioM = modelsData.radio;
+                const rS = radioM.scale;
+                modelsData.radio.node = await sdk.Scene.createNode();
+                modelsData.radio.node.addComponent('mp.fbxLoader', {
+                    url: radioM.file,
+                    visible: true,
+                    localScale: { x: rS, y: rS, z: rS },
+                    localPosition: radioM.position,
+                    localRotation: radioM.rotation
+                });
+                modelsData.radio.node.start();
+                modelsData.radio.visible = true;
+                console.log('📻 [Radio] FBX iniciando carga (~24MB):', radioM.position);
+            } catch (e) { console.warn('⚠️ [Radio] No se pudo cargar:', e.message || e); }
+
+            // ── Motor Arranque GLB animado ──
+            try {
+                modelsData.motorArranque.node = await sdk.Scene.createNode();
+                modelsData.motorArranque.node.addComponent('custom.animatedGltf', {
+                    url: 'bundle/MotorArranque_AnimBake.glb',
+                    localPosition: { x: 0, y: 0, z: 0 },
+                    localRotation: { x: 0, y: 0, z: 0 },
+                    localScale: { x: 10, y: 10, z: 10 }
+                });
+                modelsData.motorArranque.node.start();
+                modelsData.motorArranque.visible = true;
+                console.log('⚙️ [MotorArranque] Nodo creado con animaciones en loop.');
+            } catch (e) { console.warn('⚠️ [MotorArranque] No se pudo cargar:', e.message || e); }
+
+            // ── Loto_Candado GLB ──
+            try {
+                modelsData.lotoCandado.node = await sdk.Scene.createNode();
+                modelsData.lotoCandado.node.addComponent('mp.gltfLoader', {
+                    url: 'Loto_Candado.glb',
+                    visible: true,
+                    localScale: { x: 1, y: 1, z: 1 },
+                    localPosition: { x: -18.37, y: 1.32, z: -2.08 },
+                    localRotation: { x: 0, y: 0, z: 0 }
+                });
+                modelsData.lotoCandado.node.start();
+                modelsData.lotoCandado.visible = true;
+                console.log('🔒 [Loto_Candado] GLB cargado.');
+            } catch (e) { console.warn('⚠️ [Loto_Candado] No se pudo cargar:', e.message || e); }
+
+            // ── Loto_Etiqueta GLB ──
+            try {
+                modelsData.lotoEtiqueta.node = await sdk.Scene.createNode();
+                modelsData.lotoEtiqueta.node.addComponent('mp.gltfLoader', {
+                    url: 'Loto_Etiqueta.glb',
+                    visible: true,
+                    localScale: { x: 1, y: 1, z: 1 },
+                    localPosition: { x: -18.37, y: 1.32, z: -2.08 },
+                    localRotation: { x: 0, y: 0, z: 0 }
+                });
+                modelsData.lotoEtiqueta.node.start();
+                modelsData.lotoEtiqueta.visible = true;
+                console.log('🏷️ [Loto_Etiqueta] GLB cargado.');
+            } catch (e) { console.warn('⚠️ [Loto_Etiqueta] No se pudo cargar:', e.message || e); }
+
+            // ── Loto_Pinza GLB ──
+            try {
+                modelsData.lotoPinza.node = await sdk.Scene.createNode();
+                modelsData.lotoPinza.node.addComponent('mp.gltfLoader', {
+                    url: 'Loto_Pinza.glb',
+                    visible: true,
+                    localScale: { x: 1, y: 1, z: 1 },
+                    localPosition: { x: -18.335, y: 2.45, z: -0.09 },
+                    localRotation: { x: -55, y: 0, z: 0 }
+                });
+                modelsData.lotoPinza.node.start();
+                modelsData.lotoPinza.visible = true;
+                console.log('🔧 [Loto_Pinza] GLB cargado.');
+            } catch (e) { console.warn('⚠️ [Loto_Pinza] No se pudo cargar:', e.message || e); }
 
             // ── Ocultar modelos de paso tras cargar ──
             // Esperamos 500ms para que Three.js construya los obj3D antes de ocultarlos.
@@ -1081,26 +1751,40 @@
 
             for (const step of checklistSteps) {
                 try {
-                    // 1. Ícono numerado (canvas → dataURL → SDK)
-                    const iconId = `paso_num_${step.id}`;
-                    const iconDataUrl = makeNumberIcon(step.id, step.color);
-                    await sdk.Mattertag.registerIcon(iconId, iconDataUrl);
+                    // 1. Intentar registrar ícono personalizado (FAIL-SAFE: no impide crear el tag)
+                    const customIconId = `paso_num_${step.id}`;
+                    let iconRegistered = false;
+                    try {
+                        const iconDataUrl = makeNumberIcon(step.id, step.color);
+                        await sdk.Mattertag.registerIcon(customIconId, iconDataUrl);
+                        iconRegistered = true;
+                    } catch (iconErr) {
+                        console.warn(`⚠️ [Paso ${step.id}] registerIcon falló (usando ícono integrado): ${iconErr.message || iconErr}`);
+                    }
 
-                    // 2. Crear el Mattertag
+                    // 2. Crear el Mattertag (SIEMPRE se ejecuta, independiente del ícono)
                     const [sid] = await sdk.Mattertag.add({
                         label: step.label,
-                        description: '',
+                        description: step.objective || '',
                         anchorPosition: step.anchorPosition,
                         stemVector: step.stemVector,
                         color: step.color
                     });
 
                     // 3. Poblar ambos mapas
-                    tagSidMap[sid]       = step.id;  // sid → stepId  (click handler)
-                    stepSidMap[step.id]  = sid;      // stepId → sid  (navigateToStep)
+                    tagSidMap[sid] = step.id;   // sid → stepId  (click handler)
+                    stepSidMap[step.id] = sid;  // stepId → sid  (navigateToStep)
 
-                    // 4. Aplicar ícono numerado
-                    await sdk.Mattertag.editIcon(sid, iconId);
+                    // 4. Aplicar ícono: primero el custom, si falla usar el integrado (public_characters_X)
+                    try {
+                        if (iconRegistered) {
+                            await sdk.Mattertag.editIcon(sid, customIconId);
+                        } else {
+                            await sdk.Mattertag.editIcon(sid, step.iconId);
+                        }
+                    } catch (e) {
+                        console.warn(`⚠️ [Paso ${step.id}] editIcon falló:`, e.message || e);
+                    }
 
                     // 5. Registrar en el calibrador
                     registerTagForCalib(step.id, sid, step.label, step.anchorPosition);
@@ -1115,15 +1799,17 @@
             sdk.on(sdk.Mattertag.Event.CLICK, function (sid) {
                 console.log('🔖 Tag clickeado, sid:', sid);
                 const stepId = tagSidMap[sid];
+
+                // Reproducir sonido de radio al abrir el Paso 1
+                if (stepId === 1) {
+                    const radioAudio = new Audio('bundle/radio.MP3');
+                    radioAudio.volume = 0.6; // Ajusta el volumen si lo sientes muy fuerte (0.0 a 1.0)
+                    radioAudio.play().catch(e => console.warn('Audio play bloqueado por el navegador:', e));
+                }
+
                 if (stepId !== undefined) openChecklist(stepId);
             });
 
-            // ── preventAction: bloquear popup nativo del tag ────────
-            for (const tagSid of Object.keys(tagSidMap)) {
-                sdk.Mattertag.preventAction(tagSid, { opening: false })
-                    .then(() => console.log(`✅ preventAction OK: ${tagSid}`))
-                    .catch(e => console.warn(`preventAction no soportado (${tagSid}):`, e.message || e));
-            }
 
             // ── Logger de posición (debug) ─────────────────────────
             sdk.Sweep.current.subscribe(function (currentSweep) {
@@ -1138,6 +1824,9 @@
                     const x = pose.rotation.x != null ? pose.rotation.x.toFixed(1) : '?';
                     const y = pose.rotation.y != null ? pose.rotation.y.toFixed(1) : '?';
                     console.log(`🎥 CAMARA rotation --> x: ${x} (pitch), y: ${y} (yaw)`);
+                    // ── Actualizar widget de rotación ──
+                    const el = document.getElementById('rotation-value');
+                    if (el) el.textContent = `x: ${x}  y: ${y}`;
                 }
             });
 
@@ -1145,7 +1834,67 @@
             sdk.Pointer.intersection.subscribe((intersection) => {
                 console.log("📍 COORDENADAS EXACTAS ---> ", intersection.position);
             });
+
+            // ── SWEEP ID WIDGET: actualizar en tiempo real ──────────
+            sdk.Sweep.current.subscribe(function (currentSweep) {
+                if (currentSweep && currentSweep.sid) {
+                    const sid = currentSweep.sid;
+                    const el = document.getElementById('sweep-id-value');
+                    if (el) el.textContent = sid;
+                    console.log("-----------------------------------------");
+                    console.log("📍 UUID REAL PARA TU CÓDIGO:");
+                    console.log(`sweep_id: '${sid}'`);
+                    console.log("-----------------------------------------");
+                }
+            });
         });
+
+        // ── Copiar sweep_id al portapapeles ─────────────────────────
+        function copySweepId() {
+            const sid = document.getElementById('sweep-id-value').textContent;
+            if (!sid || sid === 'esperando...') return;
+            navigator.clipboard.writeText(sid).then(() => {
+                const toast = document.getElementById('sweep-copy-toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 1800);
+            }).catch(() => {
+                // Fallback para contextos sin HTTPS
+                const ta = document.createElement('textarea');
+                ta.value = sid;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                const toast = document.getElementById('sweep-copy-toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 1800);
+            });
+        }
+
+        // ── Copiar rotación al portapapeles ─────────────────────────
+        function copyRotation() {
+            const val = document.getElementById('rotation-value').textContent;
+            if (!val || val === 'esperando...') return;
+            // Formatear como objeto JS listo para pegar en el código
+            const match = val.match(/x:\s*([\d.\-]+)\s+y:\s*([\d.\-]+)/);
+            const text = match
+                ? `rotation: { x: ${match[1]}, y: ${match[2]} }`
+                : val;
+            const copy = (t) => {
+                navigator.clipboard.writeText(t).catch(() => {
+                    const ta = document.createElement('textarea');
+                    ta.value = t;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                });
+                const toast = document.getElementById('rotation-copy-toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 1800);
+            };
+            copy(text);
+        }
     </script>
 </body>
 
