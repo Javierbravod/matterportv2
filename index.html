@@ -585,8 +585,8 @@
             color: white;
             font-family: 'Inter', sans-serif;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            display: none;
-            /* Desactivado por solicitud */
+            display: flex;
+            /* Activado */
             flex-direction: column;
             gap: 0;
             min-width: 250px;
@@ -866,7 +866,10 @@
             'cuboSdk': { id: 'cuboSdk', label: 'Cubo SDK', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
             'lotoCandado': { id: 'lotoCandado', label: 'Loto Candado', icon: '🔒', file: 'Loto_Candado.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
             'lotoEtiqueta': { id: 'lotoEtiqueta', label: 'Loto Etiqueta', icon: '🏷️', file: 'Loto_Etiqueta.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
-            'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true }
+            'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
+            'cubo2': { id: 'cubo2', label: 'Cubo 2', icon: '📦', file: 'Cubo2.glb', type: 'mp.gltfLoader', scale: 10, node: null, visible: true },
+            'cubo3': { id: 'cubo3', label: 'Cubo 3', icon: '📦', file: 'cubo3.glb', type: 'mp.gltfLoader', scale: 10, node: null, visible: true },
+            'mesa2': { id: 'mesa2', label: 'Mesa 2', icon: '🪑', file: 'Mesa2.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true }
         };
 
         function syncToggleBtn(id) {
@@ -945,6 +948,13 @@
             return tagsCalibData[id] || null;
         }
 
+        function getNodeObj(m) {
+            if (!m || !m.node) return null;
+            if (m.node.obj3D) return m.node.obj3D;
+            if (window._customObjMap && window._customObjMap[m.id]) return window._customObjMap[m.id];
+            return null;
+        }
+
         function nudgePos(axis, dir) {
             const stepEl = document.getElementById('calib-step');
             const step = stepEl ? (parseFloat(stepEl.value) || 0.1) : 0.1;
@@ -955,18 +965,20 @@
                 updateCalibDisplay(); return;
             }
             const m = getActiveModel();
-            if (!m || !m.node) return;
-            m.node.obj3D.position[axis] += step * dir;
+            const obj = getNodeObj(m);
+            if (!obj) return;
+            obj.position[axis] += step * dir;
             updateCalibDisplay();
         }
 
         function nudgeRot(axis, dir) {
             if (getActiveTag()) return;
             const m = getActiveModel();
-            if (!m || !m.node) return;
+            const obj = getNodeObj(m);
+            if (!obj) return;
             const stepEl = document.getElementById('calib-rot-step');
             const step = stepEl ? (parseFloat(stepEl.value) || 5) : 5;
-            m.node.obj3D.rotation[axis] += step * dir * (Math.PI / 180);
+            obj.rotation[axis] += step * dir * (Math.PI / 180);
             updateCalibDisplay();
         }
 
@@ -976,18 +988,36 @@
                 const p = tag.anchorPosition;
                 const coordEl = document.getElementById('calib-coords');
                 const rotEl = document.getElementById('calib-rot');
-                if (coordEl) coordEl.innerText = `Pos: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}`;
+                if (coordEl) coordEl.innerText = `Pos Global: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}\nPos Local: (N/A para Tags)`;
                 if (rotEl) rotEl.innerText = `(Tags no tienen rotación)`;
                 return;
             }
             const m = getActiveModel();
-            if (!m || !m.node) return;
-            const p = m.node.obj3D.position;
-            const r = m.node.obj3D.rotation;
+            const obj = getNodeObj(m);
+            if (!obj) return;
+
+            // Posición y rotación locales (relativas al padre)
+            const pLocal = obj.position;
+            const rLocal = obj.rotation;
+
+            // Forzar actualización de matrices para obtener datos globales precisos
+            obj.updateMatrixWorld(true);
+
+            // Posición global (absoluta en el mundo Matterport)
+            const pGlobal = new THREE.Vector3();
+            obj.getWorldPosition(pGlobal);
+
             const coordEl = document.getElementById('calib-coords');
             const rotEl = document.getElementById('calib-rot');
-            if (coordEl) coordEl.innerText = `Pos: x: ${p.x.toFixed(3)}, y: ${p.y.toFixed(3)}, z: ${p.z.toFixed(3)}`;
-            if (rotEl) rotEl.innerText = `Rot: x: ${(r.x * 180 / Math.PI).toFixed(0)}°, y: ${(r.y * 180 / Math.PI).toFixed(0)}°, z: ${(r.z * 180 / Math.PI).toFixed(0)}°`;
+
+            // Mostrar ambas coordenadas con colores diferenciados
+            if (coordEl) {
+                coordEl.innerHTML = `
+                    <div style="color: #60a5fa; margin-bottom: 2px;">Local: x: ${pLocal.x.toFixed(3)}, y: ${pLocal.y.toFixed(3)}, z: ${pLocal.z.toFixed(3)}</div>
+                    <div style="color: #f59e0b;">Global: x: ${pGlobal.x.toFixed(3)}, y: ${pGlobal.y.toFixed(3)}, z: ${pGlobal.z.toFixed(3)}</div>
+                `;
+            }
+            if (rotEl) rotEl.innerText = `Rot Local: x: ${(rLocal.x * 180 / Math.PI).toFixed(0)}°, y: ${(rLocal.y * 180 / Math.PI).toFixed(0)}°, z: ${(rLocal.z * 180 / Math.PI).toFixed(0)}°`;
         }
 
         // ── COLAPSO/EXPANSIÓN ──────────────────────────────────────
@@ -1441,24 +1471,24 @@
                 return {
                     inputs: {
                         url: '',
+                        modelId: '',
                         localPosition: { x: 0, y: 0, z: 0 },
                         localRotation: { x: 0, y: 0, z: 0 },
-                        localScale: { x: 1, y: 1, z: 1 }
-                    },
-
-                    // El SDK necesita objectRoot como Object3D válido desde el inicio
-                    outputs: {
-                        objectRoot: null
+                        localScale: { x: 1, y: 1, z: 1 },
+                        pivotOffset: { x: 0, y: 0, z: 0 }
                     },
 
                     onInit() {
-                        const { url, localPosition, localRotation, localScale } = this.inputs;
+                        const { url, modelId, localPosition, localRotation, localScale } = this.inputs;
                         const loader = new GLTFLoader();
                         const self = this;
 
-                        // ① Inicializar objectRoot ANTES del fetch para que el SDK
-                        //    siempre tenga un Object3D válido (evita "Cannot read .add of undefined")
-                        self.outputs.objectRoot = new THREE.Group();
+                        // Exponer al calibrador
+                        if (modelId) {
+                            window._customObjMap = window._customObjMap || {};
+                            window._customObjMap[modelId] = self.outputs.objectRoot;
+                        }
+
                         self.outputs.objectRoot.position.set(localPosition.x, localPosition.y, localPosition.z);
                         self.outputs.objectRoot.rotation.set(
                             THREE.MathUtils.degToRad(localRotation.x),
@@ -1492,6 +1522,10 @@
                                     console.log(`🎨 [AnimGLTF] Material aplicado.`);
                                 }
 
+                                if (self.inputs.pivotOffset) {
+                                    const pOffset = self.inputs.pivotOffset;
+                                    model.position.set(pOffset.x, pOffset.y, pOffset.z);
+                                }
                                 // ③ Agregar al grupo ya registrado como objectRoot
                                 self.outputs.objectRoot.add(model);
                                 console.log(`🔗 [AnimGLTF] Añadido a objectRoot. Children: ${self.outputs.objectRoot.children.length}`);
@@ -1586,20 +1620,54 @@
             modelsData.mesa.visible = true;
             console.log('🗄️ [Mesa] GLB cargado.');
 
-            // Cubo SDK (con animaciones)
+            // ── Cubo 3 GLB ──
             try {
-                modelsData.cuboSdk.node = await sdk.Scene.createNode();
-                modelsData.cuboSdk.node.addComponent('custom.animatedGltf', {
-                    url: 'bundle/cubosdk.glb',
-                    localPosition: { x: 0, y: 0, z: 0 },
+                modelsData.cubo3.node = await sdk.Scene.createNode();
+                modelsData.cubo3.node.addComponent('mp.gltfLoader', {
+                    url: 'cubo3.glb',
+                    visible: true,
+                    localPosition: { x: 0.6, y: 1.5, z: -2.3 },
                     localRotation: { x: 0, y: 0, z: 0 },
+                    localScale: { x: 2, y: 2, z: 2 }
+                });
+                modelsData.cubo3.node.start();
+                modelsData.cubo3.visible = true;
+
+                // Obtener referencia al componente para poder modificar sus inputs
+                let cubo3Component = null;
+                for (const c of modelsData.cubo3.node.componentIterator()) {
+                    cubo3Component = c;
+                    break;
+                }
+
+                // Rotación continua simple (sin Three.Box3 que no está disponible globalmente)
+                let cubo3Angle = 0;
+                const animateCubo3 = () => {
+                    requestAnimationFrame(animateCubo3);
+                    if (modelsData.cubo3.visible && cubo3Component) {
+                        cubo3Angle = (cubo3Angle + 1) % 360;
+                        cubo3Component.inputs.localRotation = { x: 0, y: cubo3Angle, z: 0 };
+                    }
+                };
+                animateCubo3();
+
+                console.log('📦 [Cubo 3] GLB cargado y rotando.');
+            } catch (e) { console.warn('⚠️ [Cubo 3] No se pudo cargar:', e.message || e); }
+
+            // ── Mesa 2 GLB ──
+            try {
+                modelsData.mesa2.node = await sdk.Scene.createNode();
+                modelsData.mesa2.node.addComponent('mp.gltfLoader', {
+                    url: 'Mesa2.glb',
+                    visible: true,
+                    localPosition: { x: +0.6, y: 0.3, z: -2.3 },
+                    localRotation: { x: 0, y: 90, z: 0 },
                     localScale: { x: 1, y: 1, z: 1 }
                 });
-                modelsData.cuboSdk.node.start();
-                modelsData.cuboSdk.visible = true;
-                console.log('📦 [CuboSDK] GLB cargado en origen (0,0,0).');
-            } catch (e) { console.warn('⚠️ [CuboSDK] No se pudo cargar:', e.message || e); }
-
+                modelsData.mesa2.node.start();
+                modelsData.mesa2.visible = true;
+                console.log('🪑 [Mesa 2] GLB cargado nativo en origen (0,0,0).');
+            } catch (e) { console.warn('⚠️ [Mesa 2] No se pudo cargar:', e.message || e); }
 
             // 5. Candado
             try {
@@ -1666,6 +1734,7 @@
                 modelsData.motorArranque.node = await sdk.Scene.createNode();
                 modelsData.motorArranque.node.addComponent('custom.animatedGltf', {
                     url: 'bundle/MotorArranque_AnimBake.glb',
+                    modelId: 'motorArranque',
                     localPosition: { x: 0, y: 0, z: 0 },
                     localRotation: { x: 0, y: 0, z: 0 },
                     localScale: { x: 10, y: 10, z: 10 }
