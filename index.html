@@ -871,6 +871,12 @@
         <button id="btn-clima" class="model-toggle-btn" onclick="handleToggle('clima')">
             <span class="fbx-dot"></span> ❄️ M. Clima
         </button>
+        <button id="btn-cubosdk-anim" class="model-toggle-btn"
+            style="background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.4);color:#a78bfa;"
+            onclick="toggleCuboSdkAnim()">
+            <span id="cubosdk-anim-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6b7280;margin-right:4px;"></span>
+            📦 Animar Cubo SDK
+        </button>
 
         <!-- SWEEP ID DISPLAY -->
         <div id="sweep-id-widget">
@@ -1112,6 +1118,14 @@
                 lm.visible = m.visible;
                 lm.node.obj3D.visible = m.visible;
             });
+        }
+
+        // Activar / desactivar animación del Cubo SDK
+        function toggleCuboSdkAnim() {
+            window._cuboSdkAnimActive = !window._cuboSdkAnimActive;
+            const dot = document.getElementById('cubosdk-anim-dot');
+            if (dot) dot.style.background = window._cuboSdkAnimActive ? '#a78bfa' : '#6b7280';
+            console.log('📦 [CuboSDK] Animación:', window._cuboSdkAnimActive ? 'ON' : 'OFF');
         }
 
         // ── CALIBRADOR: datos y funciones ──────────────────────────
@@ -2004,6 +2018,60 @@
                 console.log('⚡ [Ele2] GLB cargado (oculto por defecto).');
             } catch (e) { console.warn('⚠️ [Ele] No se pudo cargar:', e.message || e); }
 
+            // ── Cubo SDK GLB (posición 0,0,0 + animación toggle) ──
+            try {
+                const m = modelsData.cuboSdk;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
+                m.node.start(); m.visible = true;
+
+                // Referencia al componente para animar vía inputs
+                let cuboSdkComp = null;
+                for (const c of m.node.componentIterator()) { cuboSdkComp = c; break; }
+
+                // Estado y loop de animación — rotación en eje LOCAL via cuaterniones
+                window._cuboSdkAnimActive = false;
+                window._cuboSdkComp = cuboSdkComp;
+
+                const _THREE_sdk = await import('three');
+                const DEG2RAD_sdk = Math.PI / 180;
+                const RAD2DEG_sdk = 180 / Math.PI;
+                const baseRotSdk = m.rotation; // {x:0, y:0, z:0}
+
+                // Orientación inicial del cubo
+                const qCurrentSdk = new _THREE_sdk.Quaternion().setFromEuler(
+                    new _THREE_sdk.Euler(
+                        baseRotSdk.x * DEG2RAD_sdk,
+                        baseRotSdk.y * DEG2RAD_sdk,
+                        baseRotSdk.z * DEG2RAD_sdk,
+                        'XYZ'
+                    )
+                );
+
+                // Delta: 1° por frame alrededor del eje Y LOCAL del modelo
+                const qDeltaSdk = new _THREE_sdk.Quaternion().setFromAxisAngle(
+                    new _THREE_sdk.Vector3(0, 1, 0),
+                    1 * DEG2RAD_sdk
+                );
+
+                const eulerSdk = new _THREE_sdk.Euler();
+                const animCuboSdk = () => {
+                    requestAnimationFrame(animCuboSdk);
+                    if (window._cuboSdkAnimActive && window._cuboSdkComp) {
+                        // Post-multiply = rotar en eje LOCAL (no en eje mundial)
+                        qCurrentSdk.multiply(qDeltaSdk).normalize();
+                        eulerSdk.setFromQuaternion(qCurrentSdk, 'XYZ');
+                        window._cuboSdkComp.inputs.localRotation = {
+                            x: eulerSdk.x * RAD2DEG_sdk,
+                            y: eulerSdk.y * RAD2DEG_sdk,
+                            z: eulerSdk.z * RAD2DEG_sdk
+                        };
+                    }
+                };
+                animCuboSdk();
+                console.log('📦 [CuboSDK] GLB cargado en (0,0,0). Animación lista.');
+            } catch (e) { console.warn('⚠️ [CuboSDK] No se pudo cargar:', e.message || e); }
+
             // ── Cubo 3 GLB (rotación continua) ──
             try {
                 const m = modelsData.cubo3;
@@ -2018,13 +2086,42 @@
                     break;
                 }
 
-                // Rotación continua simple (sin Three.Box3 que no está disponible globalmente)
-                let cubo3Angle = 0;
+                // Rotación en eje LOCAL del modelo usando cuaterniones (Three.js)
+                // qCurrent.multiply(qDelta) aplica el delta en el espacio LOCAL del objeto,
+                // no en el espacio mundial, garantizando rotación sobre el propio eje Y del cubo.
+                const THREE = await import('three');
+                const DEG2RAD = Math.PI / 180;
+                const RAD2DEG = 180 / Math.PI;
+                const baseRot = modelsData.cubo3.rotation;
+
+                // Orientación inicial del cubo (desde modelsData)
+                const qCurrent = new THREE.Quaternion().setFromEuler(
+                    new THREE.Euler(
+                        baseRot.x * DEG2RAD,
+                        baseRot.y * DEG2RAD,
+                        baseRot.z * DEG2RAD,
+                        'XYZ'
+                    )
+                );
+
+                // Delta: 1° por frame alrededor del eje Y LOCAL del modelo
+                const qDelta = new THREE.Quaternion().setFromAxisAngle(
+                    new THREE.Vector3(0, 1, 0),
+                    1 * DEG2RAD
+                );
+
+                const euler = new THREE.Euler();
                 const animateCubo3 = () => {
                     requestAnimationFrame(animateCubo3);
                     if (modelsData.cubo3.visible && cubo3Component) {
-                        cubo3Angle = (cubo3Angle + 1) % 360;
-                        cubo3Component.inputs.localRotation = { x: 0, y: cubo3Angle, z: 0 };
+                        // Post-multiply = rotar en eje LOCAL (no en eje mundial)
+                        qCurrent.multiply(qDelta).normalize();
+                        euler.setFromQuaternion(qCurrent, 'XYZ');
+                        cubo3Component.inputs.localRotation = {
+                            x: euler.x * RAD2DEG,
+                            y: euler.y * RAD2DEG,
+                            z: euler.z * RAD2DEG
+                        };
                     }
                 };
                 animateCubo3();
