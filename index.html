@@ -2029,43 +2029,22 @@
                 let cuboSdkComp = null;
                 for (const c of m.node.componentIterator()) { cuboSdkComp = c; break; }
 
-                // Estado y loop de animación — rotación en eje LOCAL via cuaterniones
+                // Estado y loop de animación — rotación en eje Y LOCAL usando obj3D.rotateOnAxis()
+                // rotateOnAxis(axis, angle) rota en el espacio LOCAL del objeto (no en el mundo).
+                // Esto acumula el delta SOBRE la orientación actual del cubo, frame a frame.
                 window._cuboSdkAnimActive = false;
-                window._cuboSdkComp = cuboSdkComp;
-
                 const _THREE_sdk = await import('three');
                 const DEG2RAD_sdk = Math.PI / 180;
-                const RAD2DEG_sdk = 180 / Math.PI;
-                const baseRotSdk = m.rotation; // {x:0, y:0, z:0}
+                const _localYSdk = new _THREE_sdk.Vector3(0, 1, 0); // eje Y en espacio local
 
-                // Orientación inicial del cubo
-                const qCurrentSdk = new _THREE_sdk.Quaternion().setFromEuler(
-                    new _THREE_sdk.Euler(
-                        baseRotSdk.x * DEG2RAD_sdk,
-                        baseRotSdk.y * DEG2RAD_sdk,
-                        baseRotSdk.z * DEG2RAD_sdk,
-                        'XYZ'
-                    )
-                );
-
-                // Delta: 1° por frame alrededor del eje Y LOCAL del modelo
-                const qDeltaSdk = new _THREE_sdk.Quaternion().setFromAxisAngle(
-                    new _THREE_sdk.Vector3(0, 1, 0),
-                    1 * DEG2RAD_sdk
-                );
-
-                const eulerSdk = new _THREE_sdk.Euler();
                 const animCuboSdk = () => {
                     requestAnimationFrame(animCuboSdk);
-                    if (window._cuboSdkAnimActive && window._cuboSdkComp) {
-                        // Post-multiply = rotar en eje LOCAL (no en eje mundial)
-                        qCurrentSdk.multiply(qDeltaSdk).normalize();
-                        eulerSdk.setFromQuaternion(qCurrentSdk, 'XYZ');
-                        window._cuboSdkComp.inputs.localRotation = {
-                            x: eulerSdk.x * RAD2DEG_sdk,
-                            y: eulerSdk.y * RAD2DEG_sdk,
-                            z: eulerSdk.z * RAD2DEG_sdk
-                        };
+                    if (window._cuboSdkAnimActive) {
+                        const obj = m.node && m.node.obj3D;
+                        if (obj) {
+                            // rotateOnAxis aplica el giro en el ESPACIO LOCAL del obj3D
+                            obj.rotateOnAxis(_localYSdk, 1 * DEG2RAD_sdk);
+                        }
                     }
                 };
                 animCuboSdk();
