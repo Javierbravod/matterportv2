@@ -713,6 +713,129 @@
             user-select: all;
             margin-top: 5px;
         }
+
+        /* ── CAMERA HUD ── */
+        #camera-hud {
+            position: fixed;
+            bottom: 60px;
+            left: 16px;
+            z-index: 9000;
+            background: rgba(10, 15, 30, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(99, 179, 237, 0.3);
+            border-radius: 12px;
+            padding: 0;
+            font-family: 'Inter', monospace;
+            font-size: 11px;
+            color: #e2e8f0;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(99, 179, 237, 0.1);
+            min-width: 220px;
+            transition: opacity 0.2s;
+        }
+
+        #camera-hud.collapsed #hud-body {
+            display: none;
+        }
+
+        #hud-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 12px;
+            background: rgba(99, 179, 237, 0.08);
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid rgba(99, 179, 237, 0.15);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #hud-header:hover {
+            background: rgba(99, 179, 237, 0.14);
+        }
+
+        #hud-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #63b3ed;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #hud-toggle-arrow {
+            font-size: 10px;
+            color: #63b3ed;
+            opacity: 0.7;
+            transition: transform 0.2s;
+        }
+
+        #camera-hud.collapsed #hud-toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        #hud-body {
+            padding: 8px 12px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .hud-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .hud-label {
+            font-size: 10px;
+            color: #718096;
+            white-space: nowrap;
+            min-width: 60px;
+        }
+
+        .hud-value {
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 700;
+            color: #90cdf4;
+            flex: 1;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .hud-copy-btn {
+            background: none;
+            border: 1px solid rgba(99, 179, 237, 0.3);
+            border-radius: 4px;
+            color: #63b3ed;
+            font-size: 10px;
+            padding: 1px 5px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.15s, background 0.15s;
+        }
+
+        .hud-copy-btn:hover {
+            opacity: 1;
+            background: rgba(99, 179, 237, 0.15);
+        }
+
+        .hud-divider {
+            border: none;
+            border-top: 1px solid rgba(99, 179, 237, 0.1);
+            margin: 2px 0;
+        }
+
+        #hud-sweep-val {
+            font-family: monospace;
+            font-size: 9px;
+            color: #68d391;
+            word-break: break-all;
+            flex: 1;
+            text-align: right;
+        }
     </style>
 </head>
 
@@ -769,6 +892,45 @@
                 <span id="rotation-copy-icon">⎘</span>
             </div>
             <div id="rotation-copy-toast">¡Copiado!</div>
+        </div>
+    </div>
+
+    <!-- CAMERA HUD -->
+    <div id="camera-hud">
+        <div id="hud-header" onclick="document.getElementById('camera-hud').classList.toggle('collapsed')">
+            <span id="hud-title">📡 Cámara HUD</span>
+            <span id="hud-toggle-arrow">▴</span>
+        </div>
+        <div id="hud-body">
+            <div class="hud-row">
+                <span class="hud-label">📍 Posición</span>
+                <span class="hud-value" id="hud-pos">esperando...</span>
+                <button class="hud-copy-btn" onclick="hudCopy('pos')" title="Copiar posición">⧘</button>
+            </div>
+            <div class="hud-row">
+                <span class="hud-label" style="color:#a78bfa">X</span>
+                <span class="hud-value" id="hud-px" style="color:#60a5fa">—</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-label" style="color:#a78bfa">Y</span>
+                <span class="hud-value" id="hud-py" style="color:#34d399">—</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-label" style="color:#a78bfa">Z</span>
+                <span class="hud-value" id="hud-pz" style="color:#f59e0b">—</span>
+            </div>
+            <hr class="hud-divider">
+            <div class="hud-row">
+                <span class="hud-label">🎥 Rotación</span>
+                <span class="hud-value" id="hud-rot">—</span>
+                <button class="hud-copy-btn" onclick="hudCopy('rot')" title="Copiar rotación">⧘</button>
+            </div>
+            <hr class="hud-divider">
+            <div class="hud-row">
+                <span class="hud-label">🔑 Sweep ID</span>
+                <span id="hud-sweep-val">esperando...</span>
+                <button class="hud-copy-btn" onclick="hudCopy('sweep')" title="Copiar sweep_id">⧘</button>
+            </div>
         </div>
     </div>
 
@@ -830,7 +992,46 @@
                         onclick="nudgeRot('z',1)">+</button></div>
             </div>
             <div id="calib-rot">Rot: x: 0°, y: 0°, z: 0°</div>
+
+            <div style="margin-top:10px;border-top:1px solid #333;padding-top:8px;">
+                <button class="calib-btn"
+                    style="width:100%;background:#065f46;color:#fff;padding:6px;font-size:11px;border-radius:6px;"
+                    onclick="showAllCoords()">📊 Ver coords de todos los modelos</button>
+            </div>
         </div><!-- /calib-panel-body -->
+    </div>
+
+    <!-- OVERLAY COORDENADAS TODOS LOS MODELOS -->
+    <div id="coords-overlay" style="display:none;position:fixed;top:80px;left:50%;margin-left:-270px;
+        background:#0f172a;border:1px solid #334155;border-radius:12px;padding:0;z-index:10000;
+        min-width:540px;max-height:80vh;font-family:monospace;font-size:12px;
+        color:#e2e8f0;box-shadow:0 20px 60px rgba(0,0,0,.9);">
+        <!-- DRAG HANDLE -->
+        <div id="coords-drag-handle" style="display:flex;justify-content:space-between;align-items:center;
+            padding:10px 16px;background:rgba(255,255,255,0.04);border-bottom:1px solid #334155;
+            border-radius:12px 12px 0 0;cursor:grab;user-select:none;">
+            <span style="font-weight:bold;font-size:14px;display:flex;align-items:center;gap:8px;">
+                <span style="opacity:0.4;font-size:16px;">⠿</span>
+                📊 Coordenadas absolutas — todos los modelos
+            </span>
+            <button id="coords-close-btn" onclick="document.getElementById('coords-overlay').style.display='none'"
+                style="background:#ef4444;border:none;color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:13px;">✕</button>
+        </div>
+        <!-- TABLE BODY -->
+        <div style="overflow-y:auto;max-height:calc(80vh - 48px);padding:12px 16px;">
+            <table style="width:100%;border-collapse:collapse;">
+                <thead>
+                    <tr style="color:#94a3b8;border-bottom:1px solid #334155;font-size:11px;">
+                        <th style="text-align:left;padding:4px 8px;">Modelo</th>
+                        <th style="padding:4px 6px;">X</th>
+                        <th style="padding:4px 6px;">Y</th>
+                        <th style="padding:4px 6px;">Z</th>
+                        <th style="padding:4px 6px;">Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="coords-table-body"></tbody>
+            </table>
+        </div>
     </div>
 
     <iframe id="showcase" width="100%" height="100%"
@@ -850,27 +1051,27 @@
         const _gltfLoaderPromise = import('three/addons/loaders/GLTFLoader.js');
 
         // ── SISTEMA DE GESTIÓN DE MODELOS (FBX/GLB) ──
+        // ── REGISTRO DE MODELOS 3D (fuente única de verdad) ──────────────
+        // position / rotation / localScale son los valores REALES usados al cargar.
+        // Siempre actualizar aquí cuando se calibre un modelo.
         const modelsData = {
-            'electrico': { id: 'electrico', label: 'M. Eléctrico', icon: '⚡', file: 'Electrico.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: false },
-            'clima': { id: 'clima', label: 'M. Clima', icon: '❄️', file: 'Clima.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: false },
-            'radio': {
-                id: 'radio', label: 'Radio', icon: '📻', file: 'Radio.fbx', type: 'mp.fbxLoader', scale: 0.05, node: null, visible: true,
-                position: { x: -16, y: 1.2, z: -2.7 },
-                rotation: { x: 0, y: 0, z: 0 }
-            },
-            'mesa': { id: 'mesa', label: 'Mesa', icon: '🪑', file: 'Mesa.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
-            'candado': { id: 'candado', label: 'Candado', icon: '🔒', file: 'candado.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
-            'etiqueta': { id: 'etiqueta', label: 'Etiqueta', icon: '🏷️', file: 'Etiqueta.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
-            'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', scale: 2.0, node: null, visible: true },
-            'motorArranque': { id: 'motorArranque', label: 'Motor Arranque', icon: '⚙️', file: 'bundle/MotorArranque_AnimBake.glb', type: 'custom.animatedGltf', scale: 1.0, node: null, visible: true },
-            'cuboSdk': { id: 'cuboSdk', label: 'Cubo SDK', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
-            'lotoCandado': { id: 'lotoCandado', label: 'Loto Candado', icon: '🔒', file: 'Loto_Candado.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
-            'lotoEtiqueta': { id: 'lotoEtiqueta', label: 'Loto Etiqueta', icon: '🏷️', file: 'Loto_Etiqueta.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
-            'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true },
-            'cubo2': { id: 'cubo2', label: 'Cubo 2', icon: '📦', file: 'Cubo2.glb', type: 'mp.gltfLoader', scale: 10, node: null, visible: true },
-            'cubo3': { id: 'cubo3', label: 'Cubo 3', icon: '📦', file: 'cubo3.glb', type: 'mp.gltfLoader', scale: 10, node: null, visible: true },
-            'mesa2': { id: 'mesa2', label: 'Mesa 2', icon: '🪑', file: 'Mesa2.glb', type: 'mp.gltfLoader', scale: 1.0, node: null, visible: true }
+            'electrico': { id: 'electrico', label: 'M. Eléctrico', icon: '⚡', file: 'Electrico.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: false, position: { x: -12.7, y: -0.69, z: -7.58 }, rotation: { x: 0, y: 90, z: 0 } },
+            'clima': { id: 'clima', label: 'M. Clima', icon: '❄️', file: 'Clima.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: false, position: { x: -14.5, y: -1.5, z: -9 }, rotation: { x: 0, y: 90, z: 0 } },
+            'radio': { id: 'radio', label: 'Radio', icon: '📻', file: 'Radio.fbx', type: 'mp.fbxLoader', scale: 0.025, node: null, visible: true, position: { x: -1, y: 1.4, z: 2.3 }, rotation: { x: 0, y: -90, z: 0 } },
+            'mesa': { id: 'mesa', label: 'Mesa', icon: '🪑', file: 'Mesa.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -15.65, y: 0, z: -2.6 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1.2, y: 1.1, z: 1 } },
+            'candado': { id: 'candado', label: 'Candado', icon: '🔒', file: 'candado.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 2.1, z: -2.1 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
+            'etiqueta': { id: 'etiqueta', label: 'Etiqueta', icon: '🏷️', file: 'Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.2, y: 2.35, z: -2.1 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
+            'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -2, y: 2, z: -0.8 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
+            'motorArranque': { id: 'motorArranque', label: 'Motor Arranque', icon: '⚙️', file: 'bundle/MotorArranque_AnimBake.glb', type: 'custom.animatedGltf', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 10, y: 10, z: 10 } },
+            'cuboSdk': { id: 'cuboSdk', label: 'Cubo SDK', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'lotoCandado': { id: 'lotoCandado', label: 'Loto Candado', icon: '🔒', file: 'Loto_Candado.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.92, y: 1.16, z: -0.78 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'lotoEtiqueta': { id: 'lotoEtiqueta', label: 'Loto Etiqueta', icon: '🏷️', file: 'Loto_Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.92, y: 1.17, z: -0.78 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.91, y: 1.3, z: 0.51 }, rotation: { x: -55, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'cubo2': { id: 'cubo2', label: 'Cubo 2', icon: '📦', file: 'Cubo2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 10, y: 10, z: 10 } },
+            'cubo3': { id: 'cubo3', label: 'Cubo 3', icon: '📦', file: 'cubo3.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 1, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 0.25, y: 0.25, z: 0.25 } },
+            'mesa2': { id: 'mesa2', label: 'Mesa 2', icon: '🪑', file: 'Mesa2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 0.3, z: -2.3 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 1, y: 1, z: 1 } }
         };
+
 
         function syncToggleBtn(id) {
             const m = modelsData[id];
@@ -955,6 +1156,24 @@
             return null;
         }
 
+        function getFbxComp(m) {
+            if (!m || !m.node) return null;
+            try {
+                for (const c of m.node.componentIterator())
+                    if (c.componentType === 'mp.fbxLoader') return c;
+            } catch (e) { }
+            return null;
+        }
+
+        function getGltfComp(m) {
+            if (!m || !m.node) return null;
+            try {
+                for (const c of m.node.componentIterator())
+                    if (c.componentType === 'mp.gltfLoader') return c;
+            } catch (e) { }
+            return null;
+        }
+
         function nudgePos(axis, dir) {
             const stepEl = document.getElementById('calib-step');
             const step = stepEl ? (parseFloat(stepEl.value) || 0.1) : 0.1;
@@ -965,62 +1184,193 @@
                 updateCalibDisplay(); return;
             }
             const m = getActiveModel();
+            if (!m) return;
+            // FBX: actualizar m.position y comp.inputs.localPosition
+            if (m.type === 'mp.fbxLoader') {
+                if (!m.position) m.position = { x: 0, y: 0, z: 0 };
+                m.position[axis] = +((m.position[axis] || 0) + step * dir).toFixed(4);
+                const comp = getFbxComp(m);
+                if (comp) comp.inputs.localPosition = { ...m.position };
+                updateCalibDisplay(); return;
+            }
+            // GLB (mp.gltfLoader): igual que FBX, vía comp.inputs.localPosition
+            if (m.type === 'mp.gltfLoader') {
+                if (!m.position) m.position = { x: 0, y: 0, z: 0 };
+                m.position[axis] = +((m.position[axis] || 0) + step * dir).toFixed(4);
+                const comp = getGltfComp(m);
+                if (comp) comp.inputs.localPosition = { ...m.position };
+                updateCalibDisplay(); return;
+            }
+            // custom (animatedGltf u otros): obj3D directo
             const obj = getNodeObj(m);
             if (!obj) return;
             obj.position[axis] += step * dir;
+            if (!m.position) m.position = { x: 0, y: 0, z: 0 };
+            m.position[axis] = +obj.position[axis].toFixed(4);
             updateCalibDisplay();
         }
 
         function nudgeRot(axis, dir) {
             if (getActiveTag()) return;
             const m = getActiveModel();
-            const obj = getNodeObj(m);
-            if (!obj) return;
+            if (!m) return;
             const stepEl = document.getElementById('calib-rot-step');
             const step = stepEl ? (parseFloat(stepEl.value) || 5) : 5;
+            // FBX
+            if (m.type === 'mp.fbxLoader') {
+                if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
+                m.rotation[axis] = +((m.rotation[axis] || 0) + step * dir).toFixed(1);
+                const comp = getFbxComp(m);
+                if (comp) comp.inputs.localRotation = { ...m.rotation };
+                updateCalibDisplay(); return;
+            }
+            // GLB (mp.gltfLoader): vía comp.inputs.localRotation
+            if (m.type === 'mp.gltfLoader') {
+                if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
+                m.rotation[axis] = +((m.rotation[axis] || 0) + step * dir).toFixed(1);
+                const comp = getGltfComp(m);
+                if (comp) comp.inputs.localRotation = { ...m.rotation };
+                updateCalibDisplay(); return;
+            }
+            // custom: obj3D directo
+            const obj = getNodeObj(m);
+            if (!obj) return;
             obj.rotation[axis] += step * dir * (Math.PI / 180);
+            if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
+            m.rotation[axis] = +(obj.rotation[axis] * 180 / Math.PI).toFixed(1);
             updateCalibDisplay();
         }
 
         function updateCalibDisplay() {
             const tag = getActiveTag();
+            const coordEl = document.getElementById('calib-coords');
+            const rotEl = document.getElementById('calib-rot');
             if (tag) {
                 const p = tag.anchorPosition;
-                const coordEl = document.getElementById('calib-coords');
-                const rotEl = document.getElementById('calib-rot');
-                if (coordEl) coordEl.innerText = `Pos Global: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}\nPos Local: (N/A para Tags)`;
+                if (coordEl) coordEl.innerText = `Pos Global: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}`;
                 if (rotEl) rotEl.innerText = `(Tags no tienen rotación)`;
                 return;
             }
             const m = getActiveModel();
-            const obj = getNodeObj(m);
-            if (!obj) return;
-
-            // Posición y rotación locales (relativas al padre)
-            const pLocal = obj.position;
-            const rLocal = obj.rotation;
-
-            // Forzar actualización de matrices para obtener datos globales precisos
-            obj.updateMatrixWorld(true);
-
-            // Posición global (absoluta en el mundo Matterport)
-            const pGlobal = new THREE.Vector3();
-            obj.getWorldPosition(pGlobal);
-
-            const coordEl = document.getElementById('calib-coords');
-            const rotEl = document.getElementById('calib-rot');
-
-            // Mostrar ambas coordenadas con colores diferenciados
-            if (coordEl) {
-                coordEl.innerHTML = `
-                    <div style="color: #60a5fa; margin-bottom: 2px;">Local: x: ${pLocal.x.toFixed(3)}, y: ${pLocal.y.toFixed(3)}, z: ${pLocal.z.toFixed(3)}</div>
-                    <div style="color: #f59e0b;">Global: x: ${pGlobal.x.toFixed(3)}, y: ${pGlobal.y.toFixed(3)}, z: ${pGlobal.z.toFixed(3)}</div>
-                `;
+            if (!m) return;
+            // FBX: mostrar m.position / m.rotation (fuente de verdad)
+            if (m.type === 'mp.fbxLoader') {
+                const p = m.position || { x: 0, y: 0, z: 0 };
+                const r = m.rotation || { x: 0, y: 0, z: 0 };
+                if (coordEl) coordEl.innerHTML = `
+                    <div style="color:#a78bfa;font-size:10px;margin-bottom:2px;">FBX • localPosition</div>
+                    <div style="color:#60a5fa;">x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
+                if (rotEl) rotEl.innerText = `Rot FBX: x: ${r.x.toFixed(1)}°  y: ${r.y.toFixed(1)}°  z: ${r.z.toFixed(1)}°`;
+                return;
             }
-            if (rotEl) rotEl.innerText = `Rot Local: x: ${(rLocal.x * 180 / Math.PI).toFixed(0)}°, y: ${(rLocal.y * 180 / Math.PI).toFixed(0)}°, z: ${(rLocal.z * 180 / Math.PI).toFixed(0)}°`;
+            // GLB (mp.gltfLoader): mostrar m.position como fuente de verdad
+            if (m.type === 'mp.gltfLoader') {
+                const p = m.position || { x: 0, y: 0, z: 0 };
+                const r = m.rotation || { x: 0, y: 0, z: 0 };
+                if (coordEl) coordEl.innerHTML = `
+                    <div style="color:#4ade80;font-size:10px;margin-bottom:2px;">GLB • localPosition</div>
+                    <div style="color:#60a5fa;">x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
+                if (rotEl) rotEl.innerText = `Rot GLB: x: ${r.x.toFixed(1)}°  y: ${r.y.toFixed(1)}°  z: ${r.z.toFixed(1)}°`;
+                return;
+            }
+            // custom.animatedGltf u otros: leer de obj3D
+            const obj = getNodeObj(m);
+            if (!obj) {
+                if (coordEl) coordEl.innerHTML = `<span style="color:#f59e0b">⏳ Modelo cargando...</span>`;
+                return;
+            }
+            const pL = obj.position, rL = obj.rotation;
+            if (coordEl) coordEl.innerHTML = `
+                <div style="color:#60a5fa;margin-bottom:2px;">Local: x: ${pL.x.toFixed(3)}, y: ${pL.y.toFixed(3)}, z: ${pL.z.toFixed(3)}</div>`;
+            if (rotEl) rotEl.innerText = `Rot: x: ${(rL.x * 180 / Math.PI).toFixed(0)}°  y: ${(rL.y * 180 / Math.PI).toFixed(0)}°  z: ${(rL.z * 180 / Math.PI).toFixed(0)}°`;
         }
 
-        // ── COLAPSO/EXPANSIÓN ──────────────────────────────────────
+        // ── COORDENADAS ABSOLUTAS DE TODOS LOS MODELOS ──────────────
+        async function showAllCoords() {
+            const tbody = document.getElementById('coords-table-body');
+            const overlay = document.getElementById('coords-overlay');
+            if (!tbody || !overlay) return;
+            tbody.innerHTML = '';
+
+            function makeCoordInput(modelId, axis, val, color) {
+                const td = document.createElement('td');
+                td.style.cssText = 'padding:3px 6px;text-align:right;';
+                if (val === '—') {
+                    td.innerHTML = `<span style="color:#475569;">—</span>`;
+                } else {
+                    const inp = document.createElement('input');
+                    inp.type = 'number';
+                    inp.step = '0.001';
+                    inp.value = val;
+                    inp.style.cssText = `width:72px;background:#0f172a;color:${color};border:1px solid #334155;border-radius:4px;padding:2px 4px;font-size:12px;font-family:monospace;font-weight:bold;text-align:right;outline:none;`;
+                    inp.addEventListener('focus', () => { inp.style.borderColor = color; });
+                    inp.addEventListener('blur', () => { inp.style.borderColor = '#334155'; applyCoordEdit(modelId, axis, parseFloat(inp.value)); });
+                    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') inp.blur(); });
+                    td.appendChild(inp);
+                }
+                return td;
+            }
+
+            for (const [id, m] of Object.entries(modelsData)) {
+                let px = '—', py = '—', pz = '—';
+                let estado = '⚫ no cargado';
+                let rowColor = '#1e293b';
+
+                if (m.node) {
+                    const p = m.position;
+                    if (p) { px = p.x.toFixed(3); py = p.y.toFixed(3); pz = p.z.toFixed(3); }
+                    if (m.type === 'mp.fbxLoader') rowColor = '#2e1065';
+                    else rowColor = m.visible ? '#052e16' : '#3f0f0f';
+                    estado = m.visible ? '🟢 visible' : '🔴 oculto';
+                }
+
+                console.log(`${m.icon || ''} [${id}] ${m.label}: x:${px} y:${py} z:${pz} | ${estado}`);
+
+                const tr = document.createElement('tr');
+                tr.style.cssText = `border-bottom:1px solid #1e293b;background:${rowColor}44;`;
+
+                const tdLabel = document.createElement('td');
+                tdLabel.style.cssText = 'padding:5px 8px;white-space:nowrap;';
+                tdLabel.innerHTML = `<span style="margin-right:4px;">${m.icon || '🟦'}</span><span style="color:#e2e8f0;font-weight:500;">${m.label}</span> <span style="color:#475569;font-size:10px;">(${id})</span>`;
+
+                const tdEstado = document.createElement('td');
+                tdEstado.style.cssText = 'padding:5px 8px;text-align:center;font-size:11px;';
+                tdEstado.textContent = estado;
+
+                tr.appendChild(tdLabel);
+                tr.appendChild(makeCoordInput(id, 'x', px, '#60a5fa'));
+                tr.appendChild(makeCoordInput(id, 'y', py, '#34d399'));
+                tr.appendChild(makeCoordInput(id, 'z', pz, '#f59e0b'));
+                tr.appendChild(tdEstado);
+                tbody.appendChild(tr);
+            }
+            overlay.style.display = 'block';
+        }
+
+        // Aplica coordenada absoluta editada desde la tabla al modelo
+        function applyCoordEdit(modelId, axis, newVal) {
+            if (isNaN(newVal)) return;
+            const m = modelsData[modelId];
+            if (!m || !m.node) return;
+            if (!m.position) m.position = { x: 0, y: 0, z: 0 };
+            m.position[axis] = +newVal.toFixed(4);
+            if (m.type === 'mp.fbxLoader') {
+                const comp = getFbxComp(m);
+                if (comp) comp.inputs.localPosition = { ...m.position };
+            } else if (m.type === 'mp.gltfLoader') {
+                // CORRECTO: actualizar via component inputs, NO obj3D.position
+                const comp = getGltfComp(m);
+                if (comp) comp.inputs.localPosition = { ...m.position };
+            } else {
+                // custom.animatedGltf: obj3D directo
+                const obj = getNodeObj(m);
+                if (obj) obj.position[axis] = m.position[axis];
+            }
+            const sel = document.getElementById('calib-model-select');
+            if (sel && sel.value === modelId) updateCalibDisplay();
+        }
+
+        // ── COLAPSO/EXPANSIÓN ──────────────────────────────────────────────
         function toggleCalibPanel() {
             document.getElementById('calib-panel').classList.toggle('collapsed');
         }
@@ -1051,6 +1401,33 @@
             document.addEventListener('mouseup', () => { dragging = false; });
         })();
 
+        // ── DRAG & DROP — COORDS OVERLAY ──────────────────────────
+        (function () {
+            const panel = document.getElementById('coords-overlay');
+            const handle = document.getElementById('coords-drag-handle');
+            if (!panel || !handle) return;
+            let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
+            handle.addEventListener('mousedown', (e) => {
+                if (e.target.id === 'coords-close-btn') return;
+                dragging = true;
+                startX = e.clientX; startY = e.clientY;
+                const rect = panel.getBoundingClientRect();
+                origLeft = rect.left; origTop = rect.top;
+                panel.style.transition = 'none';
+                panel.style.marginLeft = '0'; // quitar el margin-left inicial
+                e.preventDefault();
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const newLeft = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, origLeft + e.clientX - startX));
+                const newTop = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, origTop + e.clientY - startY));
+                panel.style.left = newLeft + 'px';
+                panel.style.top = newTop + 'px';
+            });
+            document.addEventListener('mouseup', () => { if (dragging) { dragging = false; handle.style.cursor = 'grab'; } });
+            handle.addEventListener('mousedown', () => { handle.style.cursor = 'grabbing'; });
+        })();
+
         // Inicializar select del calibrador
         initModelUI();
 
@@ -1058,30 +1435,21 @@
         // Step emojis by step id
         const stepEmojis = { 1: '📋', 2: '⚡', 3: '🔌', 4: '🔒', 5: '🏷️' };
 
-        // =====================================================
-        // DEFINICIÓN DE LOS PASOS DEL CHECKLIST
-        // =====================================================
-        // =====================================================
-        // DEFINICIÓN DE LOS PASOS DEL CHECKLIST
-        // ──────────────────────────────────────────────────────
-        // INSTRUCCIÓN PARA CALIBRAR sweep_id:
-        //   Abre la consola del navegador y navega manualmente
-        //   por el modelo. El logger de sweeps (al final del script)
-        //   imprimirá cada sweep_id al que llegues.
-        //   Copia esos IDs y reemplaza los valores de abajo.
-        // =====================================================
+        // ── PASOS DEL CHECKLIST ──────────────────────────────────────────
+        // Para calibrar sweep_id: navega en el modelo, el HUD inferior-izquierdo
+        // muestra el ID actual. Cópialo con ⧘ y pégalo en coordinates.sweep_id.
         const checklistSteps = [
             {
                 id: 1,
                 label: "Paso 1: Notificación y Autorización",
                 objective: "Asegurar que el área sabe que el equipo se va a detener.",
-                anchorPosition: { x: -15.6, y: 1.2, z: -2.7 },
+                anchorPosition: { x: -2.3, y: 1.2, z: -0.65 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.42, g: 0.27, b: 0.97 },
                 iconId: 'public_characters_1',
                 coordinates: {
-                    sweep_id: 'c06e7c7685684ab1af6d33371ac893fc',  // ← reemplazar con ID real de consola
-                    rotation: { x: -9.7, y: -21.1 }   // pitch / yaw en grados
+                    sweep_id: '43922c98586844b69419619289bf2334',  // ← reemplazar con ID real de consola
+                    rotation: { x: -30.2, y: -80.2 }   // pitch / yaw en grados
                 },
                 items: [
 
@@ -1094,13 +1462,13 @@
                 id: 2,
                 label: "Paso 2: Identificación de Fuentes de Energía",
                 objective: "Encontrar el punto exacto donde se debe cortar la energía.",
-                anchorPosition: { x: -18.5, y: 1.26, z: -2.20 },
+                anchorPosition: { x: -4.75, y: 1.26, z: -0.9 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.97, g: 0.55, b: 0.10 },
                 iconId: 'public_characters_2',
                 coordinates: {
-                    sweep_id: '89a800e3dbac4487b6fa87fe1908a2a3',
-                    rotation: { x: -27.1, y: -52.8 }
+                    sweep_id: 'e7048071fffe475b99179f7e44de6e8b',
+                    rotation: { x: -26.9, y: -13.2 }
                 },
                 items: [
 
@@ -1112,13 +1480,13 @@
                 id: 3,
                 label: "Paso 3: Aislamiento",
                 objective: "Cortar físicamente el flujo de energía.",
-                anchorPosition: { x: -18.5, y: 1.4, z: -2.2 },
+                anchorPosition: { x: -4.75, y: 1.4, z: -0.9 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.14, g: 0.78, b: 0.55 },
                 iconId: 'public_characters_3',
                 coordinates: {
-                    sweep_id: '89a800e3dbac4487b6fa87fe1908a2a3',
-                    rotation: { x: -20.7, y: -52.0 }
+                    sweep_id: 'e7048071fffe475b99179f7e44de6e8b',
+                    rotation: { x: -23.7, y: -5.2 }
                 },
                 items: [
 
@@ -1130,13 +1498,13 @@
                 id: 4,
                 label: "Paso 4: Recolección de Etiquetas y Dispositivos",
                 objective: "Obtener las herramientas personales de seguridad.",
-                anchorPosition: { x: -12.8, y: 1.1, z: -2.376 },
+                anchorPosition: { x: -2.1, y: 1.9, z: -0.65 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.95, g: 0.20, b: 0.40 },
                 iconId: 'public_characters_4',
                 coordinates: {
-                    sweep_id: 'bcb113715863410f89b0a3133cf345aa',
-                    rotation: { x: -18.7, y: -74.9 }
+                    sweep_id: '43922c98586844b69419619289bf2334',
+                    rotation: { x: 0.1, y: -81.7 }
                 },
                 items: [
 
@@ -1149,13 +1517,13 @@
                 id: 5,
                 label: "Paso 5: Bloqueo y Etiquetado",
                 objective: "Bloquear físicamente el interruptor para que nadie pueda encenderlo por error.",
-                anchorPosition: { x: -18.5, y: 1.54, z: -2.20 },
+                anchorPosition: { x: -4.75, y: 1.54, z: -0.9 },
                 stemVector: { x: 0, y: 0, z: 0 },
                 color: { r: 0.95, g: 0.75, b: 0.05 },
                 iconId: 'public_characters_5',
                 coordinates: {
-                    sweep_id: '89a800e3dbac4487b6fa87fe1908a2a3',
-                    rotation: { x: -14.2, y: -51.5 }
+                    sweep_id: 'e7048071fffe475b99179f7e44de6e8b',
+                    rotation: { x: -20.7, y: 9.6 }
                 },
                 items: [
 
@@ -1578,60 +1946,35 @@
             };
 
             // 1. Modelo Eléctrico
-            modelsData.electrico.node = await sdk.Scene.createNode();
-            modelsData.electrico.node.addComponent('mp.fbxLoader', {
-                url: 'Electrico.fbx',
-                visible: true,
-                localScale: { x: 0.0126, y: 0.0126, z: 0.0126 },
-                localPosition: { x: -12.7, y: -0.69, z: -7.58 },
-                localRotation: rotBIM,
-                color: 0x00FF00
-            });
-            modelsData.electrico.node.start();
-            modelsData.electrico.visible = false;
-            syncToggleBtn('electrico');
-            hideAfterLoad(modelsData.electrico);
+            {
+                const m = modelsData.electrico;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.fbxLoader', { url: m.file, visible: true, localScale: { x: m.scale, y: m.scale, z: m.scale }, localPosition: m.position, localRotation: m.rotation, color: 0x00FF00 });
+                m.node.start(); m.visible = false; syncToggleBtn('electrico'); hideAfterLoad(m);
+            }
 
             // 2. Modelo Clima
-            modelsData.clima.node = await sdk.Scene.createNode();
-            modelsData.clima.node.addComponent('mp.fbxLoader', {
-                url: 'Clima.fbx',
-                visible: true,
-                localScale: { x: 0.0134, y: 0.0126, z: 0.0126 },
-                localPosition: { x: -14.5, y: -1.5, z: -9 },
-                localRotation: rotBIM,
-                color: 0xFF00FF
-            });
-            modelsData.clima.node.start();
-            modelsData.clima.visible = false;
-            syncToggleBtn('clima');
-            hideAfterLoad(modelsData.clima);
+            {
+                const m = modelsData.clima;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.fbxLoader', { url: m.file, visible: true, localScale: { x: 0.0134, y: m.scale, z: m.scale }, localPosition: m.position, localRotation: m.rotation, color: 0xFF00FF });
+                m.node.start(); m.visible = false; syncToggleBtn('clima'); hideAfterLoad(m);
+            }
 
             // 4. Mesa GLB
-            modelsData.mesa.node = await sdk.Scene.createNode();
-            modelsData.mesa.node.addComponent('mp.gltfLoader', {
-                url: 'Mesa.glb',
-                visible: true,
-                localScale: { x: 1.2, y: 1.1, z: 1 },
-                localPosition: { x: -15.65, y: 0, z: -2.6 },
-                localRotation: { x: 0, y: 0, z: 0 }
-            });
-            modelsData.mesa.node.start();
-            modelsData.mesa.visible = true;
-            console.log('🗄️ [Mesa] GLB cargado.');
+            {
+                const m = modelsData.mesa;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
+                m.node.start(); m.visible = true; console.log('🗄️ [Mesa] GLB cargado.');
+            }
 
-            // ── Cubo 3 GLB ──
+            // ── Cubo 3 GLB (rotación continua) ──
             try {
-                modelsData.cubo3.node = await sdk.Scene.createNode();
-                modelsData.cubo3.node.addComponent('mp.gltfLoader', {
-                    url: 'cubo3.glb',
-                    visible: true,
-                    localPosition: { x: 0.6, y: 1.5, z: -2.3 },
-                    localRotation: { x: 0, y: 0, z: 0 },
-                    localScale: { x: 2, y: 2, z: 2 }
-                });
-                modelsData.cubo3.node.start();
-                modelsData.cubo3.visible = true;
+                const m = modelsData.cubo3;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localPosition: m.position, localRotation: m.rotation, localScale: m.localScale });
+                m.node.start(); m.visible = true;
 
                 // Obtener referencia al componente para poder modificar sus inputs
                 let cubo3Component = null;
@@ -1656,59 +1999,35 @@
 
             // ── Mesa 2 GLB ──
             try {
-                modelsData.mesa2.node = await sdk.Scene.createNode();
-                modelsData.mesa2.node.addComponent('mp.gltfLoader', {
-                    url: 'Mesa2.glb',
-                    visible: true,
-                    localPosition: { x: +0.6, y: 0.3, z: -2.3 },
-                    localRotation: { x: 0, y: 90, z: 0 },
-                    localScale: { x: 1, y: 1, z: 1 }
-                });
-                modelsData.mesa2.node.start();
-                modelsData.mesa2.visible = true;
-                console.log('🪑 [Mesa 2] GLB cargado nativo en origen (0,0,0).');
+                const m = modelsData.mesa2;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localPosition: m.position, localRotation: m.rotation, localScale: m.localScale });
+                m.node.start(); m.visible = true;
+                console.log('🪑 [Mesa 2] GLB cargado.');
             } catch (e) { console.warn('⚠️ [Mesa 2] No se pudo cargar:', e.message || e); }
 
             // 5. Candado
             try {
-                modelsData.candado.node = await sdk.Scene.createNode();
-                modelsData.candado.node.addComponent('mp.gltfLoader', {
-                    url: 'candado.glb',
-                    visible: true,
-                    localScale: { x: 2, y: 2, z: 2 },
-                    localPosition: { x: 2.4, y: 1.4, z: -12.8 },
-                    localRotation: { x: 0, y: 90, z: 0 }
-                });
-                modelsData.candado.node.start();
-                modelsData.candado.visible = true;
+                const m = modelsData.candado;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
+                m.node.start(); m.visible = true;
             } catch (e) { console.warn('⚠️ [Candado] No se pudo cargar:', e.message || e); }
 
             // 6. Etiqueta
             try {
-                modelsData.etiqueta.node = await sdk.Scene.createNode();
-                modelsData.etiqueta.node.addComponent('mp.gltfLoader', {
-                    url: 'Etiqueta.glb',
-                    visible: true,
-                    localScale: { x: 2, y: 2, z: 2 },
-                    localPosition: { x: 2.1, y: 1.65, z: -12.8 },
-                    localRotation: { x: 0, y: 90, z: 0 }
-                });
-                modelsData.etiqueta.node.start();
-                modelsData.etiqueta.visible = true;
+                const m = modelsData.etiqueta;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
+                m.node.start(); m.visible = true;
             } catch (e) { console.warn('⚠️ [Etiqueta] No se pudo cargar:', e.message || e); }
 
             // 7. Pinzas
             try {
-                modelsData.pinzas.node = await sdk.Scene.createNode();
-                modelsData.pinzas.node.addComponent('mp.gltfLoader', {
-                    url: 'Pinzas.glb',
-                    visible: true,
-                    localScale: { x: 2, y: 2, z: 2 },
-                    localPosition: { x: -12.8, y: 1.3, z: -2.6 },
-                    localRotation: { x: 0, y: 0, z: 0 }
-                });
-                modelsData.pinzas.node.start();
-                modelsData.pinzas.visible = true;
+                const m = modelsData.pinzas;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
+                m.node.start(); m.visible = true;
                 console.log('🔒🏷️🔧 [LOTO] Candado, Etiqueta y Pinzas cargados.');
             } catch (e) { console.warn('⚠️ [Pinzas] No se pudo cargar:', e.message || e); }
 
@@ -1731,63 +2050,23 @@
 
             // ── Motor Arranque GLB animado ──
             try {
-                modelsData.motorArranque.node = await sdk.Scene.createNode();
-                modelsData.motorArranque.node.addComponent('custom.animatedGltf', {
-                    url: 'bundle/MotorArranque_AnimBake.glb',
-                    modelId: 'motorArranque',
-                    localPosition: { x: 0, y: 0, z: 0 },
-                    localRotation: { x: 0, y: 0, z: 0 },
-                    localScale: { x: 10, y: 10, z: 10 }
-                });
-                modelsData.motorArranque.node.start();
-                modelsData.motorArranque.visible = true;
+                const m = modelsData.motorArranque;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('custom.animatedGltf', { url: m.file, modelId: m.id, localPosition: m.position, localRotation: m.rotation, localScale: m.localScale });
+                m.node.start(); m.visible = true;
                 console.log('⚙️ [MotorArranque] Nodo creado con animaciones en loop.');
             } catch (e) { console.warn('⚠️ [MotorArranque] No se pudo cargar:', e.message || e); }
 
-            // ── Loto_Candado GLB ──
-            try {
-                modelsData.lotoCandado.node = await sdk.Scene.createNode();
-                modelsData.lotoCandado.node.addComponent('mp.gltfLoader', {
-                    url: 'Loto_Candado.glb',
-                    visible: true,
-                    localScale: { x: 1, y: 1, z: 1 },
-                    localPosition: { x: -18.37, y: 1.32, z: -2.08 },
-                    localRotation: { x: 0, y: 0, z: 0 }
-                });
-                modelsData.lotoCandado.node.start();
-                modelsData.lotoCandado.visible = true;
-                console.log('🔒 [Loto_Candado] GLB cargado.');
-            } catch (e) { console.warn('⚠️ [Loto_Candado] No se pudo cargar:', e.message || e); }
-
-            // ── Loto_Etiqueta GLB ──
-            try {
-                modelsData.lotoEtiqueta.node = await sdk.Scene.createNode();
-                modelsData.lotoEtiqueta.node.addComponent('mp.gltfLoader', {
-                    url: 'Loto_Etiqueta.glb',
-                    visible: true,
-                    localScale: { x: 1, y: 1, z: 1 },
-                    localPosition: { x: -18.37, y: 1.32, z: -2.08 },
-                    localRotation: { x: 0, y: 0, z: 0 }
-                });
-                modelsData.lotoEtiqueta.node.start();
-                modelsData.lotoEtiqueta.visible = true;
-                console.log('🏷️ [Loto_Etiqueta] GLB cargado.');
-            } catch (e) { console.warn('⚠️ [Loto_Etiqueta] No se pudo cargar:', e.message || e); }
-
-            // ── Loto_Pinza GLB ──
-            try {
-                modelsData.lotoPinza.node = await sdk.Scene.createNode();
-                modelsData.lotoPinza.node.addComponent('mp.gltfLoader', {
-                    url: 'Loto_Pinza.glb',
-                    visible: true,
-                    localScale: { x: 1, y: 1, z: 1 },
-                    localPosition: { x: -18.335, y: 2.45, z: -0.09 },
-                    localRotation: { x: -55, y: 0, z: 0 }
-                });
-                modelsData.lotoPinza.node.start();
-                modelsData.lotoPinza.visible = true;
-                console.log('🔧 [Loto_Pinza] GLB cargado.');
-            } catch (e) { console.warn('⚠️ [Loto_Pinza] No se pudo cargar:', e.message || e); }
+            // ── Loto GLB models ──
+            for (const id of ['lotoCandado', 'lotoEtiqueta', 'lotoPinza']) {
+                try {
+                    const m = modelsData[id];
+                    m.node = await sdk.Scene.createNode();
+                    m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
+                    m.node.start(); m.visible = true;
+                    console.log(`🔒 [${id}] GLB cargado.`);
+                } catch (e) { console.warn(`⚠️ [${id}] No se pudo cargar:`, e.message || e); }
+            }
 
             // ── Ocultar modelos de paso tras cargar ──
             // Esperamos 500ms para que Three.js construya los obj3D antes de ocultarlos.
@@ -1883,20 +2162,91 @@
                 }
             }
 
+            // ── Sonido de Radio (función compartida) ─────────────────
+            let _radioAudio = null;
+            function playRadioSound() {
+                try {
+                    if (_radioAudio) { _radioAudio.pause(); _radioAudio.currentTime = 0; }
+                    _radioAudio = new Audio('bundle/radio.MP3');
+                    _radioAudio.volume = 0.7;
+                    _radioAudio.play().catch(e => console.warn('🔇 Audio bloqueado por el navegador:', e));
+                    console.log('📻 Radio sonando...');
+                } catch (e) { console.warn('Error audio radio:', e); }
+            }
+
             // ── CLICK en tag → abrir checklist ──────────────────────
             sdk.on(sdk.Mattertag.Event.CLICK, function (sid) {
                 console.log('🔖 Tag clickeado, sid:', sid);
                 const stepId = tagSidMap[sid];
-
-                // Reproducir sonido de radio al abrir el Paso 1
-                if (stepId === 1) {
-                    const radioAudio = new Audio('bundle/radio.MP3');
-                    radioAudio.volume = 0.6; // Ajusta el volumen si lo sientes muy fuerte (0.0 a 1.0)
-                    radioAudio.play().catch(e => console.warn('Audio play bloqueado por el navegador:', e));
-                }
-
+                if (stepId === 1) playRadioSound();
                 if (stepId !== undefined) openChecklist(stepId);
             });
+
+            // ── CLICK en modelo 3D Radio → sonido + abrir checklist ──
+            (function setupRadioClick() {
+                const raycaster = new THREE.Raycaster();
+                const mouse = new THREE.Vector2();
+                let camera = null;
+
+                // Obtener cámara de Three.js desde el renderer de Matterport
+                sdk.Renderer.takeScreenShot({ width: 1, height: 1 }).catch(() => { });
+                setTimeout(() => {
+                    try {
+                        const iframeDoc = document.getElementById('showcase').contentDocument;
+                        if (iframeDoc) {
+                            const threeCanvas = iframeDoc.querySelector('canvas');
+                            if (threeCanvas) {
+                                threeCanvas.addEventListener('click', function (e) {
+                                    const rect = threeCanvas.getBoundingClientRect();
+                                    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                                    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+                                    const radioM = modelsData.radio;
+                                    const obj = radioM && radioM.node && radioM.node.obj3D;
+                                    if (!obj || !camera) return;
+
+                                    raycaster.setFromCamera(mouse, camera);
+                                    const hits = raycaster.intersectObject(obj, true);
+                                    if (hits.length > 0) {
+                                        console.log('📻 ¡Click en el modelo Radio!');
+                                        playRadioSound();
+                                        openChecklist(1);
+                                    }
+                                });
+                                // Intentar obtener la cámara del contexto Three.js
+                                const scene = iframeDoc.querySelector('canvas').__three_renderer__?.info?.render;
+                                console.log('📹 Canvas de Matterport encontrado para radio click');
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ No se pudo acceder al canvas de Matterport (cross-origin):', e.message);
+                        // Fallback: detectar click cerca de la posición de la radio via sdk.Pointer
+                    }
+                }, 3000);
+
+                // Fallback robusto: usar mpSdk.Pointer.intersection
+                sdk.Pointer.intersection.subscribe(function (intersection) {
+                    window._lastPointerIntersection = intersection;
+                });
+                // Listener en el documento para click cuando el puntero esté cerca de la radio
+                document.addEventListener('click', function () {
+                    const inter = window._lastPointerIntersection;
+                    if (!inter || !inter.position) return;
+                    const radioM = modelsData.radio;
+                    if (!radioM || !radioM.position) return;
+                    const rp = radioM.position;
+                    const dist = Math.sqrt(
+                        Math.pow(inter.position.x - rp.x, 2) +
+                        Math.pow(inter.position.y - rp.y, 2) +
+                        Math.pow(inter.position.z - rp.z, 2)
+                    );
+                    if (dist < 0.8) {  // dentro de 80cm del radio
+                        console.log('📻 Click cerca de la Radio! Distancia:', dist.toFixed(2));
+                        playRadioSound();
+                        openChecklist(1);
+                    }
+                });
+            })();
 
 
             // ── Logger de posición (debug) ─────────────────────────
@@ -1909,12 +2259,28 @@
             // ── Logger de rotación de cámara (para calibrar vistas) ─
             sdk.Camera.pose.subscribe(function (pose) {
                 if (pose && pose.rotation) {
-                    const x = pose.rotation.x != null ? pose.rotation.x.toFixed(1) : '?';
-                    const y = pose.rotation.y != null ? pose.rotation.y.toFixed(1) : '?';
-                    console.log(`🎥 CAMARA rotation --> x: ${x} (pitch), y: ${y} (yaw)`);
+                    const rx = pose.rotation.x != null ? pose.rotation.x.toFixed(1) : '?';
+                    const ry = pose.rotation.y != null ? pose.rotation.y.toFixed(1) : '?';
+                    console.log(`🎥 CAMARA rotation --> x: ${rx} (pitch), y: ${ry} (yaw)`);
                     // ── Actualizar widget de rotación ──
                     const el = document.getElementById('rotation-value');
-                    if (el) el.textContent = `x: ${x}  y: ${y}`;
+                    if (el) el.textContent = `x: ${rx}  y: ${ry}`;
+                    // ── Actualizar HUD ──
+                    const hudRot = document.getElementById('hud-rot');
+                    if (hudRot) hudRot.textContent = `x: ${rx}°  y: ${ry}°`;
+                }
+                if (pose && pose.position) {
+                    const px = pose.position.x != null ? pose.position.x.toFixed(3) : '?';
+                    const py = pose.position.y != null ? pose.position.y.toFixed(3) : '?';
+                    const pz = pose.position.z != null ? pose.position.z.toFixed(3) : '?';
+                    const hudPos = document.getElementById('hud-pos');
+                    const hudPx = document.getElementById('hud-px');
+                    const hudPy = document.getElementById('hud-py');
+                    const hudPz = document.getElementById('hud-pz');
+                    if (hudPos) hudPos.textContent = `${px}, ${py}, ${pz}`;
+                    if (hudPx) hudPx.textContent = px;
+                    if (hudPy) hudPy.textContent = py;
+                    if (hudPz) hudPz.textContent = pz;
                 }
             });
 
@@ -1923,12 +2289,15 @@
                 console.log("📍 COORDENADAS EXACTAS ---> ", intersection.position);
             });
 
-            // ── SWEEP ID WIDGET: actualizar en tiempo real ──────────
+            // ── SWEEP ID WIDGET: actualizar en tiempo real ──────
             sdk.Sweep.current.subscribe(function (currentSweep) {
                 if (currentSweep && currentSweep.sid) {
                     const sid = currentSweep.sid;
                     const el = document.getElementById('sweep-id-value');
                     if (el) el.textContent = sid;
+                    // ── Actualizar HUD ──
+                    const hudSweep = document.getElementById('hud-sweep-val');
+                    if (hudSweep) hudSweep.textContent = sid;
                     console.log("-----------------------------------------");
                     console.log("📍 UUID REAL PARA TU CÓDIGO:");
                     console.log(`sweep_id: '${sid}'`);
@@ -1936,6 +2305,35 @@
                 }
             });
         });
+
+        // ── Copiar desde el HUD al portapapeles ─────────────────────────────
+        function hudCopy(type) {
+            let text = '';
+            if (type === 'pos') {
+                const px = document.getElementById('hud-px').textContent;
+                const py = document.getElementById('hud-py').textContent;
+                const pz = document.getElementById('hud-pz').textContent;
+                text = `position: { x: ${px}, y: ${py}, z: ${pz} }`;
+            } else if (type === 'rot') {
+                const val = document.getElementById('hud-rot').textContent;
+                const m = val.match(/x:\s*([\d.\-]+).*y:\s*([\d.\-]+)/);
+                text = m ? `rotation: { x: ${m[1]}, y: ${m[2]} }` : val;
+            } else if (type === 'sweep') {
+                text = document.getElementById('hud-sweep-val').textContent;
+            }
+            if (!text || text === 'esperando...' || text === '—') return;
+            navigator.clipboard.writeText(text).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = text; document.body.appendChild(ta);
+                ta.select(); document.execCommand('copy');
+                document.body.removeChild(ta);
+            });
+            // Feedback visual rápido
+            const btn = event.target;
+            const orig = btn.textContent;
+            btn.textContent = '✔'; btn.style.color = '#68d391';
+            setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1200);
+        }
 
         // ── Copiar sweep_id al portapapeles ─────────────────────────
         function copySweepId() {
