@@ -874,7 +874,8 @@
         <button id="btn-cubosdk-anim" class="model-toggle-btn"
             style="background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.4);color:#a78bfa;"
             onclick="toggleCuboSdkAnim()">
-            <span id="cubosdk-anim-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6b7280;margin-right:4px;"></span>
+            <span id="cubosdk-anim-dot"
+                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6b7280;margin-right:4px;"></span>
             📦 Animar Cubo SDK
         </button>
 
@@ -1074,7 +1075,7 @@
             'lotoEtiqueta': { id: 'lotoEtiqueta', label: 'Loto Etiqueta', icon: '🏷️', file: 'Loto_Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.92, y: 1.17, z: -0.78 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.91, y: 1.3, z: 0.51 }, rotation: { x: -55, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'cubo2': { id: 'cubo2', label: 'Cubo 2', icon: '📦', file: 'Cubo2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 10, y: 10, z: 10 } },
-            'cubo3': { id: 'cubo3', label: 'Cubo 3', icon: '📦', file: 'cubo3.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 1, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 0.25, y: 0.25, z: 0.25 } },
+            'cubo3': { id: 'cubo3', label: 'Cubo 3', icon: '📦', file: 'cubo3.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 1, z: 1 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 0.25, y: 0.25, z: 0.25 } },
             'mesa2': { id: 'mesa2', label: 'Mesa 2', icon: '🪑', file: 'Mesa2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 0.3, z: -2.3 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'clima2': { id: 'clima2', label: 'Clima 2', icon: '❄️', file: 'bundle/Clima2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -3.1, y: 0.4, z: 4.3 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'ele': { id: 'ele', label: 'Ele 2', icon: '⚡', file: 'bundle/Ele2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -1.55, y: 0.21, z: 4.4 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } }
@@ -1094,8 +1095,8 @@
 
         // Modelos que se encienden/apagan juntos al hacer toggle
         const linkedModels = {
-            'clima':    ['clima2'],   // M. Clima  → también Clima2.glb
-            'electrico':['ele'],      // M. Eléctrico → también Ele2.glb
+            'clima': ['clima2'],   // M. Clima  → también Clima2.glb
+            'electrico': ['ele'],      // M. Eléctrico → también Ele2.glb
         };
 
         // Toggle con actualización visual del botón
@@ -2029,22 +2030,45 @@
                 let cuboSdkComp = null;
                 for (const c of m.node.componentIterator()) { cuboSdkComp = c; break; }
 
-                // Estado y loop de animación — rotación en eje Y LOCAL usando obj3D.rotateOnAxis()
-                // rotateOnAxis(axis, angle) rota en el espacio LOCAL del objeto (no en el mundo).
-                // Esto acumula el delta SOBRE la orientación actual del cubo, frame a frame.
+                // Estado y loop de animación — rotación en eje LOCAL via cuaterniones
                 window._cuboSdkAnimActive = false;
+                window._cuboSdkComp = cuboSdkComp;
+
                 const _THREE_sdk = await import('three');
                 const DEG2RAD_sdk = Math.PI / 180;
-                const _localYSdk = new _THREE_sdk.Vector3(0, 1, 0); // eje Y en espacio local
+                const RAD2DEG_sdk = 180 / Math.PI;
+                const baseRotSdk = m.rotation; // {x:0, y:0, z:0}
 
+                // Orientación inicial del cubo
+                const qCurrentSdk = new _THREE_sdk.Quaternion().setFromEuler(
+                    new _THREE_sdk.Euler(
+                        baseRotSdk.x * DEG2RAD_sdk,
+                        baseRotSdk.y * DEG2RAD_sdk,
+                        baseRotSdk.z * DEG2RAD_sdk,
+                        'XYZ'
+                    )
+                );
+
+                // Delta: 1° por frame alrededor del eje Y LOCAL del modelo
+                const qDeltaSdk = new _THREE_sdk.Quaternion().setFromAxisAngle(
+                    new _THREE_sdk.Vector3(0, 1, 0), // eje Y local correcto
+                    1 * DEG2RAD_sdk
+                );
+
+                const eulerSdk = new _THREE_sdk.Euler();
                 const animCuboSdk = () => {
                     requestAnimationFrame(animCuboSdk);
-                    if (window._cuboSdkAnimActive) {
-                        const obj = m.node && m.node.obj3D;
-                        if (obj) {
-                            // rotateOnAxis aplica el giro en el ESPACIO LOCAL del obj3D
-                            obj.rotateOnAxis(_localYSdk, 1 * DEG2RAD_sdk);
-                        }
+                    if (window._cuboSdkAnimActive && window._cuboSdkComp) {
+                        // Post-multiply = rotar en eje LOCAL (no en eje mundial)
+                        qCurrentSdk.multiply(qDeltaSdk).normalize();
+                        eulerSdk.setFromQuaternion(qCurrentSdk, 'XYZ');
+                        
+                        // Actualizar los inputs para que Matterport no sobrescriba el obj3D
+                        window._cuboSdkComp.inputs.localRotation = {
+                            x: eulerSdk.x * RAD2DEG_sdk,
+                            y: eulerSdk.y * RAD2DEG_sdk,
+                            z: eulerSdk.z * RAD2DEG_sdk
+                        };
                     }
                 };
                 animCuboSdk();
