@@ -1069,7 +1069,9 @@
             'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.91, y: 1.3, z: 0.51 }, rotation: { x: -55, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'cubo2': { id: 'cubo2', label: 'Cubo 2', icon: '📦', file: 'Cubo2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 10, y: 10, z: 10 } },
             'cubo3': { id: 'cubo3', label: 'Cubo 3', icon: '📦', file: 'cubo3.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 1, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 0.25, y: 0.25, z: 0.25 } },
-            'mesa2': { id: 'mesa2', label: 'Mesa 2', icon: '🪑', file: 'Mesa2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 0.3, z: -2.3 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 1, y: 1, z: 1 } }
+            'mesa2': { id: 'mesa2', label: 'Mesa 2', icon: '🪑', file: 'Mesa2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 0.3, z: -2.3 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'clima2': { id: 'clima2', label: 'Clima 2', icon: '❄️', file: 'bundle/Clima2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -3.1, y: 0.4, z: 4.3 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'ele': { id: 'ele', label: 'Ele 2', icon: '⚡', file: 'bundle/Ele2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -1.55, y: 0.21, z: 4.4 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } }
         };
 
 
@@ -1084,6 +1086,12 @@
             }
         }
 
+        // Modelos que se encienden/apagan juntos al hacer toggle
+        const linkedModels = {
+            'clima':    ['clima2'],   // M. Clima  → también Clima2.glb
+            'electrico':['ele'],      // M. Eléctrico → también Ele2.glb
+        };
+
         // Toggle con actualización visual del botón
         function handleToggle(id) {
             const m = modelsData[id];
@@ -1095,6 +1103,15 @@
             m.visible = !m.visible;
             m.node.obj3D.visible = m.visible;
             syncToggleBtn(id);
+
+            // Sincronizar modelos enlazados
+            const linked = linkedModels[id] || [];
+            linked.forEach(linkedId => {
+                const lm = modelsData[linkedId];
+                if (!lm || !lm.node || !lm.node.obj3D) return;
+                lm.visible = m.visible;
+                lm.node.obj3D.visible = m.visible;
+            });
         }
 
         // ── CALIBRADOR: datos y funciones ──────────────────────────
@@ -1968,6 +1985,24 @@
                 m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
                 m.node.start(); m.visible = true; console.log('🗄️ [Mesa] GLB cargado.');
             }
+
+            // ── Clima 2 GLB ──
+            try {
+                const m = modelsData.clima2;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
+                m.node.start(); m.visible = false; hideAfterLoad(m);
+                console.log('❄️ [Clima 2] GLB cargado (oculto por defecto).');
+            } catch (e) { console.warn('⚠️ [Clima 2] No se pudo cargar:', e.message || e); }
+
+            // ── Ele GLB ──
+            try {
+                const m = modelsData.ele;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
+                m.node.start(); m.visible = false; hideAfterLoad(m);
+                console.log('⚡ [Ele2] GLB cargado (oculto por defecto).');
+            } catch (e) { console.warn('⚠️ [Ele] No se pudo cargar:', e.message || e); }
 
             // ── Cubo 3 GLB (rotación continua) ──
             try {
