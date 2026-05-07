@@ -624,6 +624,8 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            max-height: 65vh;
+            overflow-y: auto;
         }
 
         .calib-row {
@@ -702,7 +704,8 @@
         }
 
         #calib-coords,
-        #calib-rot {
+        #calib-rot,
+        #calib-scale {
             background: #000;
             padding: 8px;
             border-radius: 6px;
@@ -712,129 +715,6 @@
             color: #4ade80;
             user-select: all;
             margin-top: 5px;
-        }
-
-        /* ── CAMERA HUD ── */
-        #camera-hud {
-            position: fixed;
-            bottom: 60px;
-            left: 16px;
-            z-index: 9000;
-            background: rgba(10, 15, 30, 0.88);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(99, 179, 237, 0.3);
-            border-radius: 12px;
-            padding: 0;
-            font-family: 'Inter', monospace;
-            font-size: 11px;
-            color: #e2e8f0;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(99, 179, 237, 0.1);
-            min-width: 220px;
-            transition: opacity 0.2s;
-        }
-
-        #camera-hud.collapsed #hud-body {
-            display: none;
-        }
-
-        #hud-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 7px 12px;
-            background: rgba(99, 179, 237, 0.08);
-            border-radius: 12px 12px 0 0;
-            border-bottom: 1px solid rgba(99, 179, 237, 0.15);
-            cursor: pointer;
-            user-select: none;
-        }
-
-        #hud-header:hover {
-            background: rgba(99, 179, 237, 0.14);
-        }
-
-        #hud-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #63b3ed;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        #hud-toggle-arrow {
-            font-size: 10px;
-            color: #63b3ed;
-            opacity: 0.7;
-            transition: transform 0.2s;
-        }
-
-        #camera-hud.collapsed #hud-toggle-arrow {
-            transform: rotate(180deg);
-        }
-
-        #hud-body {
-            padding: 8px 12px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .hud-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        .hud-label {
-            font-size: 10px;
-            color: #718096;
-            white-space: nowrap;
-            min-width: 60px;
-        }
-
-        .hud-value {
-            font-family: monospace;
-            font-size: 11px;
-            font-weight: 700;
-            color: #90cdf4;
-            flex: 1;
-            text-align: right;
-            white-space: nowrap;
-        }
-
-        .hud-copy-btn {
-            background: none;
-            border: 1px solid rgba(99, 179, 237, 0.3);
-            border-radius: 4px;
-            color: #63b3ed;
-            font-size: 10px;
-            padding: 1px 5px;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.15s, background 0.15s;
-        }
-
-        .hud-copy-btn:hover {
-            opacity: 1;
-            background: rgba(99, 179, 237, 0.15);
-        }
-
-        .hud-divider {
-            border: none;
-            border-top: 1px solid rgba(99, 179, 237, 0.1);
-            margin: 2px 0;
-        }
-
-        #hud-sweep-val {
-            font-family: monospace;
-            font-size: 9px;
-            color: #68d391;
-            word-break: break-all;
-            flex: 1;
-            text-align: right;
         }
     </style>
 </head>
@@ -871,13 +751,6 @@
         <button id="btn-clima" class="model-toggle-btn" onclick="handleToggle('clima')">
             <span class="fbx-dot"></span> ❄️ M. Clima
         </button>
-        <button id="btn-cubosdk-anim" class="model-toggle-btn"
-            style="background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.4);color:#a78bfa;"
-            onclick="toggleCuboSdkAnim()">
-            <span id="cubosdk-anim-dot"
-                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6b7280;margin-right:4px;"></span>
-            📦 Animar Cubo SDK
-        </button>
 
         <!-- SWEEP ID DISPLAY -->
         <div id="sweep-id-widget">
@@ -902,44 +775,7 @@
         </div>
     </div>
 
-    <!-- CAMERA HUD -->
-    <div id="camera-hud">
-        <div id="hud-header" onclick="document.getElementById('camera-hud').classList.toggle('collapsed')">
-            <span id="hud-title">📡 Cámara HUD</span>
-            <span id="hud-toggle-arrow">▴</span>
-        </div>
-        <div id="hud-body">
-            <div class="hud-row">
-                <span class="hud-label">📍 Posición</span>
-                <span class="hud-value" id="hud-pos">esperando...</span>
-                <button class="hud-copy-btn" onclick="hudCopy('pos')" title="Copiar posición">⧘</button>
-            </div>
-            <div class="hud-row">
-                <span class="hud-label" style="color:#a78bfa">X</span>
-                <span class="hud-value" id="hud-px" style="color:#60a5fa">—</span>
-            </div>
-            <div class="hud-row">
-                <span class="hud-label" style="color:#a78bfa">Y</span>
-                <span class="hud-value" id="hud-py" style="color:#34d399">—</span>
-            </div>
-            <div class="hud-row">
-                <span class="hud-label" style="color:#a78bfa">Z</span>
-                <span class="hud-value" id="hud-pz" style="color:#f59e0b">—</span>
-            </div>
-            <hr class="hud-divider">
-            <div class="hud-row">
-                <span class="hud-label">🎥 Rotación</span>
-                <span class="hud-value" id="hud-rot">—</span>
-                <button class="hud-copy-btn" onclick="hudCopy('rot')" title="Copiar rotación">⧘</button>
-            </div>
-            <hr class="hud-divider">
-            <div class="hud-row">
-                <span class="hud-label">🔑 Sweep ID</span>
-                <span id="hud-sweep-val">esperando...</span>
-                <button class="hud-copy-btn" onclick="hudCopy('sweep')" title="Copiar sweep_id">⧘</button>
-            </div>
-        </div>
-    </div>
+
 
 
 
@@ -960,7 +796,26 @@
                 <input type="number" id="calib-step" class="calib-input" value="0.1" step="0.01">
             </div>
 
-            <div style="font-size:11px;color:#aaa;text-align:center;margin-top:5px">POSICIÓN (M)</div>
+            <div style="font-size:11px;color:#60a5fa;font-weight:bold;text-align:center;margin-top:5px">POSICIÓN LOCAL
+                (M)</div>
+            <div class="calib-row">
+                <span>Eje X:</span>
+                <div><button class="calib-btn" onclick="nudgePosLocal('x',-1)">-</button><button class="calib-btn"
+                        onclick="nudgePosLocal('x',1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Eje Y:</span>
+                <div><button class="calib-btn" onclick="nudgePosLocal('y',-1)">-</button><button class="calib-btn"
+                        onclick="nudgePosLocal('y',1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Eje Z:</span>
+                <div><button class="calib-btn" onclick="nudgePosLocal('z',-1)">-</button><button class="calib-btn"
+                        onclick="nudgePosLocal('z',1)">+</button></div>
+            </div>
+
+            <div style="font-size:11px;color:#4ade80;font-weight:bold;text-align:center;margin-top:10px">POSICIÓN
+                ABSOLUTA (M)</div>
             <div class="calib-row">
                 <span>Eje X:</span>
                 <div><button class="calib-btn" onclick="nudgePos('x',-1)">-</button><button class="calib-btn"
@@ -999,6 +854,28 @@
                         onclick="nudgeRot('z',1)">+</button></div>
             </div>
             <div id="calib-rot">Rot: x: 0°, y: 0°, z: 0°</div>
+
+            <div style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">ESCALA (LOCAL)</div>
+            <div class="calib-row">
+                <span>Paso Escala:</span>
+                <input type="number" id="calib-scale-step" class="calib-input" value="1" step="0.1">
+            </div>
+            <div class="calib-row">
+                <span>Escala X:</span>
+                <div><button class="calib-btn" onclick="nudgeScale('x',-1)">-</button><button class="calib-btn"
+                        onclick="nudgeScale('x',1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Escala Y:</span>
+                <div><button class="calib-btn" onclick="nudgeScale('y',-1)">-</button><button class="calib-btn"
+                        onclick="nudgeScale('y',1)">+</button></div>
+            </div>
+            <div class="calib-row">
+                <span>Escala Z:</span>
+                <div><button class="calib-btn" onclick="nudgeScale('z',-1)">-</button><button class="calib-btn"
+                        onclick="nudgeScale('z',1)">+</button></div>
+            </div>
+            <div id="calib-scale">Escala: x: 1, y: 1, z: 1</div>
 
             <div style="margin-top:10px;border-top:1px solid #333;padding-top:8px;">
                 <button class="calib-btn"
@@ -1069,16 +946,14 @@
             'candado': { id: 'candado', label: 'Candado', icon: '🔒', file: 'candado.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 2.1, z: -2.1 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
             'etiqueta': { id: 'etiqueta', label: 'Etiqueta', icon: '🏷️', file: 'Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.2, y: 2.35, z: -2.1 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
             'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -2, y: 2, z: -0.8 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
-            'motorArranque': { id: 'motorArranque', label: 'Motor Arranque', icon: '⚙️', file: 'bundle/MotorArranque_AnimBake.glb', type: 'custom.animatedGltf', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 10, y: 10, z: 10 } },
-            'cuboSdk': { id: 'cuboSdk', label: 'Cubo SDK', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+
             'lotoCandado': { id: 'lotoCandado', label: 'Loto Candado', icon: '🔒', file: 'Loto_Candado.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.92, y: 1.16, z: -0.78 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'lotoEtiqueta': { id: 'lotoEtiqueta', label: 'Loto Etiqueta', icon: '🏷️', file: 'Loto_Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.92, y: 1.17, z: -0.78 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.91, y: 1.3, z: 0.51 }, rotation: { x: -55, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'cubo2': { id: 'cubo2', label: 'Cubo 2', icon: '📦', file: 'Cubo2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 10, y: 10, z: 10 } },
-            'cubo3': { id: 'cubo3', label: 'Cubo 3', icon: '📦', file: 'cubo3.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 1, z: 1 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 0.25, y: 0.25, z: 0.25 } },
             'mesa2': { id: 'mesa2', label: 'Mesa 2', icon: '🪑', file: 'Mesa2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 0.3, z: -2.3 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
-            'clima2': { id: 'clima2', label: 'Clima 2', icon: '❄️', file: 'bundle/Clima2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -3.1, y: 0.4, z: 4.3 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
-            'ele': { id: 'ele', label: 'Ele 2', icon: '⚡', file: 'bundle/Ele2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -1.55, y: 0.21, z: 4.4 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } }
+            'clima2': { id: 'clima2', label: 'Clima 2', icon: '❄️', file: 'Clima2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -3.1, y: 0.4, z: 4.3 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'ele': { id: 'ele', label: 'Ele 2', icon: '⚡', file: 'Ele2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -1.55, y: 0.21, z: 4.4 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } }
         };
 
 
@@ -1099,6 +974,22 @@
             'electrico': ['ele'],      // M. Eléctrico → también Ele2.glb
         };
 
+        // Función auxiliar para forzar la visibilidad mediante el componente si es posible
+        function setNodeVisibility(node, isVisible) {
+            if (!node) return;
+            let foundComponent = false;
+            for (const c of node.componentIterator()) {
+                if (c.inputs && typeof c.inputs.visible !== 'undefined') {
+                    c.inputs.visible = isVisible;
+                    foundComponent = true;
+                    break;
+                }
+            }
+            if (!foundComponent && node.obj3D) {
+                node.obj3D.visible = isVisible;
+            }
+        }
+
         // Toggle con actualización visual del botón
         function handleToggle(id) {
             const m = modelsData[id];
@@ -1108,26 +999,21 @@
                 return;
             }
             m.visible = !m.visible;
-            m.node.obj3D.visible = m.visible;
+            setNodeVisibility(m.node, m.visible);
             syncToggleBtn(id);
 
             // Sincronizar modelos enlazados
             const linked = linkedModels[id] || [];
             linked.forEach(linkedId => {
                 const lm = modelsData[linkedId];
-                if (!lm || !lm.node || !lm.node.obj3D) return;
+                if (!lm || !lm.node) return;
                 lm.visible = m.visible;
-                lm.node.obj3D.visible = m.visible;
+                setNodeVisibility(lm.node, m.visible);
             });
         }
 
-        // Activar / desactivar animación del Cubo SDK
-        function toggleCuboSdkAnim() {
-            window._cuboSdkAnimActive = !window._cuboSdkAnimActive;
-            const dot = document.getElementById('cubosdk-anim-dot');
-            if (dot) dot.style.background = window._cuboSdkAnimActive ? '#a78bfa' : '#6b7280';
-            console.log('📦 [CuboSDK] Animación:', window._cuboSdkAnimActive ? 'ON' : 'OFF');
-        }
+
+        // Función eliminada: toggleMotorAnim
 
         // ── CALIBRADOR: datos y funciones ──────────────────────────
         const tagsCalibData = {};
@@ -1206,6 +1092,50 @@
             return null;
         }
 
+        async function nudgePosLocal(axis, dir) {
+            const stepEl = document.getElementById('calib-step');
+            const step = stepEl ? (parseFloat(stepEl.value) || 0.1) : 0.1;
+            const tag = getActiveTag();
+            if (tag) return; // Tags no tienen posición local vs global (no tienen rotación)
+            const m = getActiveModel();
+            if (!m) return;
+
+            const THREE = await _threePromise;
+            const temp = new THREE.Object3D();
+            if (!m.position) m.position = { x: 0, y: 0, z: 0 };
+            if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
+            temp.position.set(m.position.x, m.position.y, m.position.z);
+            temp.rotation.set(
+                m.rotation.x * Math.PI / 180,
+                m.rotation.y * Math.PI / 180,
+                m.rotation.z * Math.PI / 180,
+                'XYZ'
+            );
+
+            const distance = step * dir;
+            if (axis === 'x') temp.translateX(distance);
+            if (axis === 'y') temp.translateY(distance);
+            if (axis === 'z') temp.translateZ(distance);
+
+            m.position.x = +temp.position.x.toFixed(4);
+            m.position.y = +temp.position.y.toFixed(4);
+            m.position.z = +temp.position.z.toFixed(4);
+
+            if (m.type === 'mp.fbxLoader') {
+                const comp = getFbxComp(m);
+                if (comp) comp.inputs.localPosition = { ...m.position };
+            } else if (m.type === 'mp.gltfLoader') {
+                const comp = getGltfComp(m);
+                if (comp) comp.inputs.localPosition = { ...m.position };
+            } else {
+                const obj = getNodeObj(m);
+                if (obj) {
+                    obj.position.set(m.position.x, m.position.y, m.position.z);
+                }
+            }
+            updateCalibDisplay();
+        }
+
         function nudgePos(axis, dir) {
             const stepEl = document.getElementById('calib-step');
             const step = stepEl ? (parseFloat(stepEl.value) || 0.1) : 0.1;
@@ -1273,14 +1203,49 @@
             updateCalibDisplay();
         }
 
+        function nudgeScale(axis, dir) {
+            if (getActiveTag()) return;
+            const m = getActiveModel();
+            if (!m) return;
+            const stepEl = document.getElementById('calib-scale-step');
+            const step = stepEl ? (parseFloat(stepEl.value) || 1) : 1;
+
+            if (!m.localScale) {
+                if (m.scale) {
+                    m.localScale = { x: m.scale, y: m.scale, z: m.scale };
+                } else {
+                    m.localScale = { x: 1, y: 1, z: 1 };
+                }
+            }
+
+            m.localScale[axis] = +((m.localScale[axis] || 1) + step * dir).toFixed(4);
+
+            if (m.type === 'mp.fbxLoader') {
+                const comp = getFbxComp(m);
+                if (comp) comp.inputs.localScale = { ...m.localScale };
+                updateCalibDisplay(); return;
+            }
+            if (m.type === 'mp.gltfLoader') {
+                const comp = getGltfComp(m);
+                if (comp) comp.inputs.localScale = { ...m.localScale };
+                updateCalibDisplay(); return;
+            }
+            const obj = getNodeObj(m);
+            if (!obj) return;
+            obj.scale[axis] = m.localScale[axis];
+            updateCalibDisplay();
+        }
+
         function updateCalibDisplay() {
             const tag = getActiveTag();
             const coordEl = document.getElementById('calib-coords');
             const rotEl = document.getElementById('calib-rot');
+            const scaleEl = document.getElementById('calib-scale');
             if (tag) {
                 const p = tag.anchorPosition;
                 if (coordEl) coordEl.innerText = `Pos Global: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}`;
                 if (rotEl) rotEl.innerText = `(Tags no tienen rotación)`;
+                if (scaleEl) scaleEl.innerText = `(Tags no tienen escala)`;
                 return;
             }
             const m = getActiveModel();
@@ -1289,20 +1254,24 @@
             if (m.type === 'mp.fbxLoader') {
                 const p = m.position || { x: 0, y: 0, z: 0 };
                 const r = m.rotation || { x: 0, y: 0, z: 0 };
+                const s = m.localScale || { x: m.scale || 1, y: m.scale || 1, z: m.scale || 1 };
                 if (coordEl) coordEl.innerHTML = `
-                    <div style="color:#a78bfa;font-size:10px;margin-bottom:2px;">FBX • localPosition</div>
-                    <div style="color:#60a5fa;">x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
+                    <div style="color:#60a5fa;font-size:11px;margin-bottom:2px;">Local: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>
+                    <div style="color:#4ade80;font-size:11px;">Absoluta: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
                 if (rotEl) rotEl.innerText = `Rot FBX: x: ${r.x.toFixed(1)}°  y: ${r.y.toFixed(1)}°  z: ${r.z.toFixed(1)}°`;
+                if (scaleEl) scaleEl.innerText = `Escala: x: ${s.x.toFixed(3)}  y: ${s.y.toFixed(3)}  z: ${s.z.toFixed(3)}`;
                 return;
             }
             // GLB (mp.gltfLoader): mostrar m.position como fuente de verdad
             if (m.type === 'mp.gltfLoader') {
                 const p = m.position || { x: 0, y: 0, z: 0 };
                 const r = m.rotation || { x: 0, y: 0, z: 0 };
+                const s = m.localScale || { x: 1, y: 1, z: 1 };
                 if (coordEl) coordEl.innerHTML = `
-                    <div style="color:#4ade80;font-size:10px;margin-bottom:2px;">GLB • localPosition</div>
-                    <div style="color:#60a5fa;">x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
+                    <div style="color:#60a5fa;font-size:11px;margin-bottom:2px;">Local: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>
+                    <div style="color:#4ade80;font-size:11px;">Absoluta: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
                 if (rotEl) rotEl.innerText = `Rot GLB: x: ${r.x.toFixed(1)}°  y: ${r.y.toFixed(1)}°  z: ${r.z.toFixed(1)}°`;
+                if (scaleEl) scaleEl.innerText = `Escala: x: ${s.x.toFixed(3)}  y: ${s.y.toFixed(3)}  z: ${s.z.toFixed(3)}`;
                 return;
             }
             // custom.animatedGltf u otros: leer de obj3D
@@ -1311,10 +1280,12 @@
                 if (coordEl) coordEl.innerHTML = `<span style="color:#f59e0b">⏳ Modelo cargando...</span>`;
                 return;
             }
-            const pL = obj.position, rL = obj.rotation;
+            const pL = obj.position, rL = obj.rotation, sL = obj.scale;
             if (coordEl) coordEl.innerHTML = `
-                <div style="color:#60a5fa;margin-bottom:2px;">Local: x: ${pL.x.toFixed(3)}, y: ${pL.y.toFixed(3)}, z: ${pL.z.toFixed(3)}</div>`;
+                <div style="color:#60a5fa;font-size:11px;margin-bottom:2px;">Local: x: <b>${pL.x.toFixed(4)}</b> &nbsp; y: <b>${pL.y.toFixed(4)}</b> &nbsp; z: <b>${pL.z.toFixed(4)}</b></div>
+                <div style="color:#4ade80;font-size:11px;">Absoluta: x: <b>${pL.x.toFixed(4)}</b> &nbsp; y: <b>${pL.y.toFixed(4)}</b> &nbsp; z: <b>${pL.z.toFixed(4)}</b></div>`;
             if (rotEl) rotEl.innerText = `Rot: x: ${(rL.x * 180 / Math.PI).toFixed(0)}°  y: ${(rL.y * 180 / Math.PI).toFixed(0)}°  z: ${(rL.z * 180 / Math.PI).toFixed(0)}°`;
+            if (scaleEl) scaleEl.innerText = `Escala: x: ${sL.x.toFixed(3)}  y: ${sL.y.toFixed(3)}  z: ${sL.z.toFixed(3)}`;
         }
 
         // ── COORDENADAS ABSOLUTAS DE TODOS LOS MODELOS ──────────────
@@ -1936,6 +1907,8 @@
                                     gltf.animations.forEach(clip => {
                                         mixer.clipAction(clip).setLoop(THREE.LoopRepeat, Infinity).play();
                                     });
+                                    // Exponer mixer globalmente para control externo por botón
+                                    if (modelId) window['_animMixer_' + modelId] = mixer;
                                     console.log(`⚙️ [AnimGLTF] ${gltf.animations.length} animación(es) en loop.`);
                                 } else {
                                     console.warn(`⚠️ [AnimGLTF] ${url} sin animaciones (mesh estático).`);
@@ -1945,7 +1918,10 @@
                     },
 
                     onTick(delta) {
-                        if (mixer) mixer.update(delta / 1000);
+                        if (mixer) {
+                            const paused = this.inputs.modelId && window['_animPaused_' + this.inputs.modelId];
+                            if (!paused) mixer.update(delta / 1000);
+                        }
                     },
 
                     onDestroy() {
@@ -1969,7 +1945,10 @@
                 const check = (attempts = 0) => {
                     const obj = m.node.obj3D;
                     if (obj && (obj.children.length > 0 || attempts > 40)) {
-                        obj.visible = false;
+                        // Respetar el estado del botón en caso de que el usuario lo haya pulsado
+                        if (!m.visible) {
+                            setNodeVisibility(m.node, false);
+                        }
                         return;
                     }
                     setTimeout(() => check(attempts + 1), 250);
@@ -1993,12 +1972,73 @@
                 m.node.start(); m.visible = false; syncToggleBtn('clima'); hideAfterLoad(m);
             }
 
-            // 4. Mesa GLB
-            {
+            // 4. Mesa GLB (ROTACIÓN CENTRADA POR CÓDIGO)
+            try {
                 const m = modelsData.mesa;
                 m.node = await sdk.Scene.createNode();
-                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
-                m.node.start(); m.visible = true; console.log('🗄️ [Mesa] GLB cargado.');
+                
+                m.node.addComponent('mp.gltfLoader', { 
+                    url: m.file, 
+                    localPosition: m.position, 
+                    localRotation: m.rotation, 
+                    localScale: m.localScale,
+                    visible: true
+                });
+                m.node.start();
+                m.visible = true;
+
+                const THREE = await import('three');
+                const DEG2RAD = Math.PI / 180;
+
+                // Función que espera a que aparezca la malla para inyectarle el centro
+                const fixAndRotateMesa = (attempts = 0) => {
+                    const obj = m.node.obj3D;
+
+                    // Esperamos a que la geometría real se cargue en la escena
+                    if (obj && obj.children.length > 0) {
+                        const modelRoot = obj.children[0];
+
+                        // 1. Calculamos el centro REAL de la geometría desfasada
+                        const box = new THREE.Box3().setFromObject(modelRoot);
+                        const centerWorld = new THREE.Vector3();
+                        box.getCenter(centerWorld);
+
+                        // 2. Convertimos el centro mundial a coordenadas locales
+                        const centerLocal = modelRoot.worldToLocal(centerWorld.clone());
+
+                        // 3. Creamos un "Wrapper" (Grupo) que será nuestro NUEVO PIVOTE PERFECTO
+                        const pivotWrapper = new THREE.Group();
+                        pivotWrapper.position.copy(centerLocal); // Lo ponemos en el centro exacto
+                        modelRoot.add(pivotWrapper);
+
+                        // 4. Metemos la malla defectuosa dentro del Wrapper y anulamos el desfase
+                        const meshes = [...modelRoot.children].filter(child => child !== pivotWrapper);
+                        meshes.forEach(mesh => {
+                            pivotWrapper.add(mesh);
+                            mesh.position.sub(centerLocal); // Contrarresta el error del .glb
+                        });
+
+                        // 5. Animamos NUESTRO Wrapper puramente en Three.js
+                        const animateMesa = () => {
+                            requestAnimationFrame(animateMesa);
+                            if (m.visible) {
+                                pivotWrapper.rotation.y += 0.5 * DEG2RAD; // Rota 0.5° sobre sí misma
+                            }
+                        };
+                        animateMesa();
+
+                        console.log('🗄️ [Mesa] Pivote corregido inyectado. Rotación perfecta.');
+
+                    } else if (attempts < 60) {
+                        setTimeout(() => fixAndRotateMesa(attempts + 1), 200);
+                    } else {
+                        console.warn('⚠️ [Mesa] Timeout esperando malla 3D.');
+                    }
+                };
+
+                fixAndRotateMesa();
+            } catch (e) {
+                console.warn('⚠️ [Mesa] No se pudo cargar:', e.message || e);
             }
 
             // ── Clima 2 GLB ──
@@ -2062,7 +2102,7 @@
                         // Post-multiply = rotar en eje LOCAL (no en eje mundial)
                         qCurrentSdk.multiply(qDeltaSdk).normalize();
                         eulerSdk.setFromQuaternion(qCurrentSdk, 'XYZ');
-                        
+
                         // Actualizar los inputs para que Matterport no sobrescriba el obj3D
                         window._cuboSdkComp.inputs.localRotation = {
                             x: eulerSdk.x * RAD2DEG_sdk,
@@ -2141,12 +2181,55 @@
                 console.log('🪑 [Mesa 2] GLB cargado.');
             } catch (e) { console.warn('⚠️ [Mesa 2] No se pudo cargar:', e.message || e); }
 
+
+            // Función auxiliar para aplicar el Pivote Dinámico a cualquier modelo
+            const applyDynamicPivotAndRotate = (m, label, spinSpeed = 0) => {
+                const DEG2RAD = Math.PI / 180;
+                const fixAndRotate = (attempts = 0) => {
+                    const obj = m.node.obj3D;
+                    if (obj && obj.children.length > 0) {
+                        const modelRoot = obj.children[0];
+                        const box = new THREE.Box3().setFromObject(modelRoot);
+                        const centerWorld = new THREE.Vector3();
+                        box.getCenter(centerWorld);
+                        const centerLocal = modelRoot.worldToLocal(centerWorld.clone());
+
+                        const pivotWrapper = new THREE.Group();
+                        pivotWrapper.position.copy(centerLocal);
+                        modelRoot.add(pivotWrapper);
+
+                        const meshes = [...modelRoot.children].filter(child => child !== pivotWrapper);
+                        meshes.forEach(mesh => {
+                            pivotWrapper.add(mesh);
+                            mesh.position.sub(centerLocal);
+                        });
+
+                        if (spinSpeed !== 0) {
+                            const animate = () => {
+                                requestAnimationFrame(animate);
+                                if (m.visible) {
+                                    pivotWrapper.rotation.y += spinSpeed * DEG2RAD;
+                                }
+                            };
+                            animate();
+                        }
+                        console.log(`✅ [${label}] Pivote corregido inyectado.`);
+                    } else if (attempts < 60) {
+                        setTimeout(() => fixAndRotate(attempts + 1), 200);
+                    } else {
+                        console.warn(`⚠️ [${label}] Timeout esperando malla 3D.`);
+                    }
+                };
+                fixAndRotate();
+            };
+
             // 5. Candado
             try {
                 const m = modelsData.candado;
                 m.node = await sdk.Scene.createNode();
                 m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
                 m.node.start(); m.visible = true;
+                applyDynamicPivotAndRotate(m, 'Candado', 0.5);
             } catch (e) { console.warn('⚠️ [Candado] No se pudo cargar:', e.message || e); }
 
             // 6. Etiqueta
@@ -2155,6 +2238,7 @@
                 m.node = await sdk.Scene.createNode();
                 m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
                 m.node.start(); m.visible = true;
+                applyDynamicPivotAndRotate(m, 'Etiqueta', 0.5);
             } catch (e) { console.warn('⚠️ [Etiqueta] No se pudo cargar:', e.message || e); }
 
             // 7. Pinzas
@@ -2163,7 +2247,8 @@
                 m.node = await sdk.Scene.createNode();
                 m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localScale: m.localScale, localPosition: m.position, localRotation: m.rotation });
                 m.node.start(); m.visible = true;
-                console.log('🔒🏷️🔧 [LOTO] Candado, Etiqueta y Pinzas cargados.');
+                applyDynamicPivotAndRotate(m, 'Pinzas', 0.5);
+                console.log('🔒🏷️🔧 [LOTO] Candado, Etiqueta y Pinzas cargados y rotando.');
             } catch (e) { console.warn('⚠️ [Pinzas] No se pudo cargar:', e.message || e); }
 
             // 8. Radio FBX
@@ -2180,17 +2265,9 @@
                 });
                 modelsData.radio.node.start();
                 modelsData.radio.visible = true;
-                console.log('📻 [Radio] FBX iniciando carga (~24MB):', radioM.position);
+                applyDynamicPivotAndRotate(modelsData.radio, 'Radio', 0.5);
+                console.log('📻 [Radio] FBX iniciando carga (~24MB) y rotando:', radioM.position);
             } catch (e) { console.warn('⚠️ [Radio] No se pudo cargar:', e.message || e); }
-
-            // ── Motor Arranque GLB animado ──
-            try {
-                const m = modelsData.motorArranque;
-                m.node = await sdk.Scene.createNode();
-                m.node.addComponent('custom.animatedGltf', { url: m.file, modelId: m.id, localPosition: m.position, localRotation: m.rotation, localScale: m.localScale });
-                m.node.start(); m.visible = true;
-                console.log('⚙️ [MotorArranque] Nodo creado con animaciones en loop.');
-            } catch (e) { console.warn('⚠️ [MotorArranque] No se pudo cargar:', e.message || e); }
 
             // ── Loto GLB models ──
             for (const id of ['lotoCandado', 'lotoEtiqueta', 'lotoPinza']) {
@@ -2400,22 +2477,6 @@
                     // ── Actualizar widget de rotación ──
                     const el = document.getElementById('rotation-value');
                     if (el) el.textContent = `x: ${rx}  y: ${ry}`;
-                    // ── Actualizar HUD ──
-                    const hudRot = document.getElementById('hud-rot');
-                    if (hudRot) hudRot.textContent = `x: ${rx}°  y: ${ry}°`;
-                }
-                if (pose && pose.position) {
-                    const px = pose.position.x != null ? pose.position.x.toFixed(3) : '?';
-                    const py = pose.position.y != null ? pose.position.y.toFixed(3) : '?';
-                    const pz = pose.position.z != null ? pose.position.z.toFixed(3) : '?';
-                    const hudPos = document.getElementById('hud-pos');
-                    const hudPx = document.getElementById('hud-px');
-                    const hudPy = document.getElementById('hud-py');
-                    const hudPz = document.getElementById('hud-pz');
-                    if (hudPos) hudPos.textContent = `${px}, ${py}, ${pz}`;
-                    if (hudPx) hudPx.textContent = px;
-                    if (hudPy) hudPy.textContent = py;
-                    if (hudPz) hudPz.textContent = pz;
                 }
             });
 
@@ -2430,9 +2491,6 @@
                     const sid = currentSweep.sid;
                     const el = document.getElementById('sweep-id-value');
                     if (el) el.textContent = sid;
-                    // ── Actualizar HUD ──
-                    const hudSweep = document.getElementById('hud-sweep-val');
-                    if (hudSweep) hudSweep.textContent = sid;
                     console.log("-----------------------------------------");
                     console.log("📍 UUID REAL PARA TU CÓDIGO:");
                     console.log(`sweep_id: '${sid}'`);
@@ -2441,34 +2499,7 @@
             });
         });
 
-        // ── Copiar desde el HUD al portapapeles ─────────────────────────────
-        function hudCopy(type) {
-            let text = '';
-            if (type === 'pos') {
-                const px = document.getElementById('hud-px').textContent;
-                const py = document.getElementById('hud-py').textContent;
-                const pz = document.getElementById('hud-pz').textContent;
-                text = `position: { x: ${px}, y: ${py}, z: ${pz} }`;
-            } else if (type === 'rot') {
-                const val = document.getElementById('hud-rot').textContent;
-                const m = val.match(/x:\s*([\d.\-]+).*y:\s*([\d.\-]+)/);
-                text = m ? `rotation: { x: ${m[1]}, y: ${m[2]} }` : val;
-            } else if (type === 'sweep') {
-                text = document.getElementById('hud-sweep-val').textContent;
-            }
-            if (!text || text === 'esperando...' || text === '—') return;
-            navigator.clipboard.writeText(text).catch(() => {
-                const ta = document.createElement('textarea');
-                ta.value = text; document.body.appendChild(ta);
-                ta.select(); document.execCommand('copy');
-                document.body.removeChild(ta);
-            });
-            // Feedback visual rápido
-            const btn = event.target;
-            const orig = btn.textContent;
-            btn.textContent = '✔'; btn.style.color = '#68d391';
-            setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1200);
-        }
+
 
         // ── Copiar sweep_id al portapapeles ─────────────────────────
         function copySweepId() {
