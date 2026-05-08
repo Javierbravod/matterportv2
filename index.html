@@ -716,10 +716,108 @@
             user-select: all;
             margin-top: 5px;
         }
+
+        /* ── WELCOME MODAL ── */
+        #welcome-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+
+        #welcome-modal {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(6, 182, 212, 0.15);
+            border-radius: 12px;
+            padding: 40px 30px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            transform: translateY(0) scale(1);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #welcome-modal-overlay.welcome-hidden {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        #welcome-modal-overlay.welcome-hidden #welcome-modal {
+            transform: translateY(20px) scale(0.95);
+        }
+
+        .welcome-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            font-weight: 500;
+            color: #e2e8f0;
+            margin-bottom: 24px;
+        }
+
+        .welcome-text {
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .welcome-btn {
+            margin-top: 25px;
+            background: transparent;
+            border: 2px solid #06b6d4;
+            color: #06b6d4;
+            padding: 10px 28px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .welcome-btn:hover {
+            background: rgba(6, 182, 212, 0.15);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
     </style>
 </head>
 
 <body>
+    <!-- WELCOME MODAL -->
+    <div id="welcome-modal-overlay">
+        <div id="welcome-modal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 64px; height: 64px; margin: 0 auto 15px auto; display: block; filter: drop-shadow(0 0 8px rgba(6,182,212,0.6));">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <rect x="10" y="10" width="4" height="5" rx="1"></rect>
+                <path d="M10 10V8a2 2 0 0 1 4 0v2"></path>
+            </svg>
+            <div class="welcome-title">BIENVENIDO AL CURSO<br>DE BLOQUEO LOTO</div>
+            <div class="welcome-subtitle">Aislamiento Seguro de Energía</div>
+            <div class="welcome-text">En esta simulación aprenderás a desenergizar y bloquear equipos de forma segura para evitar accidentes durante el mantenimiento.</div>
+            <div class="welcome-text" style="margin-bottom:0;">Este módulo se divide en 5 pasos operativos.</div>
+            <button class="welcome-btn" onclick="closeWelcomeModal()">[ CONTINUAR > ]</button>
+        </div>
+    </div>
+
     <!-- SIDEBAR PANEL -->
     <div id="checklist-panel">
         <div class="panel-header">
@@ -2546,6 +2644,11 @@
                 setTimeout(() => toast.classList.remove('show'), 1800);
             };
             copy(text);
+        }
+
+        // ── Cerrar Modal de Bienvenida ──────────────────────────────
+        function closeWelcomeModal() {
+            document.getElementById('welcome-modal-overlay').classList.add('welcome-hidden');
         }
 
     </script>
