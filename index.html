@@ -257,6 +257,77 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
+        /* ── BOTÓN ANIMACIÓN PALANCA ── */
+        #btn-palanca-anim {
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(120, 40, 10, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 146, 60, 0.4);
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(251, 146, 60, 0.3);
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+
+        #btn-palanca-anim:hover {
+            background: rgba(180, 60, 10, 0.95);
+            border-color: rgba(251, 146, 60, 0.7);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(251, 146, 60, 0.5);
+        }
+
+        #btn-palanca-anim.playing {
+            background: rgba(20, 80, 20, 0.85);
+            border-color: rgba(74, 222, 128, 0.5);
+            box-shadow: 0 4px 20px rgba(74, 222, 128, 0.3);
+        }
+
+        #btn-palanca-anim.playing:hover {
+            background: rgba(30, 110, 30, 0.95);
+            border-color: rgba(74, 222, 128, 0.8);
+            box-shadow: 0 6px 24px rgba(74, 222, 128, 0.5);
+        }
+
+        .anim-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #fb923c;
+            box-shadow: 0 0 6px #fb923c;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        #btn-palanca-anim.playing .anim-dot {
+            background: #4ade80;
+            box-shadow: 0 0 8px #4ade80;
+            animation: anim-pulse 1s infinite;
+        }
+
+        @keyframes anim-pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.7);
+            }
+        }
+
         /* ── BOTONES DE MODELOS BIM ── */
         .model-toggle-btn {
             z-index: 9999;
@@ -570,152 +641,7 @@
             transform: none;
         }
 
-        /* ── PANEL DE CALIBRACIÓN BIM (Draggable) ── */
-        #calib-panel {
-            position: fixed;
-            top: 20px;
-            left: calc(100vw - 300px);
-            /* posición inicial cerca de la derecha */
-            z-index: 9999;
-            background: rgba(28, 28, 30, 0.92);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 0 0 15px 0;
-            color: white;
-            font-family: 'Inter', sans-serif;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            display: flex;
-            /* Activado */
-            flex-direction: column;
-            gap: 0;
-            min-width: 250px;
-            user-select: none;
-        }
 
-        .calib-header {
-            font-size: 13px;
-            font-weight: 700;
-            text-align: center;
-            border-bottom: 1px solid #444;
-            padding: 12px 16px;
-            cursor: grab;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 12px 12px 0 0;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .calib-header:active {
-            cursor: grabbing;
-        }
-
-        .calib-header::before {
-            content: '⠿';
-            font-size: 16px;
-            opacity: 0.4;
-        }
-
-        .calib-body {
-            padding: 12px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: 65vh;
-            overflow-y: auto;
-        }
-
-        .calib-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            font-size: 13px;
-        }
-
-        .calib-btn {
-            background: #3a3a3c;
-            border: 1px solid #636366;
-            color: white;
-            border-radius: 4px;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .calib-btn:hover {
-            background: #22c55e;
-            border-color: #22c55e;
-            color: black;
-        }
-
-        .calib-input {
-            background: #1c1c1e;
-            color: white;
-            border: 1px solid #636366;
-            border-radius: 4px;
-            padding: 4px;
-            width: 60px;
-            text-align: center;
-            font-size: 12px;
-        }
-
-        .calib-select {
-            background: #1c1c1e;
-            color: white;
-            border: 1px solid #636366;
-            border-radius: 4px;
-            padding: 4px;
-            font-size: 12px;
-            width: 100%;
-        }
-
-        /* Colapso del cuerpo */
-        #calib-panel.collapsed #calib-panel-body {
-            display: none;
-        }
-
-        #calib-panel.collapsed {
-            padding-bottom: 0;
-        }
-
-        .calib-toggle-btn {
-            background: none;
-            border: none;
-            color: #8e8e93;
-            cursor: pointer;
-            font-size: 14px;
-            margin-left: auto;
-            padding: 0 4px;
-            line-height: 1;
-            transition: color 0.2s, transform 0.2s;
-        }
-
-        .calib-toggle-btn:hover {
-            color: #ffffff;
-        }
-
-        #calib-panel.collapsed .calib-toggle-btn {
-            transform: rotate(180deg);
-        }
-
-        #calib-coords,
-        #calib-rot,
-        #calib-scale {
-            background: #000;
-            padding: 8px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 11px;
-            text-align: center;
-            color: #4ade80;
-            user-select: all;
-            margin-top: 5px;
-        }
 
         /* ── WELCOME MODAL ── */
         #welcome-modal-overlay {
@@ -798,6 +724,57 @@
             background: rgba(6, 182, 212, 0.15);
             box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
         }
+
+        /* ── LOGO BIM+NP EN WELCOME MODAL ── */
+        .welcome-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .welcome-brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+            border-radius: 10px;
+            box-shadow: 0 0 16px rgba(6, 182, 212, 0.5);
+            flex-shrink: 0;
+        }
+
+        .welcome-brand-logo svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .welcome-brand-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.1;
+        }
+
+        .welcome-brand-name {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #38bdf8, #06b6d4, #67e8f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-brand-tagline {
+            font-size: 10px;
+            font-weight: 500;
+            color: #64748b;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 
@@ -805,14 +782,19 @@
     <!-- WELCOME MODAL -->
     <div id="welcome-modal-overlay">
         <div id="welcome-modal">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 64px; height: 64px; margin: 0 auto 15px auto; display: block; filter: drop-shadow(0 0 8px rgba(6,182,212,0.6));">
+
+            <!-- ICONO LOTO -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round"
+                style="width: 64px; height: 64px; margin: 0 auto 15px auto; display: block; filter: drop-shadow(0 0 8px rgba(6,182,212,0.6));">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 <rect x="10" y="10" width="4" height="5" rx="1"></rect>
                 <path d="M10 10V8a2 2 0 0 1 4 0v2"></path>
             </svg>
             <div class="welcome-title">BIENVENIDO AL CURSO<br>DE BLOQUEO LOTO</div>
             <div class="welcome-subtitle">Aislamiento Seguro de Energía</div>
-            <div class="welcome-text">En esta simulación aprenderás a desenergizar y bloquear equipos de forma segura para evitar accidentes durante el mantenimiento.</div>
+            <div class="welcome-text">En esta simulación aprenderás a desenergizar y bloquear equipos de forma segura
+                para evitar accidentes durante el mantenimiento.</div>
             <div class="welcome-text" style="margin-bottom:0;">Este módulo se divide en 5 pasos operativos.</div>
             <button class="welcome-btn" onclick="closeWelcomeModal()">[ CONTINUAR > ]</button>
         </div>
@@ -843,12 +825,7 @@
 
     <!-- BOTONES TOGGLE DE MODELOS -->
     <div id="sidebar-models">
-        <button id="btn-electrico" class="model-toggle-btn" onclick="handleToggle('electrico')">
-            <span class="fbx-dot"></span> ⚡ M. Eléctrico
-        </button>
-        <button id="btn-clima" class="model-toggle-btn" onclick="handleToggle('clima')">
-            <span class="fbx-dot"></span> ❄️ M. Clima
-        </button>
+
 
         <!-- SWEEP ID DISPLAY -->
         <div id="sweep-id-widget">
@@ -877,144 +854,7 @@
 
 
 
-    <!-- PANEL DE CALIBRACIÓN BIM -->
-    <div id="calib-panel">
-        <div class="calib-header" id="calib-drag-handle">
-            🛠️ Calibrador Avanzado
-            <button class="calib-toggle-btn" id="calib-toggle" onclick="toggleCalibPanel()"
-                title="Colapsar/Expandir">▲</button>
-        </div>
-        <div id="calib-panel-body" class="calib-body">
 
-            <select id="calib-model-select" class="calib-select" onchange="updateCalibDisplay()">
-            </select>
-
-            <div class="calib-row" style="margin-top:5px">
-                <span>Paso:</span>
-                <input type="number" id="calib-step" class="calib-input" value="0.1" step="0.01">
-            </div>
-
-            <div style="font-size:11px;color:#60a5fa;font-weight:bold;text-align:center;margin-top:5px">POSICIÓN LOCAL
-                (M)</div>
-            <div class="calib-row">
-                <span>Eje X:</span>
-                <div><button class="calib-btn" onclick="nudgePosLocal('x',-1)">-</button><button class="calib-btn"
-                        onclick="nudgePosLocal('x',1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Eje Y:</span>
-                <div><button class="calib-btn" onclick="nudgePosLocal('y',-1)">-</button><button class="calib-btn"
-                        onclick="nudgePosLocal('y',1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Eje Z:</span>
-                <div><button class="calib-btn" onclick="nudgePosLocal('z',-1)">-</button><button class="calib-btn"
-                        onclick="nudgePosLocal('z',1)">+</button></div>
-            </div>
-
-            <div style="font-size:11px;color:#4ade80;font-weight:bold;text-align:center;margin-top:10px">POSICIÓN
-                ABSOLUTA (M)</div>
-            <div class="calib-row">
-                <span>Eje X:</span>
-                <div><button class="calib-btn" onclick="nudgePos('x',-1)">-</button><button class="calib-btn"
-                        onclick="nudgePos('x',1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Eje Y:</span>
-                <div><button class="calib-btn" onclick="nudgePos('y',-1)">-</button><button class="calib-btn"
-                        onclick="nudgePos('y',1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Eje Z:</span>
-                <div><button class="calib-btn" onclick="nudgePos('z',-1)">-</button><button class="calib-btn"
-                        onclick="nudgePos('z',1)">+</button></div>
-            </div>
-            <div id="calib-coords">Pos: x: 0.00, y: 0.00, z: 0.00</div>
-
-            <div style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">ROTACIÓN (GRADOS)</div>
-            <div class="calib-row">
-                <span>Paso Rot:</span>
-                <input type="number" id="calib-rot-step" class="calib-input" value="5" step="1">
-            </div>
-            <div class="calib-row">
-                <span>Rot X:</span>
-                <div><button class="calib-btn" onclick="nudgeRot('x',-1)">-</button><button class="calib-btn"
-                        onclick="nudgeRot('x',1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Rot Y:</span>
-                <div><button class="calib-btn" onclick="nudgeRot('y',-1)">-</button><button class="calib-btn"
-                        onclick="nudgeRot('y',1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Rot Z:</span>
-                <div><button class="calib-btn" onclick="nudgeRot('z',-1)">-</button><button class="calib-btn"
-                        onclick="nudgeRot('z',1)">+</button></div>
-            </div>
-            <div id="calib-rot">Rot: x: 0°, y: 0°, z: 0°</div>
-
-            <div style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">ESCALA (LOCAL)</div>
-            <div class="calib-row">
-                <span>Paso Escala:</span>
-                <input type="number" id="calib-scale-step" class="calib-input" value="1" step="0.1">
-            </div>
-            <div class="calib-row">
-                <span>Escala X:</span>
-                <div><button class="calib-btn" onclick="nudgeScale('x',-1)">-</button><button class="calib-btn"
-                        onclick="nudgeScale('x',1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Escala Y:</span>
-                <div><button class="calib-btn" onclick="nudgeScale('y',-1)">-</button><button class="calib-btn"
-                        onclick="nudgeScale('y',1)">+</button></div>
-            </div>
-            <div class="calib-row">
-                <span>Escala Z:</span>
-                <div><button class="calib-btn" onclick="nudgeScale('z',-1)">-</button><button class="calib-btn"
-                        onclick="nudgeScale('z',1)">+</button></div>
-            </div>
-            <div id="calib-scale">Escala: x: 1, y: 1, z: 1</div>
-
-            <div style="margin-top:10px;border-top:1px solid #333;padding-top:8px;">
-                <button class="calib-btn"
-                    style="width:100%;background:#065f46;color:#fff;padding:6px;font-size:11px;border-radius:6px;"
-                    onclick="showAllCoords()">📊 Ver coords de todos los modelos</button>
-            </div>
-        </div><!-- /calib-panel-body -->
-    </div>
-
-    <!-- OVERLAY COORDENADAS TODOS LOS MODELOS -->
-    <div id="coords-overlay" style="display:none;position:fixed;top:80px;left:50%;margin-left:-270px;
-        background:#0f172a;border:1px solid #334155;border-radius:12px;padding:0;z-index:10000;
-        min-width:540px;max-height:80vh;font-family:monospace;font-size:12px;
-        color:#e2e8f0;box-shadow:0 20px 60px rgba(0,0,0,.9);">
-        <!-- DRAG HANDLE -->
-        <div id="coords-drag-handle" style="display:flex;justify-content:space-between;align-items:center;
-            padding:10px 16px;background:rgba(255,255,255,0.04);border-bottom:1px solid #334155;
-            border-radius:12px 12px 0 0;cursor:grab;user-select:none;">
-            <span style="font-weight:bold;font-size:14px;display:flex;align-items:center;gap:8px;">
-                <span style="opacity:0.4;font-size:16px;">⠿</span>
-                📊 Coordenadas absolutas — todos los modelos
-            </span>
-            <button id="coords-close-btn" onclick="document.getElementById('coords-overlay').style.display='none'"
-                style="background:#ef4444;border:none;color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:13px;">✕</button>
-        </div>
-        <!-- TABLE BODY -->
-        <div style="overflow-y:auto;max-height:calc(80vh - 48px);padding:12px 16px;">
-            <table style="width:100%;border-collapse:collapse;">
-                <thead>
-                    <tr style="color:#94a3b8;border-bottom:1px solid #334155;font-size:11px;">
-                        <th style="text-align:left;padding:4px 8px;">Modelo</th>
-                        <th style="padding:4px 6px;">X</th>
-                        <th style="padding:4px 6px;">Y</th>
-                        <th style="padding:4px 6px;">Z</th>
-                        <th style="padding:4px 6px;">Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="coords-table-body"></tbody>
-            </table>
-        </div>
-    </div>
 
     <iframe id="showcase" width="100%" height="100%"
         src="./bundle/showcase.html?m=hXEV8zd9GFy&play=1&qs=1&log=0&applicationKey=myhcpcdgdh7907ggei7s5f4md"
@@ -1039,11 +879,11 @@
         const modelsData = {
             'electrico': { id: 'electrico', label: 'M. Eléctrico', icon: '⚡', file: 'Electrico.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: false, position: { x: -12.7, y: -0.69, z: -7.58 }, rotation: { x: 0, y: 90, z: 0 } },
             'clima': { id: 'clima', label: 'M. Clima', icon: '❄️', file: 'Clima.fbx', type: 'mp.fbxLoader', scale: 0.0126, node: null, visible: false, position: { x: -14.5, y: -1.5, z: -9 }, rotation: { x: 0, y: 90, z: 0 } },
-            'radio': { id: 'radio', label: 'Radio', icon: '📻', file: 'Radio.fbx', type: 'mp.fbxLoader', scale: 0.025, node: null, visible: true, position: { x: -1, y: 1.4, z: 2.3 }, rotation: { x: 0, y: -90, z: 0 } },
+            'radio': { id: 'radio', label: 'Radio', icon: '📻', file: 'Radio.fbx', type: 'mp.fbxLoader', scale: 0.025, node: null, visible: false, position: { x: -1, y: 1.4, z: 2.3 }, rotation: { x: 0, y: -90, z: 0 } },
             'mesa': { id: 'mesa', label: 'Mesa', icon: '🪑', file: 'Mesa.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -15.65, y: 0, z: -2.6 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1.2, y: 1.1, z: 1 } },
-            'candado': { id: 'candado', label: 'Candado', icon: '🔒', file: 'candado.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 2.1, z: -2.1 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
-            'etiqueta': { id: 'etiqueta', label: 'Etiqueta', icon: '🏷️', file: 'Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.2, y: 2.35, z: -2.1 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
-            'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -2, y: 2, z: -0.8 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
+            'candado': { id: 'candado', label: 'Candado', icon: '🔒', file: 'candado.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 2.1, z: -2.3 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
+            'etiqueta': { id: 'etiqueta', label: 'Etiqueta', icon: '🏷️', file: 'Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.2, y: 2.35, z: -2.25 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
+            'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -2.3, y: 2, z: -0.8 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
 
             'lotoCandado': { id: 'lotoCandado', label: 'Loto Candado', icon: '🔒', file: 'Loto_Candado.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.92, y: 1.16, z: -0.78 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'lotoEtiqueta': { id: 'lotoEtiqueta', label: 'Loto Etiqueta', icon: '🏷️', file: 'Loto_Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.92, y: 1.17, z: -0.78 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
@@ -1051,7 +891,11 @@
             'cubo2': { id: 'cubo2', label: 'Cubo 2', icon: '📦', file: 'Cubo2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 10, y: 10, z: 10 } },
             'mesa2': { id: 'mesa2', label: 'Mesa 2', icon: '🪑', file: 'Mesa2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.6, y: 0.3, z: -2.3 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'clima2': { id: 'clima2', label: 'Clima 2', icon: '❄️', file: 'Clima2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -3.1, y: 0.4, z: 4.3 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
-            'ele': { id: 'ele', label: 'Ele 2', icon: '⚡', file: 'Ele2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -1.55, y: 0.21, z: 4.4 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } }
+            'ele': { id: 'ele', label: 'Ele 2', icon: '⚡', file: 'Ele2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -1.55, y: 0.21, z: 4.4 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'palancaAnimada': { id: 'palancaAnimada', label: 'Palanca Animada', icon: '🔧', file: 'PalancaAnimada.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.9, y: 1.0, z: -0.9 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 15, y: 15, z: 15 } },
+            'cuboSdk': { id: 'cuboSdk', label: 'Cubo SDK', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'cubo3': { id: 'cubo3', label: 'Cubo 3', icon: '📦', file: 'cubo3.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -3, y: 0, z: -1 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'repisa': { id: 'repisa', label: 'Repisa', icon: '🗄️', file: 'Repisa.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } }
         };
 
 
@@ -1111,426 +955,21 @@
         }
 
 
-        // Función eliminada: toggleMotorAnim
-
-        // ── CALIBRADOR: datos y funciones ──────────────────────────
-        const tagsCalibData = {};
-
-        function initModelUI() {
-            const select = document.getElementById('calib-model-select');
-            if (!select) return;
-            select.innerHTML = '';
-
-            const grpModels = document.createElement('optgroup');
-            grpModels.label = '── Modelos 3D ──';
-            select.appendChild(grpModels);
-            Object.values(modelsData).forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.textContent = `${m.icon} ${m.label}`;
-                grpModels.appendChild(opt);
-            });
-
-            const grpTags = document.createElement('optgroup');
-            grpTags.label = '── Tags Checklist ──';
-            grpTags.id = 'calib-tags-group';
-            select.appendChild(grpTags);
-        }
-
-        function registerTagForCalib(stepId, sid, label, anchorPosition) {
-            const key = `tag_${stepId}`;
-            tagsCalibData[key] = { sid, anchorPosition: Object.assign({}, anchorPosition), stepLabel: label };
-            const grp = document.getElementById('calib-tags-group');
-            if (!grp) return;
-            if (grp.querySelector(`option[value="${key}"]`)) return;
-            const opt = document.createElement('option');
-            opt.value = key;
-            opt.textContent = `📍 Paso ${stepId}: ${label.replace(/^Paso \d+: /, '')}`;
-            grp.appendChild(opt);
-        }
-
-        function getActiveModel() {
-            const el = document.getElementById('calib-model-select');
-            if (!el) return null;
-            const id = el.value;
-            if (id && id.startsWith('tag_')) return null;
-            return modelsData[id] || null;
-        }
-
-        function getActiveTag() {
-            const el = document.getElementById('calib-model-select');
-            if (!el) return null;
-            const id = el.value;
-            if (!id || !id.startsWith('tag_')) return null;
-            return tagsCalibData[id] || null;
-        }
-
-        function getNodeObj(m) {
-            if (!m || !m.node) return null;
-            if (m.node.obj3D) return m.node.obj3D;
-            if (window._customObjMap && window._customObjMap[m.id]) return window._customObjMap[m.id];
-            return null;
-        }
-
-        function getFbxComp(m) {
-            if (!m || !m.node) return null;
-            try {
-                for (const c of m.node.componentIterator())
-                    if (c.componentType === 'mp.fbxLoader') return c;
-            } catch (e) { }
-            return null;
-        }
-
-        function getGltfComp(m) {
-            if (!m || !m.node) return null;
-            try {
-                for (const c of m.node.componentIterator())
-                    if (c.componentType === 'mp.gltfLoader') return c;
-            } catch (e) { }
-            return null;
-        }
-
-        async function nudgePosLocal(axis, dir) {
-            const stepEl = document.getElementById('calib-step');
-            const step = stepEl ? (parseFloat(stepEl.value) || 0.1) : 0.1;
-            const tag = getActiveTag();
-            if (tag) return; // Tags no tienen posición local vs global (no tienen rotación)
-            const m = getActiveModel();
-            if (!m) return;
-
-            const THREE = await _threePromise;
-            const temp = new THREE.Object3D();
-            if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-            if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
-            temp.position.set(m.position.x, m.position.y, m.position.z);
-            temp.rotation.set(
-                m.rotation.x * Math.PI / 180,
-                m.rotation.y * Math.PI / 180,
-                m.rotation.z * Math.PI / 180,
-                'XYZ'
-            );
-
-            const distance = step * dir;
-            if (axis === 'x') temp.translateX(distance);
-            if (axis === 'y') temp.translateY(distance);
-            if (axis === 'z') temp.translateZ(distance);
-
-            m.position.x = +temp.position.x.toFixed(4);
-            m.position.y = +temp.position.y.toFixed(4);
-            m.position.z = +temp.position.z.toFixed(4);
-
-            if (m.type === 'mp.fbxLoader') {
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-            } else if (m.type === 'mp.gltfLoader') {
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-            } else {
-                const obj = getNodeObj(m);
-                if (obj) {
-                    obj.position.set(m.position.x, m.position.y, m.position.z);
-                }
-            }
-            updateCalibDisplay();
-        }
-
-        function nudgePos(axis, dir) {
-            const stepEl = document.getElementById('calib-step');
-            const step = stepEl ? (parseFloat(stepEl.value) || 0.1) : 0.1;
-            const tag = getActiveTag();
-            if (tag) {
-                tag.anchorPosition[axis] = (tag.anchorPosition[axis] || 0) + step * dir;
-                if (mpSdk) mpSdk.Mattertag.editPosition(tag.sid, { anchorPosition: tag.anchorPosition, stemVector: { x: 0, y: 0, z: 0 } }).catch(e => console.warn('editPosition:', e));
-                updateCalibDisplay(); return;
-            }
-            const m = getActiveModel();
-            if (!m) return;
-            // FBX: actualizar m.position y comp.inputs.localPosition
-            if (m.type === 'mp.fbxLoader') {
-                if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-                m.position[axis] = +((m.position[axis] || 0) + step * dir).toFixed(4);
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-                updateCalibDisplay(); return;
-            }
-            // GLB (mp.gltfLoader): igual que FBX, vía comp.inputs.localPosition
-            if (m.type === 'mp.gltfLoader') {
-                if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-                m.position[axis] = +((m.position[axis] || 0) + step * dir).toFixed(4);
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-                updateCalibDisplay(); return;
-            }
-            // custom (animatedGltf u otros): obj3D directo
-            const obj = getNodeObj(m);
-            if (!obj) return;
-            obj.position[axis] += step * dir;
-            if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-            m.position[axis] = +obj.position[axis].toFixed(4);
-            updateCalibDisplay();
-        }
-
-        function nudgeRot(axis, dir) {
-            if (getActiveTag()) return;
-            const m = getActiveModel();
-            if (!m) return;
-            const stepEl = document.getElementById('calib-rot-step');
-            const step = stepEl ? (parseFloat(stepEl.value) || 5) : 5;
-            // FBX
-            if (m.type === 'mp.fbxLoader') {
-                if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
-                m.rotation[axis] = +((m.rotation[axis] || 0) + step * dir).toFixed(1);
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localRotation = { ...m.rotation };
-                updateCalibDisplay(); return;
-            }
-            // GLB (mp.gltfLoader): vía comp.inputs.localRotation
-            if (m.type === 'mp.gltfLoader') {
-                if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
-                m.rotation[axis] = +((m.rotation[axis] || 0) + step * dir).toFixed(1);
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localRotation = { ...m.rotation };
-                updateCalibDisplay(); return;
-            }
-            // custom: obj3D directo
-            const obj = getNodeObj(m);
-            if (!obj) return;
-            obj.rotation[axis] += step * dir * (Math.PI / 180);
-            if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
-            m.rotation[axis] = +(obj.rotation[axis] * 180 / Math.PI).toFixed(1);
-            updateCalibDisplay();
-        }
-
-        function nudgeScale(axis, dir) {
-            if (getActiveTag()) return;
-            const m = getActiveModel();
-            if (!m) return;
-            const stepEl = document.getElementById('calib-scale-step');
-            const step = stepEl ? (parseFloat(stepEl.value) || 1) : 1;
-
-            if (!m.localScale) {
-                if (m.scale) {
-                    m.localScale = { x: m.scale, y: m.scale, z: m.scale };
+        // ── PALANCA ANIMADA: toggle de animación ─────────────────────
+        function togglePalancaAnim() {
+            const btn = document.getElementById('btn-palanca-anim');
+            // Invertir estado de reproducción
+            window._palancaAnimActive = !window._palancaAnimActive;
+            const nowPlaying = window._palancaAnimActive;
+            if (btn) {
+                if (nowPlaying) {
+                    btn.classList.add('playing');
                 } else {
-                    m.localScale = { x: 1, y: 1, z: 1 };
+                    btn.classList.remove('playing');
                 }
             }
-
-            m.localScale[axis] = +((m.localScale[axis] || 1) + step * dir).toFixed(4);
-
-            if (m.type === 'mp.fbxLoader') {
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localScale = { ...m.localScale };
-                updateCalibDisplay(); return;
-            }
-            if (m.type === 'mp.gltfLoader') {
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localScale = { ...m.localScale };
-                updateCalibDisplay(); return;
-            }
-            const obj = getNodeObj(m);
-            if (!obj) return;
-            obj.scale[axis] = m.localScale[axis];
-            updateCalibDisplay();
+            console.log(`🔧 [PalancaAnimada] Animación ${nowPlaying ? '▶ REPRODUCIENDO' : '⏸ PAUSADA'}`);
         }
-
-        function updateCalibDisplay() {
-            const tag = getActiveTag();
-            const coordEl = document.getElementById('calib-coords');
-            const rotEl = document.getElementById('calib-rot');
-            const scaleEl = document.getElementById('calib-scale');
-            if (tag) {
-                const p = tag.anchorPosition;
-                if (coordEl) coordEl.innerText = `Pos Global: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}`;
-                if (rotEl) rotEl.innerText = `(Tags no tienen rotación)`;
-                if (scaleEl) scaleEl.innerText = `(Tags no tienen escala)`;
-                return;
-            }
-            const m = getActiveModel();
-            if (!m) return;
-            // FBX: mostrar m.position / m.rotation (fuente de verdad)
-            if (m.type === 'mp.fbxLoader') {
-                const p = m.position || { x: 0, y: 0, z: 0 };
-                const r = m.rotation || { x: 0, y: 0, z: 0 };
-                const s = m.localScale || { x: m.scale || 1, y: m.scale || 1, z: m.scale || 1 };
-                if (coordEl) coordEl.innerHTML = `
-                    <div style="color:#60a5fa;font-size:11px;margin-bottom:2px;">Local: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>
-                    <div style="color:#4ade80;font-size:11px;">Absoluta: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
-                if (rotEl) rotEl.innerText = `Rot FBX: x: ${r.x.toFixed(1)}°  y: ${r.y.toFixed(1)}°  z: ${r.z.toFixed(1)}°`;
-                if (scaleEl) scaleEl.innerText = `Escala: x: ${s.x.toFixed(3)}  y: ${s.y.toFixed(3)}  z: ${s.z.toFixed(3)}`;
-                return;
-            }
-            // GLB (mp.gltfLoader): mostrar m.position como fuente de verdad
-            if (m.type === 'mp.gltfLoader') {
-                const p = m.position || { x: 0, y: 0, z: 0 };
-                const r = m.rotation || { x: 0, y: 0, z: 0 };
-                const s = m.localScale || { x: 1, y: 1, z: 1 };
-                if (coordEl) coordEl.innerHTML = `
-                    <div style="color:#60a5fa;font-size:11px;margin-bottom:2px;">Local: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>
-                    <div style="color:#4ade80;font-size:11px;">Absoluta: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
-                if (rotEl) rotEl.innerText = `Rot GLB: x: ${r.x.toFixed(1)}°  y: ${r.y.toFixed(1)}°  z: ${r.z.toFixed(1)}°`;
-                if (scaleEl) scaleEl.innerText = `Escala: x: ${s.x.toFixed(3)}  y: ${s.y.toFixed(3)}  z: ${s.z.toFixed(3)}`;
-                return;
-            }
-            // custom.animatedGltf u otros: leer de obj3D
-            const obj = getNodeObj(m);
-            if (!obj) {
-                if (coordEl) coordEl.innerHTML = `<span style="color:#f59e0b">⏳ Modelo cargando...</span>`;
-                return;
-            }
-            const pL = obj.position, rL = obj.rotation, sL = obj.scale;
-            if (coordEl) coordEl.innerHTML = `
-                <div style="color:#60a5fa;font-size:11px;margin-bottom:2px;">Local: x: <b>${pL.x.toFixed(4)}</b> &nbsp; y: <b>${pL.y.toFixed(4)}</b> &nbsp; z: <b>${pL.z.toFixed(4)}</b></div>
-                <div style="color:#4ade80;font-size:11px;">Absoluta: x: <b>${pL.x.toFixed(4)}</b> &nbsp; y: <b>${pL.y.toFixed(4)}</b> &nbsp; z: <b>${pL.z.toFixed(4)}</b></div>`;
-            if (rotEl) rotEl.innerText = `Rot: x: ${(rL.x * 180 / Math.PI).toFixed(0)}°  y: ${(rL.y * 180 / Math.PI).toFixed(0)}°  z: ${(rL.z * 180 / Math.PI).toFixed(0)}°`;
-            if (scaleEl) scaleEl.innerText = `Escala: x: ${sL.x.toFixed(3)}  y: ${sL.y.toFixed(3)}  z: ${sL.z.toFixed(3)}`;
-        }
-
-        // ── COORDENADAS ABSOLUTAS DE TODOS LOS MODELOS ──────────────
-        async function showAllCoords() {
-            const tbody = document.getElementById('coords-table-body');
-            const overlay = document.getElementById('coords-overlay');
-            if (!tbody || !overlay) return;
-            tbody.innerHTML = '';
-
-            function makeCoordInput(modelId, axis, val, color) {
-                const td = document.createElement('td');
-                td.style.cssText = 'padding:3px 6px;text-align:right;';
-                if (val === '—') {
-                    td.innerHTML = `<span style="color:#475569;">—</span>`;
-                } else {
-                    const inp = document.createElement('input');
-                    inp.type = 'number';
-                    inp.step = '0.001';
-                    inp.value = val;
-                    inp.style.cssText = `width:72px;background:#0f172a;color:${color};border:1px solid #334155;border-radius:4px;padding:2px 4px;font-size:12px;font-family:monospace;font-weight:bold;text-align:right;outline:none;`;
-                    inp.addEventListener('focus', () => { inp.style.borderColor = color; });
-                    inp.addEventListener('blur', () => { inp.style.borderColor = '#334155'; applyCoordEdit(modelId, axis, parseFloat(inp.value)); });
-                    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') inp.blur(); });
-                    td.appendChild(inp);
-                }
-                return td;
-            }
-
-            for (const [id, m] of Object.entries(modelsData)) {
-                let px = '—', py = '—', pz = '—';
-                let estado = '⚫ no cargado';
-                let rowColor = '#1e293b';
-
-                if (m.node) {
-                    const p = m.position;
-                    if (p) { px = p.x.toFixed(3); py = p.y.toFixed(3); pz = p.z.toFixed(3); }
-                    if (m.type === 'mp.fbxLoader') rowColor = '#2e1065';
-                    else rowColor = m.visible ? '#052e16' : '#3f0f0f';
-                    estado = m.visible ? '🟢 visible' : '🔴 oculto';
-                }
-
-                console.log(`${m.icon || ''} [${id}] ${m.label}: x:${px} y:${py} z:${pz} | ${estado}`);
-
-                const tr = document.createElement('tr');
-                tr.style.cssText = `border-bottom:1px solid #1e293b;background:${rowColor}44;`;
-
-                const tdLabel = document.createElement('td');
-                tdLabel.style.cssText = 'padding:5px 8px;white-space:nowrap;';
-                tdLabel.innerHTML = `<span style="margin-right:4px;">${m.icon || '🟦'}</span><span style="color:#e2e8f0;font-weight:500;">${m.label}</span> <span style="color:#475569;font-size:10px;">(${id})</span>`;
-
-                const tdEstado = document.createElement('td');
-                tdEstado.style.cssText = 'padding:5px 8px;text-align:center;font-size:11px;';
-                tdEstado.textContent = estado;
-
-                tr.appendChild(tdLabel);
-                tr.appendChild(makeCoordInput(id, 'x', px, '#60a5fa'));
-                tr.appendChild(makeCoordInput(id, 'y', py, '#34d399'));
-                tr.appendChild(makeCoordInput(id, 'z', pz, '#f59e0b'));
-                tr.appendChild(tdEstado);
-                tbody.appendChild(tr);
-            }
-            overlay.style.display = 'block';
-        }
-
-        // Aplica coordenada absoluta editada desde la tabla al modelo
-        function applyCoordEdit(modelId, axis, newVal) {
-            if (isNaN(newVal)) return;
-            const m = modelsData[modelId];
-            if (!m || !m.node) return;
-            if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-            m.position[axis] = +newVal.toFixed(4);
-            if (m.type === 'mp.fbxLoader') {
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-            } else if (m.type === 'mp.gltfLoader') {
-                // CORRECTO: actualizar via component inputs, NO obj3D.position
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-            } else {
-                // custom.animatedGltf: obj3D directo
-                const obj = getNodeObj(m);
-                if (obj) obj.position[axis] = m.position[axis];
-            }
-            const sel = document.getElementById('calib-model-select');
-            if (sel && sel.value === modelId) updateCalibDisplay();
-        }
-
-        // ── COLAPSO/EXPANSIÓN ──────────────────────────────────────────────
-        function toggleCalibPanel() {
-            document.getElementById('calib-panel').classList.toggle('collapsed');
-        }
-
-        // ── DRAG & DROP ───────────────────────────────────────────
-        (function () {
-            const panel = document.getElementById('calib-panel');
-            const handle = document.getElementById('calib-drag-handle');
-            if (!panel || !handle) return;
-            let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
-            handle.addEventListener('mousedown', (e) => {
-                if (e.target.id === 'calib-toggle') return; // no arrastrar al pulsar el botón
-                dragging = true;
-                startX = e.clientX; startY = e.clientY;
-                const rect = panel.getBoundingClientRect();
-                origLeft = rect.left; origTop = rect.top;
-                panel.style.transition = 'none';
-                e.preventDefault();
-            });
-            document.addEventListener('mousemove', (e) => {
-                if (!dragging) return;
-                const newLeft = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, origLeft + e.clientX - startX));
-                const newTop = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, origTop + e.clientY - startY));
-                panel.style.left = newLeft + 'px';
-                panel.style.top = newTop + 'px';
-                panel.style.right = 'auto';
-            });
-            document.addEventListener('mouseup', () => { dragging = false; });
-        })();
-
-        // ── DRAG & DROP — COORDS OVERLAY ──────────────────────────
-        (function () {
-            const panel = document.getElementById('coords-overlay');
-            const handle = document.getElementById('coords-drag-handle');
-            if (!panel || !handle) return;
-            let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
-            handle.addEventListener('mousedown', (e) => {
-                if (e.target.id === 'coords-close-btn') return;
-                dragging = true;
-                startX = e.clientX; startY = e.clientY;
-                const rect = panel.getBoundingClientRect();
-                origLeft = rect.left; origTop = rect.top;
-                panel.style.transition = 'none';
-                panel.style.marginLeft = '0'; // quitar el margin-left inicial
-                e.preventDefault();
-            });
-            document.addEventListener('mousemove', (e) => {
-                if (!dragging) return;
-                const newLeft = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, origLeft + e.clientX - startX));
-                const newTop = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, origTop + e.clientY - startY));
-                panel.style.left = newLeft + 'px';
-                panel.style.top = newTop + 'px';
-            });
-            document.addEventListener('mouseup', () => { if (dragging) { dragging = false; handle.style.cursor = 'grab'; } });
-            handle.addEventListener('mousedown', () => { handle.style.cursor = 'grabbing'; });
-        })();
-
-        // Inicializar select del calibrador
-        initModelUI();
 
 
         // Step emojis by step id
@@ -1555,8 +994,8 @@
                 items: [
 
                     { text: "<strong>Tomar equipo de comunicación:</strong> Interactuar con la radio en la mesa de inicio." },
-                    { text: "<strong>Contactar al encargado:</strong> Solicitar por radio la detención operativa del equipo." },
-                    { text: "<strong>Recibir autorización:</strong> Escuchar la confirmación de detención por parte del jefe de turno antes de avanzar." }
+                    { text: "<strong>Contactar al encargado:</strong> Solicitar por radio la detención operativa del equipo.", audio: 'bundle/IniciarProceso.MP3' },
+                    { text: "<strong>Recibir autorización:</strong> Escuchar la confirmación de detención por parte del jefe de turno antes de avanzar.", audio: 'bundle/Autorización.MP3' }
                 ]
             },
             {
@@ -1737,6 +1176,7 @@
             const step = checklistSteps[index];
 
             document.getElementById('panel-header-label').textContent = `Paso ${step.id} de ${checklistSteps.length}`;
+            document.querySelector('.panel-step-block').style.display = 'block';
             document.getElementById('panel-step-emoji').textContent = stepEmojis[step.id] || '📋';
             document.getElementById('panel-title-text').textContent = step.label;
             document.getElementById('panel-objective').textContent = step.objective;
@@ -1766,6 +1206,7 @@
 
             // Reglas condicionales: el modelo SOLO se muestra si se cumple su condición en el checklist
             const conditionalModels = {
+                'radio': (step) => checkState[step] && checkState[step][0],   // aparece al marcar "Tomar equipo de comunicación"
                 'pinzas': (step) => checkState[step] && checkState[step][0],
                 'candado': (step) => checkState[step] && checkState[step][1],
                 'etiqueta': (step) => checkState[step] && checkState[step][2],
@@ -1866,10 +1307,36 @@
             }
         }
 
+        // ── Singleton de audio para los items del checklist ──
+        let _checklistAudio = null;
+        function playChecklistAudio(src) {
+            stopChecklistAudio();
+            _checklistAudio = new Audio(src);
+            _checklistAudio.play().catch(e => console.warn('[Audio]', e));
+        }
+        function stopChecklistAudio() {
+            if (_checklistAudio) {
+                _checklistAudio.pause();
+                _checklistAudio.currentTime = 0;
+                _checklistAudio = null;
+            }
+        }
+
         function toggleItem(stepId, idx) {
             if (isAdvancing) return;
             checkState[stepId][idx] = !checkState[stepId][idx];
             const step = checklistSteps.find(s => s.id === stepId);
+
+            // ── Audio vinculado al item ──
+            const item = step.items[idx];
+            if (item && item.audio) {
+                if (checkState[stepId][idx]) {
+                    playChecklistAudio(item.audio);
+                } else {
+                    stopChecklistAudio();
+                }
+            }
+
             renderItems(step);
             updateProgress(step);
 
@@ -1895,18 +1362,19 @@
         function showAllDone() {
             const container = document.getElementById('checklist-items-container');
             container.innerHTML = `
-                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:40px 20px;text-align:center">
-                    <div style="font-size:48px">🎉</div>
-                    <div style="font-size:15px;font-weight:700;color:#ffffff">¡Checklist completo!</div>
-                    <div style="font-size:12px;color:#8e8e93;line-height:1.5">Todos los pasos del procedimiento de bloqueo han sido completados exitosamente.</div>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:0 10px;text-align:center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 56px; height: 56px; margin-bottom: 4px;">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    <div style="font-size:16px;font-weight:700;color:#ffffff;line-height:1.3">¡Procedimiento completo!</div>
+                    <div style="font-size:13px;color:#8e8e93;line-height:1.5">Todos los pasos del procedimiento de bloqueo han sido completados exitosamente.</div>
                 </div>
             `;
             document.getElementById('progress-label').textContent = `${checklistSteps.length} / ${checklistSteps.length} pasos completados`;
             document.getElementById('progress-bar').style.width = '100%';
             document.getElementById('panel-header-label').textContent = 'Finalizado ✓';
-            document.getElementById('panel-step-emoji').textContent = '✅';
-            document.getElementById('panel-title-text').textContent = 'Procedimiento completado';
-            document.getElementById('panel-objective').textContent = 'Todos los pasos han sido ejecutados correctamente.';
+            document.querySelector('.panel-step-block').style.display = 'none';
         }
 
 
@@ -2074,11 +1542,11 @@
             try {
                 const m = modelsData.mesa;
                 m.node = await sdk.Scene.createNode();
-                
-                m.node.addComponent('mp.gltfLoader', { 
-                    url: m.file, 
-                    localPosition: m.position, 
-                    localRotation: m.rotation, 
+
+                m.node.addComponent('mp.gltfLoader', {
+                    url: m.file,
+                    localPosition: m.position,
+                    localRotation: m.rotation,
                     localScale: m.localScale,
                     visible: true
                 });
@@ -2279,6 +1747,15 @@
                 console.log('🪑 [Mesa 2] GLB cargado.');
             } catch (e) { console.warn('⚠️ [Mesa 2] No se pudo cargar:', e.message || e); }
 
+            // ── Repisa GLB ──
+            try {
+                const m = modelsData.repisa;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', { url: m.file, visible: true, localPosition: m.position, localRotation: m.rotation, localScale: m.localScale });
+                m.node.start(); m.visible = true;
+                console.log('🗄️ [Repisa] GLB cargado.');
+            } catch (e) { console.warn('⚠️ [Repisa] No se pudo cargar:', e.message || e); }
+
 
             // Función auxiliar para aplicar el Pivote Dinámico a cualquier modelo
             const applyDynamicPivotAndRotate = (m, label, spinSpeed = 0) => {
@@ -2378,6 +1855,68 @@
                 } catch (e) { console.warn(`⚠️ [${id}] No se pudo cargar:`, e.message || e); }
             }
 
+            // ── Palanca Animada GLB ──
+            // Usamos mp.gltfLoader para renderizar y fetch+GLTFLoader para las animaciones.
+            try {
+                const m = modelsData.palancaAnimada;
+                m.node = await sdk.Scene.createNode();
+                m.node.addComponent('mp.gltfLoader', {
+                    url: m.file,
+                    visible: true,
+                    localPosition: m.position,
+                    localRotation: m.rotation,
+                    localScale: m.localScale
+                });
+                m.node.start();
+                m.visible = true;
+                console.log('🔧 [PalancaAnimada] Node creado con mp.gltfLoader, esperando obj3D...');
+
+                // Esperar a que el nodo 3D esté listo, luego inyectar animaciones
+                const waitAndAnimate = (attempts = 0) => {
+                    const obj = m.node.obj3D;
+                    if (obj && obj.children.length > 0) {
+                        console.log('🔧 [PalancaAnimada] obj3D listo. Cargando animaciones...');
+                        // Usar el GLTFLoader del ESM para extraer clips
+                        fetch('bundle/PalancaAnimada.glb')
+                            .then(res => res.arrayBuffer())
+                            .then(buf => new GLTFLoader().parseAsync(buf, ''))
+                            .then(gltf => {
+                                if (!gltf.animations || gltf.animations.length === 0) {
+                                    console.warn('⚠️ [PalancaAnimada] Sin animaciones GLTF embebidas. Solo malla estática.');
+                                    return;
+                                }
+                                // Aplicar mixer al obj3D raíz del nodo mp.gltfLoader
+                                const mixer = new THREE.AnimationMixer(obj);
+                                gltf.animations.forEach(clip => {
+                                    mixer.clipAction(clip).setLoop(THREE.LoopRepeat, Infinity).play();
+                                });
+                                // Almacenar mixer globalmente para el botón
+                                window._palancaMixer = mixer;
+                                window._palancaAnimActive = false; // paused por defecto
+                                let lastTime = performance.now();
+                                const tickPalanca = () => {
+                                    requestAnimationFrame(tickPalanca);
+                                    if (window._palancaAnimActive && window._palancaMixer) {
+                                        const now = performance.now();
+                                        window._palancaMixer.update((now - lastTime) / 1000);
+                                        lastTime = now;
+                                    } else {
+                                        lastTime = performance.now(); // reset para evitar saltos al reanudar
+                                    }
+                                };
+                                tickPalanca();
+                                console.log(`🎬 [PalancaAnimada] ${gltf.animations.length} clip(s) listos. Botón para activar.`);
+                            })
+                            .catch(e => console.warn('⚠️ [PalancaAnimada] Error cargando animaciones:', e));
+                    } else if (attempts < 80) {
+                        setTimeout(() => waitAndAnimate(attempts + 1), 150);
+                    } else {
+                        console.warn('⚠️ [PalancaAnimada] Timeout esperando obj3D.');
+                    }
+                };
+                waitAndAnimate();
+            } catch (e) { console.warn('⚠️ [PalancaAnimada] No se pudo cargar:', e.message || e); }
+
             // ── Ocultar modelos de paso tras cargar ──
             // Esperamos 500ms para que Three.js construya los obj3D antes de ocultarlos.
             // Radio es grande (24MB) — se oculta por nombre en cuanto el nodo exista.
@@ -2462,9 +2001,6 @@
                     } catch (e) {
                         console.warn(`⚠️ [Paso ${step.id}] editIcon falló:`, e.message || e);
                     }
-
-                    // 5. Registrar en el calibrador
-                    registerTagForCalib(step.id, sid, step.label, step.anchorPosition);
 
                     console.log(`✅ Tag creado: "${step.label}" | sid: ${sid}`);
                 } catch (e) {
