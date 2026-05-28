@@ -677,7 +677,7 @@
             border: 1px solid rgba(6, 182, 212, 0.3);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(6, 182, 212, 0.15);
             border-radius: 12px;
-            padding: 40px 30px;
+            padding: 24px 30px 32px 30px;
             max-width: 480px;
             width: 90%;
             text-align: center;
@@ -787,6 +787,7 @@
             letter-spacing: 2px;
             text-transform: uppercase;
         }
+
     </style>
 </head>
 
@@ -795,14 +796,9 @@
     <div id="welcome-modal-overlay">
         <div id="welcome-modal">
 
-            <!-- ICONO LOTO -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round"
-                stroke-linejoin="round"
-                style="width: 64px; height: 64px; margin: 0 auto 15px auto; display: block; filter: drop-shadow(0 0 8px rgba(6,182,212,0.6));">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                <rect x="10" y="10" width="4" height="5" rx="1"></rect>
-                <path d="M10 10V8a2 2 0 0 1 4 0v2"></path>
-            </svg>
+            <!-- LOGO MINVERSO -->
+            <img src="./bundle/images/Minverso.png" alt="Logo Minverso"
+                style="max-width: 400px; max-height: 180px; margin: -15px auto 5px auto; display: block; filter: brightness(0) saturate(100%) invert(63%) sepia(87%) saturate(1450%) hue-rotate(152deg) brightness(90%) contrast(92%) drop-shadow(0 0 8px rgba(6, 182, 212, 0.6)); object-fit: contain;">
             <div class="welcome-title">BIENVENIDO AL CURSO<br>DE BLOQUEO LOTO</div>
             <div class="welcome-subtitle">Aislamiento Seguro de Energía</div>
             <div class="welcome-text">En esta simulación aprenderás a desenergizar y bloquear equipos de forma segura
@@ -863,46 +859,6 @@
     </div>
 
 
-
-
-
-
-
-
-
-    <!-- OVERLAY COORDENADAS TODOS LOS MODELOS -->
-    <div id="coords-overlay" style="display:none;position:fixed;top:80px;left:50%;margin-left:-270px;
-        background:#0f172a;border:1px solid #334155;border-radius:12px;padding:0;z-index:10000;
-        min-width:540px;max-height:80vh;font-family:monospace;font-size:12px;
-        color:#e2e8f0;box-shadow:0 20px 60px rgba(0,0,0,.9);">
-        <!-- DRAG HANDLE -->
-        <div id="coords-drag-handle" style="display:flex;justify-content:space-between;align-items:center;
-            padding:10px 16px;background:rgba(255,255,255,0.04);border-bottom:1px solid #334155;
-            border-radius:12px 12px 0 0;cursor:grab;user-select:none;">
-            <span style="font-weight:bold;font-size:14px;display:flex;align-items:center;gap:8px;">
-                <span style="opacity:0.4;font-size:16px;">⠿</span>
-                📊 Coordenadas absolutas — todos los modelos
-            </span>
-            <button id="coords-close-btn" onclick="document.getElementById('coords-overlay').style.display='none'"
-                style="background:#ef4444;border:none;color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:13px;">✕</button>
-        </div>
-        <!-- TABLE BODY -->
-        <div style="overflow-y:auto;max-height:calc(80vh - 48px);padding:12px 16px;">
-            <table style="width:100%;border-collapse:collapse;">
-                <thead>
-                    <tr style="color:#94a3b8;border-bottom:1px solid #334155;font-size:11px;">
-                        <th style="text-align:left;padding:4px 8px;">Modelo</th>
-                        <th style="padding:4px 6px;">X</th>
-                        <th style="padding:4px 6px;">Y</th>
-                        <th style="padding:4px 6px;">Z</th>
-                        <th style="padding:4px 6px;">Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="coords-table-body"></tbody>
-            </table>
-        </div>
-    </div>
-
     <iframe id="showcase" width="100%" height="100%"
         src="./bundle/showcase.html?m=hXEV8zd9GFy&play=1&qs=1&log=0&applicationKey=myhcpcdgdh7907ggei7s5f4md"
         frameborder="0" allowfullscreen allow="vr; xr-spatial-tracking"
@@ -931,17 +887,18 @@
             'etiqueta': { id: 'etiqueta', label: 'Etiqueta', icon: '🏷️', file: 'Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0.2, y: 2.35, z: -2.25 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
             'pinzas': { id: 'pinzas', label: 'Pinzas', icon: '🔧', file: 'Pinzas.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -2.3, y: 2, z: -0.8 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 2, y: 2, z: 2 } },
 
-            'lotoCandado': { id: 'lotoCandado', label: 'Loto Candado', icon: '🔒', file: 'Loto_Candado.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.92, y: 1.16, z: -0.78 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
-            'lotoEtiqueta': { id: 'lotoEtiqueta', label: 'Loto Etiqueta', icon: '🏷️', file: 'Loto_Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.92, y: 1.17, z: -0.78 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
-            'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.91, y: 1.3, z: 0.51 }, rotation: { x: -55, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
-            'cubo2': { id: 'cubo2', label: 'Cubo 2', icon: '📦', file: 'Cubo2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 10, y: 10, z: 10 } },
+            'lotoCandado': { id: 'lotoCandado', label: 'Loto Candado', icon: '🔒', file: 'Loto_Candado.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 4.93, y: 1.372, z: -0.2306 }, rotation: { x: 44, y: 180, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'lotoEtiqueta': { id: 'lotoEtiqueta', label: 'Loto Etiqueta', icon: '🏷️', file: 'Loto_Etiqueta.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 4.93, y: 1.372, z: -0.2306 }, rotation: { x: 44, y: 180, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'lotoPinza': { id: 'lotoPinza', label: 'Loto Pinza', icon: '🔧', file: 'Loto_Pinza.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 4.93, y: 1.372, z: -0.2306 }, rotation: { x: 44, y: 180, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'lotoBloqueo2': { id: 'lotoBloqueo2', label: 'Loto Bloqueo 2', icon: '🔒', file: 'Lotobloqueo2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 4.95, y: 1.372, z: -0.2306 }, rotation: { x: 44, y: 180, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'cubo2': { id: 'cubo2', label: 'Cubo 2', icon: '📦', file: 'Cubo2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 10, y: 10, z: 10 } },
             'clima2': { id: 'clima2', label: 'Clima 2', icon: '❄️', file: 'Clima2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -3.1, y: 0.4, z: 4.3 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'ele': { id: 'ele', label: 'Ele 2', icon: '⚡', file: 'Ele2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -1.55, y: 0.21, z: 4.4 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'palancaAnimada': { id: 'palancaAnimada', label: 'Palanca Animada', icon: '🔧', file: 'PalancaAnimada.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.9, y: 1.0, z: -0.9 }, rotation: { x: 0, y: 90, z: 0 }, localScale: { x: 15, y: 15, z: 15 } },
-            'cuboSdk': { id: 'cuboSdk', label: 'Cubo SDK', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
+            'cuboSdk': { id: 'cuboSdk', label: 'Cubo SDK', icon: '📦', file: 'cubosdk.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'cubo3': { id: 'cubo3', label: 'Cubo 3', icon: '📦', file: 'cubo3.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -3, y: 0, z: -1 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 1, y: 1, z: 1 } },
             'repisa': { id: 'repisa', label: 'Repisa', icon: '🗄️', file: 'Repisa.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -1.96, y: 1.55, z: -0.195 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 0.7, y: 2.1, z: 0.4 } },
-            'repisa2': { id: 'repisa2', label: 'Repisa 2', icon: '🗄️', file: 'Repisa2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 0.7, y: 2.1, z: 0.4 } },
+            'repisa2': { id: 'repisa2', label: 'Repisa 2', icon: '🗄️', file: 'Repisa2.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 0.7, y: 2.1, z: 0.4 } },
             'palancaV2': { id: 'palancaV2', label: 'Palanca V2', icon: '🔧', file: 'PalancaV2.glb', type: 'mp.gltfLoader', node: null, visible: true, position: { x: -4.9, y: 1.36, z: -0.97 }, rotation: { x: 0, y: 0, z: 0 }, localScale: { x: 0.5, y: 0.5, z: 0.5 } },
             'cuadroSeleccion': { id: 'cuadroSeleccion', label: 'Cuadro Selección', icon: '⏹️', file: 'Cuadroseleccion.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -4.75, y: -0.95, z: -1.42 }, rotation: { x: 90, y: 0, z: 0 }, localScale: { x: 1.95, y: 0.75, z: 1.75 } },
             'flecha': { id: 'flecha', label: 'Flecha', icon: '➡️', file: 'Flecha.glb', type: 'mp.gltfLoader', node: null, visible: false, position: { x: -4.9, y: -.9, z: -1.5 }, rotation: { x: 90, y: 0, z: 0 }, localScale: { x: 0.1, y: 0.1, z: 0.1 } }
@@ -1071,7 +1028,8 @@
             'bundle/IniciarProceso.MP3': new Audio('bundle/IniciarProceso.MP3'),
             'bundle/Autorización.MP3': new Audio('bundle/Autorización.MP3'),
             'bundle/radio.MP3': new Audio('bundle/radio.MP3'),
-            'bundle/bajadadepalanca.MP3': new Audio('bundle/bajadadepalanca.MP3')
+            'bundle/bajadadepalanca.MP3': new Audio('bundle/bajadadepalanca.MP3'),
+            'bundle/Felicitaciones.mp3': new Audio('bundle/Felicitaciones.mp3')
         };
         // Forzar pre-carga asíncrona de los archivos de audio
         Object.values(audioCache).forEach(audio => {
@@ -1097,424 +1055,7 @@
         }
 
 
-        // ── CALIBRADOR: datos y funciones ──────────────────────────
-        const tagsCalibData = {};
 
-        function initModelUI() {
-            const select = document.getElementById('calib-model-select');
-            if (!select) return;
-            select.innerHTML = '';
-
-            const grpModels = document.createElement('optgroup');
-            grpModels.label = '── Modelos 3D ──';
-            select.appendChild(grpModels);
-            Object.values(modelsData).forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.textContent = `${m.icon} ${m.label}`;
-                grpModels.appendChild(opt);
-            });
-
-            const grpTags = document.createElement('optgroup');
-            grpTags.label = '── Tags Checklist ──';
-            grpTags.id = 'calib-tags-group';
-            select.appendChild(grpTags);
-        }
-
-        function registerTagForCalib(stepId, sid, label, anchorPosition) {
-            const key = `tag_${stepId}`;
-            tagsCalibData[key] = { sid, anchorPosition: Object.assign({}, anchorPosition), stepLabel: label };
-            const grp = document.getElementById('calib-tags-group');
-            if (!grp) return;
-            if (grp.querySelector(`option[value="${key}"]`)) return;
-            const opt = document.createElement('option');
-            opt.value = key;
-            opt.textContent = `📍 Paso ${stepId}: ${label.replace(/^Paso \d+: /, '')}`;
-            grp.appendChild(opt);
-        }
-
-        function getActiveModel() {
-            const el = document.getElementById('calib-model-select');
-            if (!el) return null;
-            const id = el.value;
-            if (id && id.startsWith('tag_')) return null;
-            return modelsData[id] || null;
-        }
-
-        function getActiveTag() {
-            const el = document.getElementById('calib-model-select');
-            if (!el) return null;
-            const id = el.value;
-            if (!id || !id.startsWith('tag_')) return null;
-            return tagsCalibData[id] || null;
-        }
-
-        function getNodeObj(m) {
-            if (!m || !m.node) return null;
-            if (m.node.obj3D) return m.node.obj3D;
-            if (window._customObjMap && window._customObjMap[m.id]) return window._customObjMap[m.id];
-            return null;
-        }
-
-        function getFbxComp(m) {
-            if (!m || !m.node) return null;
-            try {
-                for (const c of m.node.componentIterator())
-                    if (c.componentType === 'mp.fbxLoader') return c;
-            } catch (e) { }
-            return null;
-        }
-
-        function getGltfComp(m) {
-            if (!m || !m.node) return null;
-            try {
-                for (const c of m.node.componentIterator())
-                    if (c.componentType === 'mp.gltfLoader') return c;
-            } catch (e) { }
-            return null;
-        }
-
-        async function nudgePosLocal(axis, dir) {
-            const stepEl = document.getElementById('calib-step');
-            const step = stepEl ? (parseFloat(stepEl.value) || 0.1) : 0.1;
-            const tag = getActiveTag();
-            if (tag) return; // Tags no tienen posición local vs global (no tienen rotación)
-            const m = getActiveModel();
-            if (!m) return;
-
-            const THREE = await _threePromise;
-            const temp = new THREE.Object3D();
-            if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-            if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
-            temp.position.set(m.position.x, m.position.y, m.position.z);
-            temp.rotation.set(
-                m.rotation.x * Math.PI / 180,
-                m.rotation.y * Math.PI / 180,
-                m.rotation.z * Math.PI / 180,
-                'XYZ'
-            );
-
-            const distance = step * dir;
-            if (axis === 'x') temp.translateX(distance);
-            if (axis === 'y') temp.translateY(distance);
-            if (axis === 'z') temp.translateZ(distance);
-
-            m.position.x = +temp.position.x.toFixed(4);
-            m.position.y = +temp.position.y.toFixed(4);
-            m.position.z = +temp.position.z.toFixed(4);
-
-            if (m.type === 'mp.fbxLoader') {
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-            } else if (m.type === 'mp.gltfLoader') {
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-            } else {
-                const obj = getNodeObj(m);
-                if (obj) {
-                    obj.position.set(m.position.x, m.position.y, m.position.z);
-                }
-            }
-            updateCalibDisplay();
-        }
-
-        function nudgePos(axis, dir) {
-            const stepEl = document.getElementById('calib-step');
-            const step = stepEl ? (parseFloat(stepEl.value) || 0.1) : 0.1;
-            const tag = getActiveTag();
-            if (tag) {
-                tag.anchorPosition[axis] = (tag.anchorPosition[axis] || 0) + step * dir;
-                if (mpSdk) mpSdk.Mattertag.editPosition(tag.sid, { anchorPosition: tag.anchorPosition, stemVector: { x: 0, y: 0, z: 0 } }).catch(e => console.warn('editPosition:', e));
-                updateCalibDisplay(); return;
-            }
-            const m = getActiveModel();
-            if (!m) return;
-            // FBX: actualizar m.position y comp.inputs.localPosition
-            if (m.type === 'mp.fbxLoader') {
-                if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-                m.position[axis] = +((m.position[axis] || 0) + step * dir).toFixed(4);
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-                updateCalibDisplay(); return;
-            }
-            // GLB (mp.gltfLoader): igual que FBX, vía comp.inputs.localPosition
-            if (m.type === 'mp.gltfLoader') {
-                if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-                m.position[axis] = +((m.position[axis] || 0) + step * dir).toFixed(4);
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-                updateCalibDisplay(); return;
-            }
-            // custom (animatedGltf u otros): obj3D directo
-            const obj = getNodeObj(m);
-            if (!obj) return;
-            obj.position[axis] += step * dir;
-            if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-            m.position[axis] = +obj.position[axis].toFixed(4);
-            updateCalibDisplay();
-        }
-
-        function nudgeRot(axis, dir) {
-            if (getActiveTag()) return;
-            const m = getActiveModel();
-            if (!m) return;
-            const stepEl = document.getElementById('calib-rot-step');
-            const step = stepEl ? (parseFloat(stepEl.value) || 5) : 5;
-            // FBX
-            if (m.type === 'mp.fbxLoader') {
-                if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
-                m.rotation[axis] = +((m.rotation[axis] || 0) + step * dir).toFixed(1);
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localRotation = { ...m.rotation };
-                updateCalibDisplay(); return;
-            }
-            // GLB (mp.gltfLoader): vía comp.inputs.localRotation
-            if (m.type === 'mp.gltfLoader') {
-                if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
-                m.rotation[axis] = +((m.rotation[axis] || 0) + step * dir).toFixed(1);
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localRotation = { ...m.rotation };
-                updateCalibDisplay(); return;
-            }
-            // custom: obj3D directo
-            const obj = getNodeObj(m);
-            if (!obj) return;
-            obj.rotation[axis] += step * dir * (Math.PI / 180);
-            if (!m.rotation) m.rotation = { x: 0, y: 0, z: 0 };
-            m.rotation[axis] = +(obj.rotation[axis] * 180 / Math.PI).toFixed(1);
-            updateCalibDisplay();
-        }
-
-        function nudgeScale(axis, dir) {
-            if (getActiveTag()) return;
-            const m = getActiveModel();
-            if (!m) return;
-            const stepEl = document.getElementById('calib-scale-step');
-            const step = stepEl ? (parseFloat(stepEl.value) || 1) : 1;
-
-            if (!m.localScale) {
-                if (m.scale) {
-                    m.localScale = { x: m.scale, y: m.scale, z: m.scale };
-                } else {
-                    m.localScale = { x: 1, y: 1, z: 1 };
-                }
-            }
-
-            m.localScale[axis] = +((m.localScale[axis] || 1) + step * dir).toFixed(4);
-
-            if (m.type === 'mp.fbxLoader') {
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localScale = { ...m.localScale };
-                updateCalibDisplay(); return;
-            }
-            if (m.type === 'mp.gltfLoader') {
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localScale = { ...m.localScale };
-                updateCalibDisplay(); return;
-            }
-            const obj = getNodeObj(m);
-            if (!obj) return;
-            obj.scale[axis] = m.localScale[axis];
-            updateCalibDisplay();
-        }
-
-        function updateCalibDisplay() {
-            const tag = getActiveTag();
-            const coordEl = document.getElementById('calib-coords');
-            const rotEl = document.getElementById('calib-rot');
-            const scaleEl = document.getElementById('calib-scale');
-            if (tag) {
-                const p = tag.anchorPosition;
-                if (coordEl) coordEl.innerText = `Pos Global: x: ${(p.x || 0).toFixed(3)}, y: ${(p.y || 0).toFixed(3)}, z: ${(p.z || 0).toFixed(3)}`;
-                if (rotEl) rotEl.innerText = `(Tags no tienen rotación)`;
-                if (scaleEl) scaleEl.innerText = `(Tags no tienen escala)`;
-                return;
-            }
-            const m = getActiveModel();
-            if (!m) return;
-            // FBX: mostrar m.position / m.rotation (fuente de verdad)
-            if (m.type === 'mp.fbxLoader') {
-                const p = m.position || { x: 0, y: 0, z: 0 };
-                const r = m.rotation || { x: 0, y: 0, z: 0 };
-                const s = m.localScale || { x: m.scale || 1, y: m.scale || 1, z: m.scale || 1 };
-                if (coordEl) coordEl.innerHTML = `
-                    <div style="color:#60a5fa;font-size:11px;margin-bottom:2px;">Local: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>
-                    <div style="color:#4ade80;font-size:11px;">Absoluta: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
-                if (rotEl) rotEl.innerText = `Rot FBX: x: ${r.x.toFixed(1)}°  y: ${r.y.toFixed(1)}°  z: ${r.z.toFixed(1)}°`;
-                if (scaleEl) scaleEl.innerText = `Escala: x: ${s.x.toFixed(3)}  y: ${s.y.toFixed(3)}  z: ${s.z.toFixed(3)}`;
-                return;
-            }
-            // GLB (mp.gltfLoader): mostrar m.position como fuente de verdad
-            if (m.type === 'mp.gltfLoader') {
-                const p = m.position || { x: 0, y: 0, z: 0 };
-                const r = m.rotation || { x: 0, y: 0, z: 0 };
-                const s = m.localScale || { x: 1, y: 1, z: 1 };
-                if (coordEl) coordEl.innerHTML = `
-                    <div style="color:#60a5fa;font-size:11px;margin-bottom:2px;">Local: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>
-                    <div style="color:#4ade80;font-size:11px;">Absoluta: x: <b>${p.x.toFixed(4)}</b> &nbsp; y: <b>${p.y.toFixed(4)}</b> &nbsp; z: <b>${p.z.toFixed(4)}</b></div>`;
-                if (rotEl) rotEl.innerText = `Rot GLB: x: ${r.x.toFixed(1)}°  y: ${r.y.toFixed(1)}°  z: ${r.z.toFixed(1)}°`;
-                if (scaleEl) scaleEl.innerText = `Escala: x: ${s.x.toFixed(3)}  y: ${s.y.toFixed(3)}  z: ${s.z.toFixed(3)}`;
-                return;
-            }
-            // custom.animatedGltf u otros: leer de obj3D
-            const obj = getNodeObj(m);
-            if (!obj) {
-                if (coordEl) coordEl.innerHTML = `<span style="color:#f59e0b">⏳ Modelo cargando...</span>`;
-                return;
-            }
-            const pL = obj.position, rL = obj.rotation, sL = obj.scale;
-            if (coordEl) coordEl.innerHTML = `
-                <div style="color:#60a5fa;font-size:11px;margin-bottom:2px;">Local: x: <b>${pL.x.toFixed(4)}</b> &nbsp; y: <b>${pL.y.toFixed(4)}</b> &nbsp; z: <b>${pL.z.toFixed(4)}</b></div>
-                <div style="color:#4ade80;font-size:11px;">Absoluta: x: <b>${pL.x.toFixed(4)}</b> &nbsp; y: <b>${pL.y.toFixed(4)}</b> &nbsp; z: <b>${pL.z.toFixed(4)}</b></div>`;
-            if (rotEl) rotEl.innerText = `Rot: x: ${(rL.x * 180 / Math.PI).toFixed(0)}°  y: ${(rL.y * 180 / Math.PI).toFixed(0)}°  z: ${(rL.z * 180 / Math.PI).toFixed(0)}°`;
-            if (scaleEl) scaleEl.innerText = `Escala: x: ${sL.x.toFixed(3)}  y: ${sL.y.toFixed(3)}  z: ${sL.z.toFixed(3)}`;
-        }
-
-        // ── COORDENADAS ABSOLUTAS DE TODOS LOS MODELOS ──────────────
-        async function showAllCoords() {
-            const tbody = document.getElementById('coords-table-body');
-            const overlay = document.getElementById('coords-overlay');
-            if (!tbody || !overlay) return;
-            tbody.innerHTML = '';
-
-            function makeCoordInput(modelId, axis, val, color) {
-                const td = document.createElement('td');
-                td.style.cssText = 'padding:3px 6px;text-align:right;';
-                if (val === '—') {
-                    td.innerHTML = `<span style="color:#475569;">—</span>`;
-                } else {
-                    const inp = document.createElement('input');
-                    inp.type = 'number';
-                    inp.step = '0.001';
-                    inp.value = val;
-                    inp.style.cssText = `width:72px;background:#0f172a;color:${color};border:1px solid #334155;border-radius:4px;padding:2px 4px;font-size:12px;font-family:monospace;font-weight:bold;text-align:right;outline:none;`;
-                    inp.addEventListener('focus', () => { inp.style.borderColor = color; });
-                    inp.addEventListener('blur', () => { inp.style.borderColor = '#334155'; applyCoordEdit(modelId, axis, parseFloat(inp.value)); });
-                    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') inp.blur(); });
-                    td.appendChild(inp);
-                }
-                return td;
-            }
-
-            for (const [id, m] of Object.entries(modelsData)) {
-                let px = '—', py = '—', pz = '—';
-                let estado = '⚫ no cargado';
-                let rowColor = '#1e293b';
-
-                if (m.node) {
-                    const p = m.position;
-                    if (p) { px = p.x.toFixed(3); py = p.y.toFixed(3); pz = p.z.toFixed(3); }
-                    if (m.type === 'mp.fbxLoader') rowColor = '#2e1065';
-                    else rowColor = m.visible ? '#052e16' : '#3f0f0f';
-                    estado = m.visible ? '🟢 visible' : '🔴 oculto';
-                }
-
-                console.log(`${m.icon || ''} [${id}] ${m.label}: x:${px} y:${py} z:${pz} | ${estado}`);
-
-                const tr = document.createElement('tr');
-                tr.style.cssText = `border-bottom:1px solid #1e293b;background:${rowColor}44;`;
-
-                const tdLabel = document.createElement('td');
-                tdLabel.style.cssText = 'padding:5px 8px;white-space:nowrap;';
-                tdLabel.innerHTML = `<span style="margin-right:4px;">${m.icon || '🟦'}</span><span style="color:#e2e8f0;font-weight:500;">${m.label}</span> <span style="color:#475569;font-size:10px;">(${id})</span>`;
-
-                const tdEstado = document.createElement('td');
-                tdEstado.style.cssText = 'padding:5px 8px;text-align:center;font-size:11px;';
-                tdEstado.textContent = estado;
-
-                tr.appendChild(tdLabel);
-                tr.appendChild(makeCoordInput(id, 'x', px, '#60a5fa'));
-                tr.appendChild(makeCoordInput(id, 'y', py, '#34d399'));
-                tr.appendChild(makeCoordInput(id, 'z', pz, '#f59e0b'));
-                tr.appendChild(tdEstado);
-                tbody.appendChild(tr);
-            }
-            overlay.style.display = 'block';
-        }
-
-        // Aplica coordenada absoluta editada desde la tabla al modelo
-        function applyCoordEdit(modelId, axis, newVal) {
-            if (isNaN(newVal)) return;
-            const m = modelsData[modelId];
-            if (!m || !m.node) return;
-            if (!m.position) m.position = { x: 0, y: 0, z: 0 };
-            m.position[axis] = +newVal.toFixed(4);
-            if (m.type === 'mp.fbxLoader') {
-                const comp = getFbxComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-            } else if (m.type === 'mp.gltfLoader') {
-                // CORRECTO: actualizar via component inputs, NO obj3D.position
-                const comp = getGltfComp(m);
-                if (comp) comp.inputs.localPosition = { ...m.position };
-            } else {
-                // custom.animatedGltf: obj3D directo
-                const obj = getNodeObj(m);
-                if (obj) obj.position[axis] = m.position[axis];
-            }
-            const sel = document.getElementById('calib-model-select');
-            if (sel && sel.value === modelId) updateCalibDisplay();
-        }
-
-        // ── COLAPSO/EXPANSIÓN ──────────────────────────────────────────────
-        function toggleCalibPanel() {
-            document.getElementById('calib-panel').classList.toggle('collapsed');
-        }
-
-        // ── DRAG & DROP ───────────────────────────────────────────
-        (function () {
-            const panel = document.getElementById('calib-panel');
-            const handle = document.getElementById('calib-drag-handle');
-            if (!panel || !handle) return;
-            let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
-            handle.addEventListener('mousedown', (e) => {
-                if (e.target.id === 'calib-toggle') return; // no arrastrar al pulsar el botón
-                dragging = true;
-                startX = e.clientX; startY = e.clientY;
-                const rect = panel.getBoundingClientRect();
-                origLeft = rect.left; origTop = rect.top;
-                panel.style.transition = 'none';
-                e.preventDefault();
-            });
-            document.addEventListener('mousemove', (e) => {
-                if (!dragging) return;
-                const newLeft = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, origLeft + e.clientX - startX));
-                const newTop = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, origTop + e.clientY - startY));
-                panel.style.left = newLeft + 'px';
-                panel.style.top = newTop + 'px';
-                panel.style.right = 'auto';
-            });
-            document.addEventListener('mouseup', () => { dragging = false; });
-        })();
-
-        // ── DRAG & DROP — COORDS OVERLAY ──────────────────────────
-        (function () {
-            const panel = document.getElementById('coords-overlay');
-            const handle = document.getElementById('coords-drag-handle');
-            if (!panel || !handle) return;
-            let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
-            handle.addEventListener('mousedown', (e) => {
-                if (e.target.id === 'coords-close-btn') return;
-                dragging = true;
-                startX = e.clientX; startY = e.clientY;
-                const rect = panel.getBoundingClientRect();
-                origLeft = rect.left; origTop = rect.top;
-                panel.style.transition = 'none';
-                panel.style.marginLeft = '0'; // quitar el margin-left inicial
-                e.preventDefault();
-            });
-            document.addEventListener('mousemove', (e) => {
-                if (!dragging) return;
-                const newLeft = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, origLeft + e.clientX - startX));
-                const newTop = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, origTop + e.clientY - startY));
-                panel.style.left = newLeft + 'px';
-                panel.style.top = newTop + 'px';
-            });
-            document.addEventListener('mouseup', () => { if (dragging) { dragging = false; handle.style.cursor = 'grab'; } });
-            handle.addEventListener('mousedown', () => { handle.style.cursor = 'grabbing'; });
-        })();
-
-        // Inicializar select del calibrador
-        initModelUI();
 
 
         // Step emojis by step id
@@ -1650,6 +1191,21 @@
 
             const step = checklistSteps[index];
 
+            // Si vamos a un paso que no es el 1, detener la radio de inmediato
+            if (step.id !== 1) {
+                if (typeof window.stopRadioAnimation === 'function') {
+                    window.stopRadioAnimation();
+                }
+                if (typeof stopChecklistAudio === 'function') {
+                    stopChecklistAudio();
+                }
+                const radioAudio = audioCache['bundle/radio.MP3'];
+                if (radioAudio) {
+                    radioAudio.pause();
+                    radioAudio.currentTime = 0;
+                }
+            }
+
             // Ocultar cuadro y flecha si no estamos en Paso 2
             if (step.id !== 2) {
                 if (modelsData.cuadroSeleccion && modelsData.cuadroSeleccion.node) {
@@ -1761,7 +1317,7 @@
             const stepModels = {
                 1: [],
                 4: ['candado', 'etiqueta', 'pinzas'],
-                5: ['lotoPinza', 'lotoCandado', 'lotoEtiqueta']
+                5: ['lotoBloqueo2', 'lotoPinza', 'lotoCandado', 'lotoEtiqueta']
             };
 
             // Reglas condicionales: el modelo SOLO se muestra si se cumple su condición en el checklist
@@ -1772,6 +1328,7 @@
                 'lotoPinza': (step) => checkState[step] && checkState[step][0],
                 'lotoCandado': (step) => checkState[step] && checkState[step][1],
                 'lotoEtiqueta': (step) => checkState[step] && checkState[step][2],
+                'lotoBloqueo2': (step) => checkState[step] && (checkState[step][0] || checkState[step][1] || checkState[step][2]),
             };
 
             const activeStep = checklistSteps[activeIndex];
@@ -1786,11 +1343,12 @@
                     if (!m || !m.node) return;
 
                     let shouldShow = isCurrentStep;
-
                     // Si estamos en el paso y tiene regla, suplantar por la regla
                     if (isCurrentStep && conditionalModels[mid]) {
                         shouldShow = conditionalModels[mid](stepId);
                     }
+
+                    m.visible = shouldShow;
 
                     // Para modelos FBX grandes (Radio), el obj3D existe pero sus hijos
                     // pueden tardar en cargarse. Usamos polling hasta que esté listo.
@@ -1801,9 +1359,30 @@
                             setTimeout(() => applyVisibility(attempts + 1), 250);
                             return;
                         }
-                        obj.visible = shouldShow;
-                        m.visible = shouldShow;
-                        // console.log(`👁️ [${mid}] visible=${shouldShow} (intentos: ${attempts})`);
+                        obj.visible = m.visible;
+
+                        // Si es lotoBloqueo2, controlar la visibilidad de sus sub-nodos en tiempo real
+                        if (mid === 'lotoBloqueo2' && m.visible) {
+                            const calibSel = document.getElementById('calib-model-select');
+                            const isCalibrating = calibSel && calibSel.value === 'lotoBloqueo2';
+
+                            const haspVisible = isCalibrating || (checkState[5] && checkState[5][0]);
+                            const lockVisible = isCalibrating || (checkState[5] && checkState[5][1]);
+                            const tagVisible = isCalibrating || (checkState[5] && checkState[5][2]);
+
+                            obj.traverse(child => {
+                                if (child.name) {
+                                    const nameLower = child.name.toLowerCase();
+                                    if (nameLower.includes('hasp') || nameLower.includes('pinza')) {
+                                        child.visible = haspVisible;
+                                    } else if (nameLower.includes('lock') || nameLower.includes('candado') || nameLower.includes('key') || nameLower.includes('llave')) {
+                                        child.visible = lockVisible;
+                                    } else if (nameLower.includes('tag') || nameLower.includes('etiqueta')) {
+                                        child.visible = tagVisible;
+                                    }
+                                }
+                            });
+                        }
                     };
                     applyVisibility();
                 });
@@ -1821,7 +1400,22 @@
          */
         function openChecklist(stepId) {
             const index = checklistSteps.findIndex(s => s.id === stepId);
-            if (index !== -1) renderChecklistUI(index);
+            if (index !== -1) {
+                if (stepId !== 1) {
+                    if (typeof window.stopRadioAnimation === 'function') {
+                        window.stopRadioAnimation();
+                    }
+                    if (typeof stopChecklistAudio === 'function') {
+                        stopChecklistAudio();
+                    }
+                    const radioAudio = audioCache['bundle/radio.MP3'];
+                    if (radioAudio) {
+                        radioAudio.pause();
+                        radioAudio.currentTime = 0;
+                    }
+                }
+                renderChecklistUI(index);
+            }
         }
 
         function renderItems(step) {
@@ -1971,6 +1565,9 @@
 
         /** Pantalla de cierre cuando se completan todos los pasos */
         function showAllDone() {
+            // Reproducir audio de felicitaciones al completar todo el checklist
+            playChecklistAudio('bundle/Felicitaciones.mp3');
+
             const container = document.getElementById('checklist-items-container');
             container.innerHTML = `
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:0 10px;text-align:center">
@@ -2581,7 +2178,7 @@
             } catch (e) { console.warn('⚠️ [Radio] No se pudo cargar:', e.message || e); }
 
             // ── Loto GLB models ──
-            for (const id of ['lotoCandado', 'lotoEtiqueta', 'lotoPinza']) {
+            for (const id of ['lotoCandado', 'lotoEtiqueta', 'lotoPinza', 'lotoBloqueo2']) {
                 try {
                     const m = modelsData[id];
                     m.node = await sdk.Scene.createNode();
@@ -2839,8 +2436,7 @@
                         console.warn(`⚠️ [Paso ${step.id}] editIcon falló:`, e.message || e);
                     }
 
-                    // 5. Registrar en el calibrador
-                    registerTagForCalib(step.id, sid, step.label, step.anchorPosition);
+
 
                     console.log(`✅ Tag creado: "${step.label}" | sid: ${sid}`);
                 } catch (e) {
