@@ -1168,6 +1168,7 @@
 
         // ── ÍNDICE SECUENCIAL ──────────────────────────────────
         let currentStepIndex = 0;   // índice en checklistSteps[]
+        let maxUnlockedStepIndex = 0; // índice máximo alcanzado/desbloqueado en checklistSteps[]
         let isAdvancing = false;    // bloqueo durante la transición
 
         // =====================================================
@@ -1284,11 +1285,41 @@
 
 
         // =====================================================
+        // VISIBILIDAD DE MATTERTAGS POR PASO
+        // =====================================================
+        function updateTagVisibilities(activeIndex) {
+            if (!mpSdk) return;
+            const activeStep = checklistSteps[activeIndex];
+            if (!activeStep) return;
+
+            checklistSteps.forEach(step => {
+                const sid = stepSidMap[step.id];
+                if (!sid) return;
+
+                // Un paso es visible si su id es menor o igual al paso máximo desbloqueado + 1
+                const isVisible = step.id <= (maxUnlockedStepIndex + 1);
+
+                if (isVisible) {
+                    mpSdk.Mattertag.editOpacity(sid, 1.0)
+                        .catch(err => console.error(`Error editOpacity visible for step ${step.id}:`, err));
+                    mpSdk.Mattertag.preventAction(sid, { navigating: false, opening: false })
+                        .catch(err => console.error(`Error preventAction false for step ${step.id}:`, err));
+                } else {
+                    mpSdk.Mattertag.editOpacity(sid, 0.0)
+                        .catch(err => console.error(`Error editOpacity hidden for step ${step.id}:`, err));
+                    mpSdk.Mattertag.preventAction(sid, { navigating: true, opening: true })
+                        .catch(err => console.error(`Error preventAction true for step ${step.id}:`, err));
+                }
+            });
+        }
+
+        // =====================================================
         // RENDERIZADO DE UI (solo panel, sin tocar la cámara)
         // =====================================================
         function renderChecklistUI(index) {
             if (index < 0 || index >= checklistSteps.length) return;
             currentStepIndex = index;
+            maxUnlockedStepIndex = Math.max(maxUnlockedStepIndex, index);
             const step = checklistSteps[index];
 
             document.getElementById('panel-header-label').textContent = `Paso ${step.id} de ${checklistSteps.length}`;
@@ -1303,6 +1334,9 @@
 
             // ── VISIBILIDAD DE MODELOS POR PASO ──
             setStepModels(index);
+
+            // ── VISIBILIDAD DE MATTERTAGS POR PASO ──
+            updateTagVisibilities(index);
 
             isAdvancing = false;  // liberar bloqueo una vez que el UI está listo
         }
@@ -2439,6 +2473,16 @@
 
 
                     console.log(`✅ Tag creado: "${step.label}" | sid: ${sid}`);
+
+                    // 5. Inicializar visibilidad (solo Paso 1 visible al inicio)
+                    if (step.id > 1) {
+                        try {
+                            await sdk.Mattertag.editOpacity(sid, 0.0);
+                            await sdk.Mattertag.preventAction(sid, { navigating: true, opening: true });
+                        } catch (err) {
+                            console.warn(`⚠️ [Paso ${step.id}] Falló inicializar visibilidad:`, err.message || err);
+                        }
+                    }
                 } catch (e) {
                     console.error(`❌ Error creando tag paso ${step.id}:`, e);
                 }
@@ -2460,8 +2504,15 @@
             sdk.on(sdk.Mattertag.Event.CLICK, function (sid) {
                 console.log('🔖 Tag clickeado, sid:', sid);
                 const stepId = tagSidMap[sid];
-                if (stepId === 1) playRadioSound();
-                if (stepId !== undefined) openChecklist(stepId);
+                if (stepId !== undefined) {
+                    // Solo permitir si el paso está desbloqueado
+                    if (stepId <= maxUnlockedStepIndex + 1) {
+                        if (stepId === 1) playRadioSound();
+                        openChecklist(stepId);
+                    } else {
+                        console.log(`⚠️ Paso ${stepId} bloqueado.`);
+                    }
+                }
             });
 
             // ── CLICK en modelo 3D Radio → sonido + abrir checklist ──
