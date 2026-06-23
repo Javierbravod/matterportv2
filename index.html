@@ -788,6 +788,94 @@
             text-transform: uppercase;
         }
 
+        /* ── SELECTOR DE ESPACIOS PREMIUM ── */
+        #space-selector-panel {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            width: 280px;
+            background: rgba(20, 20, 22, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 16px;
+            z-index: 99999;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .space-selector-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .space-selector-icon {
+            font-size: 18px;
+            filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.6));
+        }
+
+        .space-selector-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .space-buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .space-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+            text-align: left;
+            width: 100%;
+        }
+
+        .space-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .space-btn.active {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(8, 145, 178, 0.2) 100%);
+            border-color: rgba(6, 182, 212, 0.4);
+            color: #06b6d4;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+        }
+
+        .space-btn-icon {
+            font-size: 16px;
+        }
+
+        .space-btn-text {
+            flex: 1;
+        }
+
     </style>
 </head>
 
@@ -807,7 +895,6 @@
             <button class="welcome-btn" onclick="closeWelcomeModal()">[ CONTINUAR > ]</button>
         </div>
     </div>
-
     <!-- SIDEBAR PANEL -->
     <div id="checklist-panel">
         <div class="panel-header">
@@ -868,6 +955,62 @@
         const showcase = document.getElementById('showcase');
         let sdk;
         let mpSdk = null;         // alias semántico expuesto tras connect()
+        let handleLotoInit;
+
+        // ── FUNCIÓN PARA CAMBIAR DE ESPACIO DE MATTERPORT ──
+        function switchSpace(modelId) {
+            const showcase = document.getElementById('showcase');
+            const currentUrl = showcase.getAttribute('src');
+            
+            if (currentUrl.includes(`m=${modelId}`)) return;
+
+            document.querySelectorAll('.space-btn').forEach(btn => btn.classList.remove('active'));
+            if (modelId === 'hXEV8zd9GFy') {
+                const btnLoto = document.getElementById('btn-space-loto');
+                if (btnLoto) btnLoto.classList.add('active');
+            } else if (modelId === 'yJqnFEve9eH') {
+                const btnMolino = document.getElementById('btn-space-molino');
+                if (btnMolino) btnMolino.classList.add('active');
+            }
+
+            // Asignación estricta por modelo
+            const applicationKey = (modelId === 'hXEV8zd9GFy')
+                ? 'myhcpcdgdh7907ggei7s5f4md'  // Clave BIM (LOTO)
+                : 'pyzfqf57f64n3eci65dqcx10b'; // Clave Matter (Molino SAG)
+
+            // 4. Reconexión del SDK
+            if (modelId === 'hXEV8zd9GFy') {
+                // Si volvemos al modelo principal, restauramos el cargador completo de LOTO
+                showcase.onload = handleLotoInit;
+            } else {
+                // Si cambiamos a un modelo secundario, reconectamos el SDK de forma ligera
+                showcase.onload = async function () {
+                    console.log(`🔄 Reconectando SDK para el modelo secundario: ${modelId}`);
+                    try {
+                        const sdkSource = showcase.contentWindow.MP_SDK || window.MP_SDK;
+                        if (sdkSource) {
+                            sdk = await sdkSource.connect(showcase, applicationKey, '');
+                            mpSdk = sdk;
+                            console.log('✅ SDK reconectado con éxito para espacio secundario:', modelId);
+                            closeChecklist();
+                            setStepModels(-1, true);
+                        } else {
+                            console.error('❌ No se encontró MP_SDK en el iframe.');
+                        }
+                    } catch (e) {
+                        console.error('❌ Error reconectando SDK para espacio secundario:', e);
+                    }
+                };
+            }
+
+            // 3. Actualización del Iframe
+            showcase.src = `./bundle/showcase.html?m=${modelId}&play=1&qs=1&log=0&applicationKey=${applicationKey}`;
+            
+            if (modelId !== 'hXEV8zd9GFy') {
+                closeChecklist();
+                closeWelcomeModal();
+            }
+        }
 
         // ── PRE-CARGA DE MÓDULOS THREE.JS (ES Modules via import map) ──
         // Se inicia la descarga en paralelo mientras Matterport carga el iframe.
@@ -1611,6 +1754,9 @@
                     </svg>
                     <div style="font-size:16px;font-weight:700;color:#ffffff;line-height:1.3">¡Procedimiento completo!</div>
                     <div style="font-size:13px;color:#8e8e93;line-height:1.5">Todos los pasos del procedimiento de bloqueo han sido completados exitosamente.</div>
+                    <button class="next-step-btn" style="margin-top: 24px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); border: none;" onclick="resetTraining()">
+                        Reiniciar Capacitación 🔄
+                    </button>
                 </div>
             `;
             document.getElementById('progress-label').textContent = `${checklistSteps.length} / ${checklistSteps.length} pasos completados`;
@@ -1619,30 +1765,100 @@
             document.querySelector('.panel-step-block').style.display = 'none';
         }
 
+        /** Reinicia toda la simulación al estado inicial */
+        function resetTraining() {
+            // 1. Detener audios del checklist
+            stopChecklistAudio();
+            const radioAudio = audioCache['bundle/radio.MP3'];
+            if (radioAudio) {
+                radioAudio.pause();
+                radioAudio.currentTime = 0;
+            }
+
+            // 2. Restaurar estado de los checkboxes
+            checklistSteps.forEach(step => {
+                checkState[step.id] = step.items.map(() => false);
+            });
+
+            // 3. Resetear variables de control de avance
+            currentStepIndex = 0;
+            maxUnlockedStepIndex = 0;
+            isAdvancing = false;
+
+            // 4. Detener animaciones específicas de modelos
+            if (typeof window.stopRadioAnimation === 'function') {
+                window.stopRadioAnimation();
+            }
+            if (typeof setPalancaV2Anim === 'function') {
+                setPalancaV2Anim(false);
+            }
+            if (typeof setFlechaAnim === 'function') {
+                setFlechaAnim(false);
+            }
+
+            // Ocultar cuadro y flecha de Paso 2
+            if (modelsData.cuadroSeleccion && modelsData.cuadroSeleccion.node) {
+                setNodeVisibility(modelsData.cuadroSeleccion.node, false);
+                modelsData.cuadroSeleccion.visible = false;
+            }
+            if (modelsData.flecha && modelsData.flecha.node) {
+                setNodeVisibility(modelsData.flecha.node, false);
+                modelsData.flecha.visible = false;
+            }
+
+            // Ocultar todos los modelos 3D dinámicos de los pasos
+            setStepModels(-1, true);
+
+            // 5. Navegar al Paso 1 (actualiza UI y vuela la cámara de Matterport)
+            navigateToStep(0);
+        }
+
 
         // (toggles centralizados — ver toggleSpecificModel() y modelsData arriba)
 
         // =====================================================
         // INICIALIZACIÓN DEL SDK
         // =====================================================
-        showcase.addEventListener('load', async function () {
+        handleLotoInit = async function () {
+            // Obtener el ID del modelo actual cargado en el iframe
+            const currentUrl = showcase.getAttribute('src');
+            const urlParams = new URLSearchParams(currentUrl.substring(currentUrl.indexOf('?')));
+            const loadedModelId = urlParams.get('m');
+            console.log('📦 Modelo cargado:', loadedModelId);
+
+            // Determinar la clave correspondiente para la conexión SDK
+            const currentKey = (loadedModelId === 'hXEV8zd9GFy')
+                ? 'myhcpcdgdh7907ggei7s5f4md'  // Clave BIM (LOTO)
+                : 'pyzfqf57f64n3eci65dqcx10b'; // Clave Matter (Molino SAG)
+
             try {
-                sdk = await showcase.contentWindow.MP_SDK.connect(showcase, 'myhcpcdgdh7907ggei7s5f4md');
+                const sdkSource = showcase.contentWindow.MP_SDK || window.MP_SDK;
+                sdk = await sdkSource.connect(showcase, currentKey, '');
                 mpSdk = sdk;   // exponer alias semántico para uso en renderCurrentStep()
             } catch (e) {
-                console.error(e);
+                console.error('Error de conexión SDK de Matterport:', e);
                 return;
             }
 
-
             console.log('Hello Bundle SDK', sdk);
+
+            // Sincronizar botones del selector de espacio por si acaso
+            document.querySelectorAll('.space-btn').forEach(btn => btn.classList.remove('active'));
+            if (loadedModelId === 'hXEV8zd9GFy') {
+                const btnLoto = document.getElementById('btn-space-loto');
+                if (btnLoto) btnLoto.classList.add('active');
+            } else if (loadedModelId === 'yJqnFEve9eH') {
+                const btnMolino = document.getElementById('btn-space-molino');
+                if (btnMolino) btnMolino.classList.add('active');
+            }
 
             // THREE y GLTFLoader vienen del CDN vía import map,
             // completamente independientes del bundle interno de Matterport.
             const [THREE, { GLTFLoader }] = await Promise.all([_threePromise, _gltfLoaderPromise]);
             console.log('⚙️ [ESM] THREE r' + THREE.REVISION + ' y GLTFLoader listos.');
 
-            sdk.Scene.register('custom.animatedGltf', function () {
+            if (loadedModelId === 'hXEV8zd9GFy') {
+                sdk.Scene.register('custom.animatedGltf', function () {
                 let mixer = null;
                 // THREE interno de Matterport para materiales compatibles con su renderer
                 const mpTHREE = showcase.contentWindow.THREE;
@@ -2586,6 +2802,11 @@
                     }
                 });
             })();
+            } else {
+                console.log('ℹ️ Espacio secundario cargado. Omitiendo inicialización de LOTO.');
+                closeChecklist();
+                setStepModels(-1, true);
+            }
 
 
             // ── Logger de posición (debug) ─────────────────────────
@@ -2624,7 +2845,10 @@
                     console.log("-----------------------------------------");
                 }
             });
-        });
+        };
+
+        // Registro inicial del onload
+        showcase.onload = handleLotoInit;
 
 
 
